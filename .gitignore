@@ -61,6 +61,10 @@ main
 # Google Drive
 Icon
 
+# Files created by text editors
+*~
+*.lock
+*.swp
 
 
 ########################################
