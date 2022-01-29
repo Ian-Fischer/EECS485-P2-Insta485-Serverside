@@ -10,11 +10,31 @@ CREATE TABLE users(
 );
 
 CREATE TABLE posts(
-    postid INTEGER AUTO_INCREMENT,
+    postid INTEGER PRIMARY KEY AUTOINCREMENT,
     filename VARCHAR(64) NOT NULL,
     owner VARCHAR(20) NOT NULL,
     FOREIGN KEY (owner) REFERENCES users(username) ON DELETE CASCADE,
     created DATETIME
+);
+
+/* check to see if we need to define the following relationship "username1 follows username2" */
+CREATE TABLE following(
+    username1 VARCHAR(20) NOT NULL,
+    FOREIGN KEY (username1) REFERENCES users(username) ON DELETE CASCADE,
+    username2 VARCHAR(20) NOT NULL,
+    FOREIGN KEY (username2) REFERENCES users(username) ON DELETE CASCADE,
+    PRIMARY KEY (username1, username2),
+    created DATETIME,
+);
+
+CREATE TABLE comments(
+    commentid INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner VARCHAR(20) NOT NULL ON DELETE CASCADE,
+    postid INTEGER NOT NULL ON DELETE CASCADE,
+    text VARCHAR(1024) NOT NULL,
+    created DATETIME,
+    FOREIGN KEY (owner) REFERENCES users(username),
+    FOREIGN KEY (postid) REFERENCES posts(postid)
 );
 
 CREATE TABLE likes(
@@ -24,23 +44,4 @@ CREATE TABLE likes(
     created DATETIME 
     FOREIGN KEY (owner) REFERENCES users(username),
     FOREIGN KEY (postid) REFERENCES posts(postid)
-);
-
-
-CREATE TABLE FRIENDS (
-    USER1_ID NOT NULL,
-    USER2_ID NOT NULL,
-    PRIMARY KEY (USER1_ID, USER2_ID),
-    FOREIGN KEY (USER1_ID) REFERENCES USERS(USER_ID),
-    FOREIGN KEY (USER2_ID) REFERENCES USERS(USER_ID)
-);
-
-CREATE TABLE USERS (
-    USER_ID NUMBER PRIMARY KEY,
-    FIRST_NAME VARCHAR2(100) NOT NULL,
-    LAST_NAME VARCHAR2(100) NOT NULL,
-    YEAR_OF_BIRTH INTEGER,
-    MONTH_OF_BIRTH INTEGER,
-    DAY_OF_BIRTH INTEGER,
-    GENDER VARCHAR2(100)
 );
