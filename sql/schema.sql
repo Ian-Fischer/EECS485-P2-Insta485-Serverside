@@ -11,20 +11,20 @@ CREATE TABLE users(
 
 CREATE TABLE posts(
     postid INTEGER PRIMARY KEY AUTOINCREMENT,
-    filename VEGERAR(64) NOT NULL,
+    filename VARCHAR(64) NOT NULL,
     owner VARCHAR(20) NOT NULL,
-    FOREIGN KEY (owner) REFERENCES users(username) ON DELETE CASCADE,
-    created DATETIME
+    created DATETIME,
+    FOREIGN KEY (owner) REFERENCES users(username) ON DELETE CASCADE
 );
 
 /* check to see if we need to define the following relationship "username1 follows username2" */
 CREATE TABLE following(
     username1 VARCHAR( 20) NOT NULL,
-    FOREIGN KEY (username1) REFERENCES users(username) ON DELETE CASCADE,
     username2 VARCHAR(20) NOT NULL,
-    FOREIGN KEY (username2) REFERENCES users(username) ON DELETE CASCADE,
+    created DATETIME,
     PRIMARY KEY (username1, username2),
-    created DATETIME
+    FOREIGN KEY (username2) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY (username1) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE comments(
