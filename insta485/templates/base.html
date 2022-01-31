@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            insta485
+        </title>
+        <style>
+            ul {
+                display: inline;
+            }
+        </style>
+    </head> 
+    <body>
+        <ul>
+            <li><a href="/">Insta485!</a></li>
+            <li style="float:right"><a href="/explore/">explore</a></li>
+            <li style="float:right"><a href="/users/{{logname}}/">{{logname}}</a></li>
+        </ul>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

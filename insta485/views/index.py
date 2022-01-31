@@ -59,9 +59,6 @@ def show_index():
 
 
 
-
-
-
 @insta485.app.route('/accounts/login/', methods=['POST'])
 def login():
     # POST-only route for handling login requests
