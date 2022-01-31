@@ -1,4 +1,4 @@
-PRAGMA foreign_keys = ON
+PRAGMA foreign_keys = ON;
 
 CREATE TABLE users(
     username VARCHAR(20) PRIMARY KEY,
