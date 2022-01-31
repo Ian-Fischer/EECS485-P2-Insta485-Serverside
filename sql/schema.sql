@@ -14,7 +14,7 @@ CREATE TABLE posts(
     filename VARCHAR(64) NOT NULL,
     owner VARCHAR(20) NOT NULL,
     created DATETIME,
-    FOREIGN KEY (owner) REFERENCES users(username) ON DELETE CASCADE
+    FOREIGN KEY(owner) REFERENCES users(username) ON DELETE CASCADE
 );
 
 /* check to see if we need to define the following relationship "username1 follows username2" */
@@ -23,8 +23,8 @@ CREATE TABLE following(
     username2 VARCHAR(20) NOT NULL,
     PRIMARY KEY (username1, username2),
     created DATETIME,
-    FOREIGN KEY (username2) REFERENCES users(username) ON DELETE CASCADE,
-    FOREIGN KEY (username1) REFERENCES users(username) ON DELETE CASCADE
+    FOREIGN KEY(username2) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY(username1) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE comments(
@@ -33,8 +33,8 @@ CREATE TABLE comments(
     postid INTEGER NOT NULL,
     text VARCHAR(1024) NOT NULL,
     created DATETIME,
-    FOREIGN KEY (owner) REFERENCES users(username),
-    FOREIGN KEY (postid) REFERENCES posts(postid) ON DELETE CASCADE
+    FOREIGN KEY(owner) REFERENCES users(username),
+    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
 );
 
 CREATE TABLE likes(
@@ -42,6 +42,6 @@ CREATE TABLE likes(
     owner VARCHAR(20) NOT NULL,
     postid INTEGER NOT NULL,
     created DATETIME,
-    FOREIGN KEY (owner) REFERENCES users(username) ON DELETE CASCADE,
-    FOREIGN KEY (postid) REFERENCES posts(postid) ON DELETE CASCADE
+    FOREIGN KEY(owner) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
 );
