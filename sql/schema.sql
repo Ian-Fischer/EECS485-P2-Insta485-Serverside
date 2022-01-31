@@ -17,7 +17,6 @@ CREATE TABLE posts(
     FOREIGN KEY(owner) REFERENCES users(username) ON DELETE CASCADE
 );
 
-/* check to see if we need to define the following relationship "username1 follows username2" */
 CREATE TABLE following(
     username1 VARCHAR(20) NOT NULL,
     username2 VARCHAR(20) NOT NULL,
@@ -33,7 +32,7 @@ CREATE TABLE comments(
     postid INTEGER NOT NULL,
     text VARCHAR(1024) NOT NULL,
     created DATETIME,
-    FOREIGN KEY(owner) REFERENCES users(username),
+    FOREIGN KEY(owner) REFERENCES users(username) ON DELETE CASCADE,
     FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
 );
 
