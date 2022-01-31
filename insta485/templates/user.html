@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"> 
+    <head>
+        <style>
+            .home {
+                text-align: left;
+            }
+            .cande {
+                text-align: right;
+            }
+            .info {
+                width: 200px;
+                height: 50px;
+            }
+            .posts {
+                border: 5px;
+                border-style: groove;
+                width: 810px;
+                height: auto;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            img {
+                margin-right: auto;
+                margin-left: auto;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+        </style>
+        <title>insta485</title>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/users/{{logname}}/">{{logname}}</a>
+                <a href="/explore/">explore</a>
+            </h2>
+        </div>
+    </div>     
+    <div class="info">
+        <p>{{username}}</p>
+        {% if logname_follows_username == true and logname != username %}
+            <p>following</p>
+        {% elif logname_follows_username == false and logname != username %}
+            <p>not following</p>
+        {% endif %}
+        {% if total_posts == 1%} 
+            <p>{{total_posts}} post</p>
+        {% else %} 
+            <p> {{total_posts}} posts</p> 
+        {% endif %} 
+        <a href="/users/{{username}}/followers/">
+            {% if followers == 1 %}
+                <p>{{followers}} follower</p>
+            {% else %} 
+                <p>{{followers}} followers</p>
+            {% endif %}
+        </a> 
+        <a href="/users/{{username}}/following/">
+            <p>{{following}} following</p>
+        </a> 
+        <p>{{fullname}}</p>
+    </div>
+    <div class="posts">
+        {% for post in posts%}
+            <a href="/posts/{{post.postid}}/"><img src="{{post.img_url}}" alt="Post" style="width:400px; height:400px;"></a>
+        {% endfor %}
+    </div>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>insta485</title>
+        <style>
+            .username {
+                line-height: 5px;
+                width: 10px;
+                height: 10px;
+            }
+            .profilepicture {
+                width: 50px;
+                height: 50px;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+            .cande {
+                text-align: right;
+            }
+        </style>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/users/{{logname}}/">{{logname}}</a>
+                <a href="/explore/">explore</a>
+            </h2>
+        </div>
+    </div>       
+    {% for user in not_following %}
+        <div>
+            <img src="{{user.user_img_url}}" alt="profilepicture" class="profilepicture">
+            <a href="/users/{{user.username}}/" class="username">{{user.username}}</a>
+        </div>
+    {% endfor %}
+</html>

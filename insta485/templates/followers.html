@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .follower {
+                border-style: groove;
+                border-color: black;
+                border-width: 5px;
+                margin-left: auto;
+                margin-right: auto;
+                background-color: gray;
+            }
+            .cande {
+                text-align: right;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+            .posts {
+                border: 2px black;
+                border-style: groove;
+                background-color: lightgray;
+                height: 600px;
+                width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 30px;
+                align-content: center;
+            }
+        </style>
+        <title>insta485</title>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/users/{{logname}}/">{{logname}}</a>
+                <a href="/explore/">explore</a>
+            </h2>
+        </div>
+    </div>     
+    {% for follower in followers %}
+        <div class="follower">
+            <img src="{{follower.user_img_url}}" alt="Profile picture" class="posts">
+            <a href="/users/{{follower.username}}/">
+                <p>{{follower.username}}</p>
+            </a>
+            {% if follower.logname_follows_username == true and logname != follower.username %}
+                <p>following</p>
+            {% elif follower.logname_follows_username == false and logname != follower.username %}
+                <p>not following</p>
+            {% endif %}
+        </div>
+    {% endfor %} 
+</html>

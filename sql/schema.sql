@@ -21,8 +21,8 @@ CREATE TABLE posts(
 CREATE TABLE following(
     username1 VARCHAR(20) NOT NULL,
     username2 VARCHAR(20) NOT NULL,
-    created DATETIME,
     PRIMARY KEY (username1, username2),
+    created DATETIME,
     FOREIGN KEY (username2) REFERENCES users(username) ON DELETE CASCADE,
     FOREIGN KEY (username1) REFERENCES users(username) ON DELETE CASCADE
 );

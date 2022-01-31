@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+    <head>
+        <style>
+            .posts {
+                border: 2px black;
+                border-style: groove;
+                background-color: lightgray;
+                height: 600px;
+                width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 30px;
+                align-content: center;
+            }
+            .profilepicture {
+                width: 50px;
+                height: 50px;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+            .cande {
+                text-align: right;
+            }
+        </style>
+        <title>insta485</title>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/users/{{logname}}/">{{logname}}</a>
+                <a href="/explore/">explore</a>
+            </h2>
+        </div>
+    </div>     
+    <div class="posts">
+        <a href="/users/{{owner}}/">
+            <img src="{{owner_img_url}}" alt="Profile picture" class="profilepicture"><p>{{owner}}</p>
+        </a>
+        <a href="/posts/{{postid}}/">
+            <p>{{timestamp}}</p>
+        </a>
+        <img src="{{img_url}}" alt="Post" class="posts">
+        {% if likes == 1%}
+            <p> 1 like </p>
+        {% else %}
+            <p> {{likes}} likes </p>
+        {% endif %}
+        {% for comment in comments %}
+            <a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a><p>{{comment.text}}</p>
+        {% endfor %}
+    </div>    
+
