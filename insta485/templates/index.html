@@ -6,51 +6,62 @@
             .posts {
                 border: 2px black;
                 border-style: groove;
-                background-color: lightgray;
-                display: inline-block;
+                background-color: gray;
+                width: fit-content;
+                height: fit-content;
                 margin-left: auto;
                 margin-right: auto;
                 margin-top: 30px;
-                align-content: center;
             }
             .username {
+                float: left;
+                color: white;
                 line-height: 5px;
-                width: 10px;
-                height: 10px;
             }
             .profilepicture {
+                float: left;
                 width: 50px;
                 height: 50px;
             }
             .time {
+                color: white;
                 float: right;
             }
             ul {
+                position: sticky;
+                font-size: xx-large;
                 list-style-type: none;
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
-                background-color: #333;
+                background-color: gray;
+            }
+            li {
+                display: inline
             }
             li a {
-                display: block;
                 color: white;
                 text-align: center;
                 padding: 14px 16px;
                 text-decoration: none;
             }
+            .leftstuff {
+                float: right;
+            }
         </style>
     </head>
     <ul>
         <li><a href="/">Insta485!</a></li>
-        <li><a href="/explore/">explore</a></li>
-        <li><a href="/users/{{logname}}/">{{logname}}</a></li>
+        <li class="leftstuff"><a href="/explore/">explore</a></li>
+        <li class="leftstuff"><a href="/users/{{logname}}/">{{logname}}</a></li>
     </ul>
     {% for post in posts %}
         <div class="posts">
-            <a href="/users/{{post.owner}}/"><img src="{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
-            <a href="/users/{{post.owner}}/" class="username"><b>{{post.owner}}</b></a>
-            <a href="/posts/{{post.postid}}/" class="time">{{post.timestamp}}</a>
+            <ul>
+                <a href="/users/{{post.owner}}/"><img src="{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
+                <a href="/users/{{post.owner}}/" class="username"><b>{{post.owner}}</b></a>
+                <a href="/posts/{{post.postid}}/" class="time">{{post.timestamp}}</a>
+            </ul>
             <img src="{{post.img_url}}" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
             {% if post.likes == 1%}
                 <p>1 like</p>
