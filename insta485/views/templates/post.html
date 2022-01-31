@@ -47,8 +47,27 @@
         {% else %}
             <p> {{likes}} likes </p>
         {% endif %}
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="like"/>
+            <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+            <input type="submit" name="like" value="like"/>
+        </form>
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="unlike"/>
+            <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+            <input type="submit" name="unlike" value="unlike"/>
+        </form>
         {% for comment in comments %}
             <a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a><p>{{comment.text}}</p>
         {% endfor %}
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create"/>
+            <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+            <input type="text" name="text" required/>
+            <input type="submit" name="comment" value="comment"/>
+        </form>
     </div>    
 

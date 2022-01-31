@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>insta485</title>
+        <style>
+            .cande {
+                text-align: right;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+            .creating {
+                display: inline-block;
+                background-color: lightgray;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/users/{{logname}}/">{{logname}}</a>
+                <a href="/explore/">explore</a>
+            </h2>
+        </div>
+    </div>
+    <div class="create">
+        <form action="/accounts/create/">
+            <label for="file">Photo</label>
+            <input type="file">
+        </form>
+    </div>
+</html>

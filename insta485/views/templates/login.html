@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>insta485</title>
+        <style>
+            .cande {
+                text-align: right;
+            }
+            .navigation {
+                background-color: lightgray;
+            }
+            .loggin {
+                display: inline-block;
+                background-color: lightgray;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+    <div class="navigation">
+        <a href="/"><h1>Insta485!</h1></a>
+        <div class="cande">
+            <h2>
+                <a href="/accounts/login/">login</a>
+            </h2>
+        </div>
+    </div>
+    <div class="loggin">
+        <form action="/login/" method="post">
+            <p><input type="text" name="username"></p>
+            <p><input type="text" name="password"></p>
+            <p><input type="submit" value="Login"></p>
+        </form>
+    </div>
+    <div>
+        <p>Don't have an account? <a href="/accounts/create/">Sign up.</a></p>
+    </div>
+</html>
