@@ -7,14 +7,15 @@ URLs include:
 from re import L
 import flask
 import insta485
-
+import sqlite3
+import pathlib
 
 @insta485.app.route('/')
 def show_index():
     """Display / route."""
-
     # Connect to database
     connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
 
     if 'logname' not in flask.session:
         return flask.render_template("login.html")
@@ -22,52 +23,46 @@ def show_index():
         context = {}
         # 1. get all following
         logname = flask.session['logname']
-        following = list(connection.execute(
-            "SELECT F.username2"
-            "FROM following F"
-            "WHERE F.username1 = ?"
-            (logname,)
-        ))
+        following = connection.execute(
+            "SELECT F.username2 "
+            "FROM following F "
+            "WHERE F.username1 = ? ",
+            (logname, )
+        ).fetchall()
+        following = [elt['username2'] for elt in following]
+        following.append(logname)
         posts = []
         for user in following:
-            
-            posts.append({
-                "postid" : 
-                "owner" :
-                "owner_img_url" :
-                "img_url" : 
-                "timestamp" :
-                "likes" : 
-                "comments" : [
-                    {
-                        "owner" :
-                        "text" :
-                    } 
-                ]
-            })
-        return flask.render_template("login.html",  **context)
-
-
-    # Query database
-    logname = "awdeorio"
-    cur = connection.execute(
-        "SELECT username, fullname "
-        "FROM users "
-        "WHERE username != ?",
-        (logname, )
-    
-    users = cur.fetchall()
-
-    # Add database info to context
-    context = {"users": users}
-    return flask.render_template("index.html", **context)
+            user_posts = connection.execute(
+                "SELECT P.postid AS postid, P.filename as pfilename, P.owner AS owner, P.created AS created, U.filename AS ufilename "
+                "FROM posts P, users U, likes L "
+                "WHERE P.owner = ? AND ? = U.users AND L.postid = P.postid",
+                (user,)
+            ).fetchall()
+            for post in user_posts:
+                likes = 
+                posts.append({
+                    "postid" : post['postid']
+                    "owner" : post['owner']
+                    "owner_img_url" : post['ufilename']
+                    "img_url" : post['pfilename']
+                    "timestamp" : post['created']
+                    "likes" : 
+                    "comments" : [
+                        {
+                            "owner" :
+                            "text" :
+                        } 
+                    ]
+                })
+        return flask.render_template("index.html",  **context)
 
 
 
 
 
 
-@app.route('/accounts/login/', methods=['POST'])
+@insta485.app.route('/accounts/login/', methods=['POST'])
 def login():
     # POST-only route for handling login requests
     # TODO: Implement this route
@@ -75,5 +70,5 @@ def login():
     flask.session['logname'] = flask.request.form['username']
     return flask.redirect(flask.url_for('show_index'))
 
-@app.route('/accounts/create/', methods=['POST'])
-def create():
+# @insta485.app.route('/accounts/create/', methods=['POST'])
+# def create():
