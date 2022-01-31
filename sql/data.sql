@@ -19,31 +19,31 @@ VALUES
     ('michjc','jag'),
     ('jag','michjc');
 
+INSERT INTO posts(postid, filename, owner)
+VALUES
+    (1, '122a7d27ca1d7420a1072f695d9290fad4501a41.jpg', 'awdeorio'),
+    (2, 'ad7790405c539894d25ab8dcf0b79eed3341e109.jpg', 'jflinn'),
+    (3, '9887e06812ef434d291e4936417d125cd594b38a.jpg', 'awdeorio'),
+    (4, '2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg', 'jag');
+
 INSERT INTO likes(likeid, owner, postid)
 VALUES 
-    ('1', 'awdeorio', '1'),
-    ('2', 'michjc', '1'),
-    ('3', 'jflinn', '1'),
-    ('4', 'awdeorio', '2'),
-    ('5', 'michjc', '2'),
-    ('6', 'awdeorio', '3');
-
+    (1, 'awdeorio', 1),
+    (2, 'michjc', 1),
+    (3, 'jflinn', 1),
+    (4, 'awdeorio', 2),
+    (5, 'michjc', 2),
+    (6, 'awdeorio', 3);
 
 INSERT INTO comments(commentid, owner, postid, text)
 VALUES 
-    ('1', 'awdeorio', '3', '#chickensofinstagram'),
-    ('2', 'jflinn', '3', 'I <3 chickens'),
-    ('3', 'michjc', '3', 'Cute overload!'),
-    ('4', 'awdeorio','2','#crossword'),
-    ('5', 'jflinn','1','Walking the plank #chickensofinstagram'),
-    ('6', 'awdeorio','1','This was after trying to teach them to do a #crossword'),
-    ('7', 'jag','4','Saw this on the diag yesterday!');
+    (1, 'awdeorio', 3, '#chickensofinstagram'),
+    (2, 'jflinn', 3, 'I <3 chickens'),
+    (3, 'michjc', 3, 'Cute overload!'),
+    (4, 'awdeorio',2,'#crossword'),
+    (5, 'jflinn',1,'Walking the plank #chickensofinstagram'),
+    (6, 'awdeorio',1,'This was after trying to teach them to do a #crossword'),
+    (7, 'jag',4,'Saw this on the diag yesterday!');
 
-INSERT INTO posts(postid, filename, owner)
-VALUES
-    ('1', '122a7d27ca1d7420a1072f695d9290fad4501a41.jpg', 'awdeorio'),
-    ('2', 'ad7790405c539894d25ab8dcf0b79eed3341e109.jpg', 'jflinn'),
-    ('3', '9887e06812ef434d291e4936417d125cd594b38a.jpg', 'awdeorio'),
-    ('4', '2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg', 'jag');
 
 
