@@ -12,7 +12,6 @@
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
-                background-color: gray;
             }
             li {
                 display: inline
@@ -31,14 +30,13 @@
                 height: 50px;
             }
             .posts {
-                border: 2px black;
-                border-style: groove;
-                background-color: gray;
+                background-color: rgba(122, 198, 248, 0.678);
                 width: fit-content;
                 height: fit-content;
                 margin-left: auto;
                 margin-right: auto;
                 margin-top: 30px;
+                border-radius: 20px;
             }
             img {
                 margin-right: auto;
@@ -50,66 +48,62 @@
         </style>
         <title>insta485</title>
     </head>
-    <ul>
-        <li><a href="/">Insta485!</a></li>
-        <li class="leftstuff"><a href="/explore/">explore</a></li>
-        <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
-    </ul>
-    <div class="info">
-        <p>{{username}}</p>
-        {% if username == logname %}
-            <a href="/accounts/edit/">Edit profile</a>
-            <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
-                <input type="submit" name="logout" value="Logout"/>
-            </form>
-        {% endif %}
-        {% if logname_follows_username == true and logname != username %}
+        <ul style="background-color: rgb(0, 95, 51, 0.5)">
+            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li class="leftstuff"><a href="/explore/">explore</a></li>
+            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+        </ul>
+        <div class="posts">
             <ul>
+                <li>{{username}}</li>
+                {% if total_posts == 1%} 
+                    <li>{{total_posts}} post</li>
+                {% else %} 
+                    <li> {{total_posts}} posts</li> 
+                {% endif %} 
                 <li>
-                    <p>following</p>
-                </li>
+                    {% if followers == 1 %}
+                        <a href="{{ url_for('show_followers', user_url_slug=username) }}">{{followers}} follower</a>
+                    {% else %} 
+                        <a href="{{ url_for('show_followers', user_url_slug=username) }}">{{followers}} followers</a>
+                    {% endif %}
+                </li> 
                 <li>
-                    <form action="/following/?target={{ url_for('follow_unfollow') }}" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="unfollow" value="unfollow"/>
-                        <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
-                        <input type="hidden" name="operation" value="unfollow"/>
-                    </form>
+                    <a href="{{ url_for('show_following', user_url_slug=username) }}">{{following}} following6</a>
                 </li>
             </ul>
-        {% elif logname_follows_username == false and logname != username %}
-            <ul>
-                <li>
-                    <p>not following</p>
-                </li>
-                <li>
-                    <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="follow" value="follow" />
-                        <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>" />
-                        <input type="hidden" name="operation" value="follow" />
-                    </form>
-                </li>
-            </ul>
-        {% endif %}
-        {% if total_posts == 1%} 
-            <p>{{total_posts}} post</p>
-        {% else %} 
-            <p> {{total_posts}} posts</p> 
-        {% endif %} 
-        <a href="{{ url_for('show_followers', user_url_slug=username) }}">
-            {% if followers == 1 %}
-                <p>{{followers}} follower</p>
-            {% else %} 
-                <p>{{followers}} followers</p>
+            {% if username == logname %}
+                <a href="/accounts/edit/">Edit profile</a>
+                <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
+                    <input type="submit" name="logout" value="Logout"/>
+                </form>
             {% endif %}
-        </a> 
-        <a href="{{ url_for('show_following', user_url_slug=username) }}">
-            <p>{{following}} following</p>
-        </a> 
-        <p>{{fullname}}</p>
-    </div>
-    <div class="posts">
-        {% for post in posts%}
-            <a href="/posts/{{post.postid}}/"><img src="{{post.img_url}}" alt="Post" style="width:400px; height:400px;"></a>
-        {% endfor %}
-    </div>
+            {% if logname_follows_username == true and logname != username %}
+                <ul>
+                    <li>following</li>
+                    <li>
+                        <form action="/following/?target={{ url_for('follow_unfollow') }}" method="post" enctype="multipart/form-data">
+                            <input type="submit" name="unfollow" value="unfollow"/>
+                            <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
+                            <input type="hidden" name="operation" value="unfollow"/>
+                        </form>
+                    </li>
+                </ul>
+            {% elif logname_follows_username == false and logname != username %}
+                <ul>
+                    <li>not following</li>
+                    <li>
+                        <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                            <input type="submit" name="follow" value="follow" />
+                            <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>" />
+                            <input type="hidden" name="operation" value="follow" />
+                        </form>
+                    </li>
+                </ul>
+            {% endif %}
+            <p>{{fullname}}</p>
+            {% for post in posts%}
+                <a href="/posts/{{post.postid}}/"><img src="{{post.img_url}}" alt="Post" style="width:300px; height:300px;"></a>
+            {% endfor %}
+        </div>
 </html>

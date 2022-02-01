@@ -17,13 +17,13 @@
                 background-color: lightgray;
             }
             .posts {
-                border: 2px black;
-                border-style: groove;
-                background-color: lightgray;
-                height: 200px;
-                width: 200px;
+                background-color: rgba(122, 198, 248, 0.678);
+                width: fit-content;
+                height: fit-content;
+                margin-left: 10px;
+                margin-right: 10px;
                 margin-top: 30px;
-                align-content: center;
+                border-radius: 20px;
             }
             ul {
                 position: sticky;
@@ -49,22 +49,24 @@
         </style>
         <title>insta485</title>
     </head>
-    <ul>
-        <li><a href="/">Insta485!</a></li>
-        <li class="leftstuff"><a href="/explore/">explore</a></li>
-        <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
-    </ul>
-    {% for follower in followers %}
-        <div class="follower">
-            <img src="{{follower.user_img_url}}" alt="Profile picture" class="posts">
-            <a href=" {{ url_for('show_user', user_url_slug=follower.username) }}">
-                <p>{{follower.username}}</p>
-            </a>
-            {% if follower.logname_follows_username == true and logname != follower.username %}
-                <p>following</p>
-            {% elif follower.logname_follows_username == false and logname != follower.username %}
-                <p>not following</p>
-            {% endif %}
-        </div>
-    {% endfor %} 
+    <body>
+        <ul style="background-color: rgb(0, 95, 51, 0.5)">
+            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li class="leftstuff"><a href="/explore/">explore</a></li>
+            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+        </ul>
+        {% for follower in followers %}
+            <div class="follower">
+                <img src="{{follower.user_img_url}}" alt="Profile picture" class="posts">
+                <a href=" {{ url_for('show_user', user_url_slug=follower.username) }}">
+                    <p>{{follower.username}}</p>
+                </a>
+                {% if follower.logname_follows_username == true and logname != follower.username %}
+                    <p>following</p>
+                {% elif follower.logname_follows_username == false and logname != follower.username %}
+                    <p>not following</p>
+                {% endif %}
+            </div>
+        {% endfor %} 
+    </body>
 </html>

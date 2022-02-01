@@ -3,15 +3,18 @@
     <head>
         <title>insta485</title>
         <style>
+            body {
+                background: lightgrey;
+                color: white;
+            }
             .posts {
-                border: 2px black;
-                border-style: groove;
-                background-color: gray;
+                background-color: rgba(122, 198, 248, 0.678);
                 width: fit-content;
                 height: fit-content;
                 margin-left: auto;
                 margin-right: auto;
                 margin-top: 30px;
+                border-radius: 20px;
             }
             .username {
                 float: left;
@@ -21,6 +24,7 @@
                 float: left;
                 width: 50px;
                 height: 50px;
+                border-radius: 20px;
             }
             .time {
                 color: white;
@@ -33,7 +37,6 @@
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
-                background-color: gray;
             }
             li {
                 display: inline
@@ -41,7 +44,7 @@
             li a {
                 color: white;
                 text-align: center;
-                padding: 14px 16px;
+                padding: 20px 20px;
                 text-decoration: none;
             }
             .leftstuff {
@@ -49,47 +52,48 @@
             }
         </style>
     </head>
-    <ul>
-        <li><a href="/">Insta485!</a></li>
-        <li class="leftstuff"><a href="/explore/">explore</a></li>
-        <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
-    </ul>
-
-    {% for post in posts %}
-        <div class="posts">
-            <ul>
-                <a href="{{ url_for('show_user', user_url_slug=post.owner) }}"><img src="{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
-                <a href="{{ url_for('show_user', user_url_slug=post.owner) }}" class="username"><b>{{post.owner}}</b></a>
-                <a href="/posts/{{post.postid}}/" class="time">{{post.timestamp}}</a>
-            </ul>
-            <img src="{{post.img_url}}" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
-            {% if post.likes == 1%}
-                <p>1 like</p>
-            {% else %}
-                <p>{{post.likes}} likes</p>
-            {% endif %}
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="like"/>
-                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
-                <input type="submit" name="like" value="like"/>
-            </form>
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="unlike"/>
-                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
-                <input type="submit" name="unlike" value="unlike"/>
-            </form>
-            {% for comment in post.comments %}
-                <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
-            {% endfor %}
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
-                <input type="text" name="text" required/>
-                <input type="submit" name="comment" value="comment"/>
-            </form>
-        </div>
-    {% endfor %}
+    <body>
+        <ul style="background-color: rgb(0, 95, 51, 0.5)">
+            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li class="leftstuff"><a href="/explore/">explore</a></li>
+            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+        </ul>
+        {% for post in posts %}
+            <div class="posts">
+                <ul>
+                    <a href="{{ url_for('show_user', user_url_slug=post.owner) }}"><img src="{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
+                    <a href="{{ url_for('show_user', user_url_slug=post.owner) }}" class="username"><b>{{post.owner}}</b></a>
+                    <a href="/posts/{{post.postid}}/" class="time">{{post.timestamp}}</a>
+                </ul>
+                <img src="{{post.img_url}}" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
+                {% if post.likes == 1%}
+                    <p>1 like</p>
+                {% else %}
+                    <p>{{post.likes}} likes</p>
+                {% endif %}
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="like"/>
+                    <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                    <input type="submit" name="like" value="like"/>
+                </form>
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                <form action="<FIXME_LIKES_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="unlike"/>
+                    <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                    <input type="submit" name="unlike" value="unlike"/>
+                </form>
+                {% for comment in post.comments %}
+                    <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
+                {% endfor %}
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="create"/>
+                    <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                    <input type="text" name="text" required/>
+                    <input type="submit" name="comment" value="comment"/>
+                </form>
+            </div>
+        {% endfor %}
+    </body>
 </html>

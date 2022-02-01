@@ -20,19 +20,17 @@
             }
         </style>
     </head>
-    <div class="navigation">
-        <a href="/"><h1>Insta485!</h1></a>
-        <div class="cande">
-            <h2>
-                <a href="/users/{{logname}}/">{{logname}}</a>
-                <a href="/explore/">explore</a>
-            </h2>
-        </div>
-    </div>       
-    {% for user in not_following %}
-        <div>
-            <img src="{{user.user_img_url}}" alt="profilepicture" class="profilepicture">
-            <a href="/users/{{user.username}}/" class="username">{{user.username}}</a>
-        </div>
-    {% endfor %}
+    <body>
+        <ul style="background-color: rgb(0, 95, 51, 0.5)">
+            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li class="leftstuff"><a href="/explore/">explore</a></li>
+            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+        </ul>   
+        {% for user in not_following %}
+            <div>
+                <img src="{{user.user_img_url}}" alt="profilepicture" class="profilepicture">
+                <a href="/users/{{user.username}}/" class="username">{{user.username}}</a>
+            </div>
+        {% endfor %}
+    </body>
 </html>
