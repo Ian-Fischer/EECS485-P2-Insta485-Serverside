@@ -5,13 +5,14 @@ URLs include:
 /
 """
 from re import L
+import arrow
 import flask
 import insta485
 import sqlite3
-import pathlib
+import pdb
 
 def get_all_comments(postid, connection):
-    comments = connection.exectute(
+    comments = connection.execute(
         "SELECT C.owner, C.text "
         "FROM comments C "
         "WHERE C.postid = ? ",
@@ -31,7 +32,6 @@ def show_index():
     if 'logname' not in flask.session:
         return flask.render_template("login.html")
     else:
-        context = {}
         # 1. get all following
         logname = flask.session['logname']
         following = connection.execute(
@@ -47,25 +47,31 @@ def show_index():
             user_posts = connection.execute(
                 "SELECT P.postid AS postid, P.filename as pfilename, P.owner AS owner, P.created AS created, U.filename AS ufilename "
                 "FROM posts P, users U "
-                "WHERE P.owner = ? AND ? = U.users ",
-                (user,)
+                "WHERE P.owner = ? AND ? = U.username ",
+                (user,user,)
             ).fetchall()
             for post in user_posts:
                 likes = len(connection.execute(
                     "SELECT L.postid "
-                    "FROM likes "
+                    "FROM likes L "
                     "WHERE L.postid = ? ",
-                    (post['postid'])))
+                    (post['postid'],)).fetchall())
                 comments = get_all_comments(post['postid'], connection)
                 posts.append({
                     "postid" : post['postid'],
                     "owner" : post['owner'],
                     "owner_img_url" : post['ufilename'],
                     "img_url" : post['pfilename'],
-                    "timestamp" : post['created'],
+                    "timestamp" : arrow.get(post['created']).to('US/Eastern').humanize(),
                     "likes" : likes,
                     "comments" : comments
                 })
+        # now we have gone through all the following and collected all their posts
+        # build context
+        context = {
+            "logname": logname,
+            "posts": posts
+        }
         return flask.render_template("index.html",  **context)
 
 
@@ -77,6 +83,10 @@ def login():
     print('DEBUG Login:', flask.request.form['username'])
     flask.session['logname'] = flask.request.form['username']
     return flask.redirect(flask.url_for('show_index'))
+
+@insta485.app.route('/<path:filename>')
+def send_file(filename):
+    return flask.send_from_directory("/", "insta485/var/uploads", filename)
 
 # @insta485.app.route('/accounts/create/', methods=['POST'])
 # def create():

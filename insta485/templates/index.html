@@ -16,7 +16,6 @@
             .username {
                 float: left;
                 color: white;
-                line-height: 5px;
             }
             .profilepicture {
                 float: left;
@@ -58,7 +57,7 @@
     {% for post in posts %}
         <div class="posts">
             <ul>
-                <a href="/users/{{post.owner}}/"><img src="{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
+                <a href="/users/{{post.owner}}/"><img src="insta485/var/uploads/{{post.owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
                 <a href="/users/{{post.owner}}/" class="username"><b>{{post.owner}}</b></a>
                 <a href="/posts/{{post.postid}}/" class="time">{{post.timestamp}}</a>
             </ul>
