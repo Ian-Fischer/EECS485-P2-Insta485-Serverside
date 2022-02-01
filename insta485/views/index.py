@@ -17,10 +17,8 @@ def get_all_comments(postid, connection):
         "FROM comments C "
         "WHERE C.postid = ? ",
         (postid,)
-    )
-    comments = [{'owner' : elt['owner'], 'text': elt['text']} for elt in comments]
-    return comments
-
+    ).fetchall()
+    return [{'owner' : elt['owner'], 'text': elt['text']} for elt in comments]
 
 @insta485.app.route('/')
 def show_index():
@@ -75,7 +73,6 @@ def show_index():
         return flask.render_template("index.html",  **context)
 
 
-
 @insta485.app.route('/accounts/login/', methods=['POST'])
 def login():
     # POST-only route for handling login requests
@@ -84,9 +81,9 @@ def login():
     flask.session['logname'] = flask.request.form['username']
     return flask.redirect(flask.url_for('show_index'))
 
-@insta485.app.route('/<path:filename>')
+@insta485.app.route('/var/uploads/<path:filename>')
 def send_file(filename):
-    return flask.send_from_directory("/", "insta485/var/uploads", filename)
+    return flask.send_from_directory("/", filename)
 
-# @insta485.app.route('/accounts/create/', methods=['POST'])
-# def create():
+@insta485.app.route('/accounts/create/', methods=['POST'])
+def create():
