@@ -5,20 +5,40 @@
             .home {
                 text-align: left;
             }
-            .cande {
-                text-align: right;
+            ul {
+                position: sticky;
+                font-size: xx-large;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: gray;
+            }
+            li {
+                display: inline
+            }
+            li a {
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+            .leftstuff {
+                float: right;
             }
             .info {
                 width: 200px;
                 height: 50px;
             }
             .posts {
-                border: 5px;
+                border: 2px black;
                 border-style: groove;
-                width: 810px;
-                height: auto;
-                margin-right: auto;
+                background-color: gray;
+                width: fit-content;
+                height: fit-content;
                 margin-left: auto;
+                margin-right: auto;
+                margin-top: 30px;
             }
             img {
                 margin-right: auto;
@@ -30,21 +50,46 @@
         </style>
         <title>insta485</title>
     </head>
-    <div class="navigation">
-        <a href="/"><h1>Insta485!</h1></a>
-        <div class="cande">
-            <h2>
-                <a href="/users/{{logname}}/">{{logname}}</a>
-                <a href="/explore/">explore</a>
-            </h2>
-        </div>
-    </div>     
+    <ul>
+        <li><a href="/">Insta485!</a></li>
+        <li class="leftstuff"><a href="/explore/">explore</a></li>
+        <li class="leftstuff"><a href="/users/{{logname}}/">{{logname}}</a></li>
+    </ul>
     <div class="info">
         <p>{{username}}</p>
+        {% if username == logname %}
+            <a href="/accounts/edit/">Edit profile</a>
+            <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
+                <input type="submit" name="logout" value="Logout"/>
+            </form>
+        {% endif %}
         {% if logname_follows_username == true and logname != username %}
-            <p>following</p>
+            <ul>
+                <li>
+                    <p>following</p>
+                </li>
+                <li>
+                    <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
+                        <input type="submit" name="unfollow" value="unfollow"/>
+                        <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
+                        <input type="hidden" name="operation" value="unfollow"/>
+                    </form>
+                </li>
+            </ul>
         {% elif logname_follows_username == false and logname != username %}
             <p>not following</p>
+            <ul>
+                <li>
+                    <p>following</p>
+                </li>
+                <li>
+                    <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                        <input type="submit" name="follow" value="follow" />
+                        <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>" />
+                        <input type="hidden" name="operation" value="follow" />
+                    </form>
+                </li>
+            </ul>
         {% endif %}
         {% if total_posts == 1%} 
             <p>{{total_posts}} post</p>
