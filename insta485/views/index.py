@@ -10,6 +10,17 @@ import insta485
 import sqlite3
 import pathlib
 
+def get_all_comments(postid, connection):
+    comments = connection.exectute(
+        "SELECT C.owner, C.text "
+        "FROM comments C "
+        "WHERE C.postid = ? ",
+        (postid,)
+    )
+    comments = [{'owner' : elt['owner'], 'text': elt['text']} for elt in comments]
+    return comments
+
+
 @insta485.app.route('/')
 def show_index():
     """Display / route."""
@@ -32,29 +43,29 @@ def show_index():
         following = [elt['username2'] for elt in following]
         following.append(logname)
         posts = []
-        # for user in following:
-        #     user_posts = connection.execute(
-        #         "SELECT P.postid AS postid, P.filename as pfilename, P.owner AS owner, P.created AS created, U.filename AS ufilename "
-        #         "FROM posts P, users U, likes L "
-        #         "WHERE P.owner = ? AND ? = U.users AND L.postid = P.postid",
-        #         (user,)
-        #     ).fetchall()
-        #     for post in user_posts:
-        #         likes = 
-        #         posts.append({
-        #             "postid" : post['postid']
-        #             "owner" : post['owner']
-        #             "owner_img_url" : post['ufilename']
-        #             "img_url" : post['pfilename']
-        #             "timestamp" : post['created']
-        #             "likes" : 
-        #             "comments" : [
-        #                 {
-        #                     "owner" :
-        #                     "text" :
-        #                 } 
-        #             ]
-        #         })
+        for user in following:
+            user_posts = connection.execute(
+                "SELECT P.postid AS postid, P.filename as pfilename, P.owner AS owner, P.created AS created, U.filename AS ufilename "
+                "FROM posts P, users U "
+                "WHERE P.owner = ? AND ? = U.users ",
+                (user,)
+            ).fetchall()
+            for post in user_posts:
+                likes = len(connection.execute(
+                    "SELECT L.postid "
+                    "FROM likes "
+                    "WHERE L.postid = ? ",
+                    (post['postid'])))
+                comments = get_all_comments(post['postid'], connection)
+                posts.append({
+                    "postid" : post['postid'],
+                    "owner" : post['owner'],
+                    "owner_img_url" : post['ufilename'],
+                    "img_url" : post['pfilename'],
+                    "timestamp" : post['created'],
+                    "likes" : likes,
+                    "comments" : comments
+                })
         return flask.render_template("index.html",  **context)
 
 
