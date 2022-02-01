@@ -96,14 +96,14 @@
         {% else %} 
             <p> {{total_posts}} posts</p> 
         {% endif %} 
-        <a href="/users/{{username}}/followers/">
+        <a href="{ url_for('show_followers', user_url_slug=username) }">
             {% if followers == 1 %}
                 <p>{{followers}} follower</p>
             {% else %} 
                 <p>{{followers}} followers</p>
             {% endif %}
         </a> 
-        <a href="/users/{{username}}/following/">
+        <a href="{ url_for('show_following', user_url_slug=username) }">
             <p>{{following}} following</p>
         </a> 
         <p>{{fullname}}</p>
