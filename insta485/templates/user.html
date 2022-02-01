@@ -53,7 +53,7 @@
     <ul>
         <li><a href="/">Insta485!</a></li>
         <li class="leftstuff"><a href="/explore/">explore</a></li>
-        <li class="leftstuff"><a href="/users/{{logname}}/">{{logname}}</a></li>
+        <li class="leftstuff"><a href=" url_for('show_user', user_url_slug=logname) }} ">{{logname}}</a></li>
     </ul>
     <div class="info">
         <p>{{username}}</p>
@@ -69,7 +69,7 @@
                     <p>following</p>
                 </li>
                 <li>
-                    <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
+                    <form action="/following/?target={{ url_for('follow_unfollow') }}" method="post" enctype="multipart/form-data">
                         <input type="submit" name="unfollow" value="unfollow"/>
                         <input type="hidden" name="username" value="<FIXME_USERNAME_HERE>"/>
                         <input type="hidden" name="operation" value="unfollow"/>
@@ -77,10 +77,9 @@
                 </li>
             </ul>
         {% elif logname_follows_username == false and logname != username %}
-            <p>not following</p>
             <ul>
                 <li>
-                    <p>following</p>
+                    <p>not following</p>
                 </li>
                 <li>
                     <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
@@ -96,14 +95,14 @@
         {% else %} 
             <p> {{total_posts}} posts</p> 
         {% endif %} 
-        <a href="{ url_for('show_followers', user_url_slug=username) }">
+        <a href="{{ url_for('show_followers', user_url_slug=username) }}">
             {% if followers == 1 %}
                 <p>{{followers}} follower</p>
             {% else %} 
                 <p>{{followers}} followers</p>
             {% endif %}
         </a> 
-        <a href="{ url_for('show_following', user_url_slug=username) }">
+        <a href="{{ url_for('show_following', user_url_slug=username) }}">
             <p>{{following}} following</p>
         </a> 
         <p>{{fullname}}</p>

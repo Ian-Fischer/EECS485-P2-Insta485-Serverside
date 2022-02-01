@@ -158,14 +158,14 @@ def show_user(user_url_slug):
 def show_followers(user_url_slug):
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-    # FIX ME FIX ME FIX ME
+
     logname = flask.session['logname']
     username = user_url_slug
     followers = connection.execute(
-        "SELECT F.username1, U.filename"
-        "FROM following F, users U"
-        "WHERE ? = F.username2 AND ? = U.user",
-        (username, username,)
+        "SELECT F.username1, U.filename "
+        "FROM following F, users U "
+        "WHERE ? = F.username2 AND F.username1 = U.username",
+        (username,)
     ).fetchall()
     
     logname_follower = connection.execute(
@@ -194,36 +194,36 @@ def show_following(user_url_slug):
     # open database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-    # build the context
-    # logname, username, logname_follows_username, fullname, following, followers
-    # total_posts, posts = [{'postid', 'img_url'}]
+
 
     logname = flask.session['logname']
     username = user_url_slug
     following = connection.execute(
-        "SELECT F.username2, U.filename"
-        "FROM following F, users U"
-        "WHERE ? = F.username1 AND ? = U.user",
-        (username, username, )
+        "SELECT F.username2, U.filename "
+        "FROM following F, users U "
+        "WHERE ? = F.username1 AND F.username2 = U.username ",
+        (username,)
     ).fetchall()
 
-    following = connection.execute(
+    logname_following = connection.execute(
         "SELECT F.username2 "
         "FROM following F "
         "WHERE ? = F.username1",
         (logname,)
     ).fetchall()
 
+    logname_following = [elt['username2'] for elt in logname_following]
+
     following = [{
-                    'username': elt['username1'], 
+                    'username': elt['username2'], 
                     'user_img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename'], 
-                    'logname_follows_username': elt['username1'] in following
+                    'logname_follows_username': elt['username2'] in logname_following
                 } for elt in following]
     context = {
         'logname': logname,
         'following': following
     }
-    return flask.render_template("followers.html", **context)
+    return flask.render_template("following.html", **context)
 
 @insta485.app.route('/following/', methods=['POST'])
 def follow_unfollow():
