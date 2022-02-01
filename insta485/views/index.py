@@ -168,19 +168,19 @@ def show_followers(user_url_slug):
         (username, username,)
     ).fetchall()
     
-    logname_following = connection.execute(
+    logname_follower = connection.execute(
         "SELECT F.username2 "
         "FROM following F "
         "WHERE ? = F.username1",
         (logname,)
     ).fetchall()
 
-    logname_following = [elt['username2'] for elt in logname_following]
+    logname_follower = [elt['username2'] for elt in logname_follower]
 
     followers = [{
                     'username': elt['username1'], 
                     'user_img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename'], 
-                    'logname_follows_username': elt['username1'] in logname_following
+                    'logname_follows_username': elt['username1'] in logname_follower
                 } for elt in followers]
     context = {
         'logname': logname,
@@ -207,14 +207,23 @@ def show_following(user_url_slug):
         (username, username, )
     ).fetchall()
 
-    if_following = connection.execute(
+    following = connection.execute(
         "SELECT F.username2 "
         "FROM following F "
-        "WHERE ? = F.username1 AND ? = F.username2 ",
-        (username, logname )
-    )
-    
-    following = [{'username': elt['username2'], } for elt in following]
+        "WHERE ? = F.username1",
+        (logname,)
+    ).fetchall()
+
+    following = [{
+                    'username': elt['username1'], 
+                    'user_img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename'], 
+                    'logname_follows_username': elt['username1'] in following
+                } for elt in following]
+    context = {
+        'logname': logname,
+        'following': following
+    }
+    return flask.render_template("followers.html", **context)
 
 @insta485.app.route('/following/', methods=['POST'])
 def follow_unfollow():
