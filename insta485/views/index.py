@@ -58,8 +58,8 @@ def show_index():
                 posts.append({
                     "postid" : post['postid'],
                     "owner" : post['owner'],
-                    "owner_img_url" : post['ufilename'],
-                    "img_url" : post['pfilename'],
+                    "owner_img_url" : insta485.app.config['UPLOAD_FOLDER']/post['ufilename'],
+                    "img_url" : insta485.app.config['UPLOAD_FOLDER']/post['pfilename'],
                     "timestamp" : arrow.get(post['created']).to('US/Eastern').humanize(),
                     "likes" : likes,
                     "comments" : comments
@@ -70,10 +70,9 @@ def show_index():
             "logname": logname,
             "posts": posts
         }
-        insta485.model.close_db()
         return flask.render_template("index.html",  **context)
 
-@insta485.app.route('/accounts/login/', methods=['POST'])
+@insta485.app.route('/accounts/logout/', methods=['POST'])
 def logout():
     flask.session.clear()
     return flask.redirect(flask.url_for('show_index'))
@@ -132,17 +131,17 @@ def show_user(user_url_slug):
     followers = len(connection.execute(
         "SELECT F.username1 "
         "FROM following F "
-        "WHERE ? = F.username2 "
+        "WHERE ? = F.username2 ",
         (username, )
     ).fetchall())
 
     posts_tbl = connection.execute(
-        "SELECT P.postid, P.filename"
-        "FROM posts P"
-        "WHERE ? = P.owner",
+        "SELECT P.postid, P.filename "
+        "FROM posts P "
+        "WHERE ? = P.owner ",
         (username,)
     )
-    posts = [{'postid': elt['postid'], 'img_url': elt['filename']} for elt in posts_tbl]
+    posts = [{'postid': elt['postid'], 'img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename']} for elt in posts_tbl]
     total_posts = len(posts)
     context = {
         'logname': logname,
@@ -156,9 +155,10 @@ def show_user(user_url_slug):
     }
     return flask.render_template("user.html", **context)
 
-
-
-
 @insta485.app.route('/following/', methods=['POST'])
 def follow_unfollow():
     target = flask.request.args.get('target')
+
+@insta485.app.route(str(insta485.app.config['UPLOAD_FOLDER']/'<path:filename>'))
+def send_file(filename):
+    return flask.send_from_directory(insta485.app.config["UPLOAD_FOLDER"], filename)
