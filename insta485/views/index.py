@@ -8,6 +8,7 @@ import re
 from re import L
 import arrow
 import flask
+from pyparsing import empty
 import insta485
 import sqlite3
 import pdb
@@ -498,21 +499,46 @@ def delete_account():
     return flask.redirect(target)
 
 
-# @insta485.app.route('/likes/', methods=['POST'])
-# def like():
-#     target = flask.request.args.get('target')
-#     connection = insta485.model.get_db()
-#     if not target:
-#         target = '/'
-#     operation = flask.request.form.get('operation')
-#     if operation is like:
-#         # put the like in the database
-#         connection.execute(
-#             "INSERT INTO likes(args) "
-#             "VALUE (values) "
-#         )
-#         flask.redirect(target)
-#     else if operation is unlike:
-#         # get rid of it
-#     else:
-#         # you did something wrong
+@insta485.app.route('/likes/', methods=['POST'])
+def like():
+
+    target = flask.request.args.get('target')
+    connection = insta485.model.get_db()
+    logname = flask.session['logname']
+    if not target:
+        target = '/'
+    operation = flask.request.form.get('operation')
+    postid = flask.request.form.get('postid')
+    post_info = connection.execute(
+        "SELECT P.owner, P.created "
+        "FROM posts P "
+        "WHERE P.postid = ?",
+        (postid,)
+    )
+    check = connection.execute(
+            "SELECT L.likeid "
+            "FROM likes L "
+            "WHERE L.postid = ? AND L.owner = ?",
+            (postid,logname,)
+    ).fetchall()       
+    
+    if operation == 'like':
+        # put the like in the database if it is not there
+        if len(check) != 1:
+            connection.execute(
+                "INSERT INTO likes(owner, postid) "
+                "VALUEs (?,?) ",
+                (logname, postid,))
+        return flask.redirect(target)
+    
+    elif operation == 'unlike':
+        # take the like out if it's there
+        if check:
+            connection.execute(
+                "DELETE FROM likes "
+                "WHERE owner = ? AND postid = ?",
+                (logname, postid, )
+            )
+        return flask.redirect(target)
+    else:
+        return flask.redirect(target)
