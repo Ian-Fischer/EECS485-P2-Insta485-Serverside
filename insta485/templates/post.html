@@ -48,6 +48,14 @@
                 <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img src="{{owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
                 <a href="{{ url_for('show_user', user_url_slug=owner) }}" class="username"><b>{{owner}}</b></a>
                 <a href="/posts/{{postid}}/" class="time">{{timestamp}}</a>
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                {% if owner == logname %}
+                <form action="<FIXME_POSTS_URL_HERE>?target=<FIXME_LOGGED_IN_USER_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="delete"/>
+                    <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                    <input type="submit" name="delete" value="delete this post"/>
+                </form>
+                {% endif %}
             </ul>
             <img src="{{img_url}}" alt="Post" class="posts">
             {% if likes == 1%}
@@ -69,6 +77,14 @@
             </form>
             {% for comment in comments %}
                 <a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a><p>{{comment.text}}</p>
+                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                {% if comment.owner == logname %}
+                <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="delete"/>
+                    <input type="hidden" name="commentid" value="<FIXME_COMMENT_ID_HERE>"/>
+                    <input type="submit" name="uncomment" value="delete"/>
+                </form>
+                {% endif %}
             {% endfor %}
             <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
             <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">

@@ -304,25 +304,30 @@ def edit_profile():
     
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-    
+    cursor = connection.cursor()
+
+    cur = conn.cursor()
     logname = flask.session['logname']
 
-    connection.execute(
+    cursor.execute(
         "UPDATE users "
         "SET filename = ?, fullname = ?, email = ? "
         "WHERE username = ? ",
         (file, fullname, email, logname,)
     )
+    cursor.commit()
 
 
-@insta485.app.route('/accounts/password/', methods=['POST'])
+@insta485.app.route('/accounts/password/', methods=['GET', 'POST'])
 def show_password():
-    print('hello beanboy')
+    # build context for edit password page
+    # serve password.html
+    return flask.render_template("password.html")
     
     
 
 @insta485.app.route('/accounts/changepass/', methods=['POST'])
-def make_pass_change():
+def edit_password():
     
     import uuid 
     import hashlib
@@ -333,11 +338,6 @@ def make_pass_change():
     # check old passcode == password in db
     # update if it matches
     # if not, just redirect to show_password
-    
-    connection = insta485.model.get_db()
-    connection.row_factory = sqlite3.Row
-    
-    logname = flask.session['logname']
 
     password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
     new_password2 = flask.request.form.get('new_password2')
@@ -386,4 +386,7 @@ def make_pass_change():
 
 @insta485.app.route('/accounts/delete/', methods=['POST'])
 def delete_account():
-    print("implement")
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']

@@ -76,7 +76,7 @@
                 </li>
             </ul>
             {% if username == logname %}
-                <a href="/accounts/edit/">Edit profile</a>
+                <a href=" {{ url_for('show_edit')}}">Edit profile</a>
                 <form action="{{ url_for('logout') }}" method="post" enctype="multipart/form-data">
                     <input type="submit" name="logout" value="Logout"/>
                 </form>
