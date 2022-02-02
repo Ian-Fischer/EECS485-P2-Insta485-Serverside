@@ -36,9 +36,9 @@
                     <p><a href="{{ url_for('show_user', user_url_slug=comment.owner)}}"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
                     <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                     {% if comment.owner == logname %}
-                        <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                        <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid)}}" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="operation" value="delete"/>
-                            <input type="hidden" name="commentid" value="<FIXME_COMMENT_ID_HERE>"/>
+                            <input type="hidden" name="commentid" value="{{comment.commentid}}"/>
                             <input type="submit" name="uncomment" value="delete"/>
                         </form>
                     {% endif %}

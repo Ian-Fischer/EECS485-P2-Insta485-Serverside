@@ -33,12 +33,12 @@ def hash_password(password, salt):
 
 def get_all_comments(postid, connection):
     comments = connection.execute(
-        "SELECT C.owner, C.text "
+        "SELECT C.owner, C.text, C.commentid "
         "FROM comments C "
         "WHERE C.postid = ? ",
         (postid,)
     ).fetchall()
-    return [{'owner' : elt['owner'], 'text': elt['text']} for elt in comments]
+    return [{'owner' : elt['owner'], 'text': elt['text'], 'commentid': elt['commentid']} for elt in comments]
 
 def get_likes(postid, connection):
     return len(connection.execute(
@@ -527,7 +527,7 @@ def like():
         if len(check) != 1:
             connection.execute(
                 "INSERT INTO likes(owner, postid) "
-                "VALUEs (?,?) ",
+                "VALUES (?,?) ",
                 (logname, postid,))
         return flask.redirect(target)
     
@@ -563,18 +563,18 @@ def comment():
     commentid, text = flask.request.form.get('commentid'), flask.request.form.get('text')
     # check if the comment exists
     exists = connection.execute(
-            "SELECT C.commentid "
+            "SELECT C.commentid, C.owner "
             "FROM comments C "
             "WHERE C.commentid = ?",
             (commentid,)).fetchall()
-    if operation is 'create':
+
+    if operation == 'create' and text:
         if len(exists) == 0:
             exists = connection.execute(
                 "INSERT INTO comments(owner, postid, text) "
-                "VALUE (?,?,?) ",
-                (logname, postid, text)
-            )
-    elif operation is 'delete':
+                "VALUES (?,?,?) ",
+                (logname, postid, text,))
+    elif operation == 'delete':
         if len(exists) == 1:
             # check if the logname is the owner
             if logname == exists[0]['owner']:
@@ -582,8 +582,7 @@ def comment():
                 exists = connection.execute(
                     "DELETE FROM comments "
                     "WHERE commentid = ? ",
-                    (commentid,)
-                )
+                    (commentid,))
     elif not text:
         flask.abort(400)
     else:
