@@ -554,6 +554,21 @@ def comment():
     # if not specified then set to the home page 
     if not target:
         target = flask.url_for('show_index')
+    # get form information
+    operation, postid = flask.request.form.get('operation'), flask.request.form.get('postid')
+    commentid, text = flask.request.form.get('commentid'), flask.request.form.get('text')
+    if operation is 'create':
+        # do something 
+        print('beanboy')
+    elif operation is 'delete':
+        # do something
+        print('beanboy')
+    elif not text:
+        flask.abort(400)
+    else:
+        # something doesn't add up do nothing!
+        return flask.redirect(target)
+
 
     # send to the target
     return flask.redirect(target)
