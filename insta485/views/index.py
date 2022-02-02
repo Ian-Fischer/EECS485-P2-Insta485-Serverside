@@ -554,15 +554,36 @@ def comment():
     # if not specified then set to the home page 
     if not target:
         target = flask.url_for('show_index')
+    # changes only for someone who is logged in
+    if 'logname' not in flask.session:
+        return flask.redirect(target)
+    logname = flask.session['logname']
     # get form information
     operation, postid = flask.request.form.get('operation'), flask.request.form.get('postid')
     commentid, text = flask.request.form.get('commentid'), flask.request.form.get('text')
+    # check if the comment exists
+    exists = connection.execute(
+            "SELECT C.commentid "
+            "FROM comments C "
+            "WHERE C.commentid = ?",
+            (commentid,)).fetchall()
     if operation is 'create':
-        # do something 
-        print('beanboy')
+        if len(exists) == 0:
+            exists = connection.execute(
+                "INSERT INTO comments(owner, postid, text) "
+                "VALUE (?,?,?) ",
+                (logname, postid, text)
+            )
     elif operation is 'delete':
-        # do something
-        print('beanboy')
+        if len(exists) == 1:
+            # check if the logname is the owner
+            if logname == exists[0]['owner']:
+                exists = connection.execute(
+                    "DELETE FROM comments "
+                    "WHERE commentid = ? ",
+                    (commentid,)
+                )
+
     elif not text:
         flask.abort(400)
     else:
