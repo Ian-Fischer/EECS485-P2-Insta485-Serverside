@@ -100,6 +100,42 @@ def show_index():
         }
         return flask.render_template("index.html",  **context)
 
+@insta485.app.route('/explore/', methods=['GET'])
+def show_explore():
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+    users = connection.execute(
+        "SELECT U.username "
+        "FROM users U "
+        "EXCEPT "
+        "SELECT F.username2 "
+        "FROM following F "
+        "WHERE F.username1 = ? OR F.username2 = ?",
+        (logname,logname, )
+    ).fetchall()
+
+    not_following = []
+    for user in users:
+        profile_pic = connection.execute(
+            "SELECT U.filename "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (user[0], )
+        ).fetchall()
+        user_dict = {}
+        user_dict['username'] = user[0]
+        user_dict['user_img_url'] = insta485.app.config['UPLOAD_FOLDER']/profile_pic[0][0]
+        not_following.append(user_dict)
+
+    context = {
+        'logname': logname,
+        'not_following': not_following
+    }
+
+    return flask.render_template("explore.html", **context)
+
 @insta485.app.route('/accounts/logout/', methods=['POST'])
 def logout():
     flask.session.clear()
@@ -394,6 +430,9 @@ def edit_password():
     password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
     new_password2 = flask.request.form.get('new_password2')
 
+
+    target = flask.request.args.get('target')
+
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -421,10 +460,12 @@ def edit_password():
         "WHERE username = ? ",
         (password_db_string, logname, )
     )
-    return flask.redirect(flask.url_for('show_user', user_url_slug=logname))
+    return flask.redirect(target)
 
-@insta485.app.route('/accounts/delete/', methods=['POST'])
+
+@insta485.app.route('/accounts/delete/', methods=['GET', 'POST'])
 def show_delete():
+    
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -434,9 +475,9 @@ def show_delete():
         'logname': logname
     }
 
-    return flask.render_template("delete.html")
+    return flask.render_template("delete.html", **context)
 
-@insta485.app.route('/accounts/delete/', methods=['POST'])
+@insta485.app.route('/accounts/deleting/', methods=['POST'])
 def delete_account():
     
     target = flask.request.args.get('target')
@@ -452,12 +493,26 @@ def delete_account():
         "WHERE username = ? ",
         (logname, )
     )
-    return flask.redirect(flask.url_for('show_index'))
+    flask.session.clear()
+    
+    return flask.redirect(target)
 
 
-@insta485.app.route('/likes/', methods=['POST'])
-def like():
-    target = flask.request.args.get('target')
-    operation = flask.request.form.get('name')
-    pdb.set_trace()
-    print(operation)
+# @insta485.app.route('/likes/', methods=['POST'])
+# def like():
+#     target = flask.request.args.get('target')
+#     connection = insta485.model.get_db()
+#     if not target:
+#         target = '/'
+#     operation = flask.request.form.get('operation')
+#     if operation is like:
+#         # put the like in the database
+#         connection.execute(
+#             "INSERT INTO likes(args) "
+#             "VALUE (values) "
+#         )
+#         flask.redirect(target)
+#     else if operation is unlike:
+#         # get rid of it
+#     else:
+#         # you did something wrong

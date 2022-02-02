@@ -38,11 +38,10 @@ CREATE TABLE comments(
 );
 
 CREATE TABLE likes(
-    likeid INTEGER,
+    likeid INTEGER PRIMARY KEY AUTOINCREMENT,
     owner VARCHAR(20) NOT NULL,
     postid INTEGER NOT NULL,
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(owner) REFERENCES users(username) ON DELETE CASCADE,
-    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE,
-    PRIMARY KEY(likeid)
+    FOREIGN KEY(postid) REFERENCES posts(postid) ON DELETE CASCADE
 );
