@@ -1,69 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            .follow {
-                border-width: 5px;
-                margin-left: auto;
-                margin-right: auto;
-                background-color: rgba(122, 198, 248, 0.678);
-                width: fit-content;
-                height: fit-content;
-                padding: 10px;
-                margin-top: 20px;
-            }
-            img {
-                width: 200px;
-                height: 200px;
-            }
-            .cande {
-                text-align: right;
-            }
-            .navigation {
-                background-color: lightgray;
-            }
-            .posts {
-                background-color: rgba(122, 198, 248, 0.678);
-                width: fit-content;
-                height: fit-content;
-                margin-left: 10px;
-                margin-right: 10px;
-                margin-top: 30px;
-                border-radius: 20px;
-            }
-            ul {
-                position: sticky;
-                font-size: xx-large;
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-                background-color: gray;
-            }
-            li {
-                display: inline
-            }
-            li a {
-                color: white;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-            }
-            .leftstuff {
-                float: right;
-            }
-        </style>
-        <title>insta485</title>
-    </head>
+{% extends "base.html" %}
+{% block content %}
     <body>
-        <ul style="background-color: rgb(0, 95, 51, 0.5)">
-            <li><a href="/">I(a)NSTAGRAM!!</a></li>
-            <li class="leftstuff"><a href="/explore/">explore</a></li>
-            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
-        </ul>
         {% for follow in following %}
             <div class="follow">
-                <img src="{{follow.user_img_url}}" alt="Profile picture">
+                <img src="{{follow.user_img_url}}" alt="Profile picture" class="larger_profpic">
                 <a href="{{ url_for('show_user', user_url_slug=follow.username)}}">
                     <p>{{follow.username}}</p>
                 </a>
@@ -75,4 +15,4 @@
             </div>
         {% endfor %} 
     </body>
-</html>
+{% endblock %}

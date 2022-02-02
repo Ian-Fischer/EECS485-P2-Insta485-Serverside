@@ -542,3 +542,18 @@ def like():
         return flask.redirect(target)
     else:
         return flask.redirect(target)
+
+
+@insta485.app.route('/comments/', methods=['POST'])
+def comment():
+    # connect to db
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+    # get the target
+    target = flask.request.args.get('target')
+    # if not specified then set to the home page 
+    if not target:
+        target = flask.url_for('show_index')
+
+    # send to the target
+    return flask.redirect(target)

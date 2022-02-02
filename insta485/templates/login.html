@@ -37,7 +37,7 @@
     </head>
     <body>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
-            <li><a href="/">I(a)NSTAGRAM!!</a></li>
+            <li><a href="{{ url_for('show_index') }}">I(a)NSTAGRAM!!</a></li>
             <li class="leftstuff"><a href="{{ url_for('login') }}">login</a></li>
         </ul>
         <div class="login">
@@ -48,6 +48,7 @@
             </form>
         </div>
         <div class="login">
+            <!-- FIX FIX FIX FIX FIX WE HAVE NOT MADE CREATE YET FIX FIX FIX FIX -->
             <p>Don't have an account? <a href="/accounts/create/">Sign up.</a></p>
         </div>
     </body>
