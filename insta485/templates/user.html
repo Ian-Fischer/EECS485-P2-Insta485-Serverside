@@ -12,6 +12,7 @@
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
+                color: white;
             }
             li {
                 display: inline
@@ -37,6 +38,7 @@
                 margin-right: auto;
                 margin-top: 30px;
                 border-radius: 20px;
+                padding: 10px;
             }
             img {
                 margin-right: auto;
@@ -49,13 +51,14 @@
         <title>insta485</title>
     </head>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
-            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li><a href="/">I(a)NSTAGRAM!!</a></li>
             <li class="leftstuff"><a href="/explore/">explore</a></li>
             <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
         </ul>
         <div class="posts">
             <ul>
                 <li>{{username}}</li>
+                <br>
                 {% if total_posts == 1%} 
                     <li>{{total_posts}} post</li>
                 {% else %} 
@@ -69,7 +72,7 @@
                     {% endif %}
                 </li> 
                 <li>
-                    <a href="{{ url_for('show_following', user_url_slug=username) }}">{{following}} following6</a>
+                    <a href="{{ url_for('show_following', user_url_slug=username) }}">{{following}} following</a>
                 </li>
             </ul>
             {% if username == logname %}

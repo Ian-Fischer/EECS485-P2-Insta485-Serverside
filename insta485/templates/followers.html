@@ -3,12 +3,17 @@
     <head>
         <style>
             .follower {
-                border-style: groove;
-                border-color: black;
                 border-width: 5px;
                 margin-left: auto;
                 margin-right: auto;
-                background-color: gray;
+                background-color: rgba(122, 198, 248, 0.678);
+                width: fit-content;
+                height: fit-content;
+                padding: 10px;
+            }
+            img {
+                width: 200px;
+                height: 200px;
             }
             .cande {
                 text-align: right;
@@ -51,13 +56,13 @@
     </head>
     <body>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
-            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li><a href="/">I(a)NSTAGRAM!!</a></li>
             <li class="leftstuff"><a href="/explore/">explore</a></li>
             <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
         </ul>
         {% for follower in followers %}
             <div class="follower">
-                <img src="{{follower.user_img_url}}" alt="Profile picture" class="posts">
+                <img src="{{follower.user_img_url}}" alt="Profile picture">
                 <a href=" {{ url_for('show_user', user_url_slug=follower.username) }}">
                     <p>{{follower.username}}</p>
                 </a>
