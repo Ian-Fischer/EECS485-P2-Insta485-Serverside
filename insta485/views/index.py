@@ -578,18 +578,16 @@ def comment():
         if len(exists) == 1:
             # check if the logname is the owner
             if logname == exists[0]['owner']:
+                # if so, delete it
                 exists = connection.execute(
                     "DELETE FROM comments "
                     "WHERE commentid = ? ",
                     (commentid,)
                 )
-
     elif not text:
         flask.abort(400)
     else:
         # something doesn't add up do nothing!
         return flask.redirect(target)
-
-
     # send to the target
     return flask.redirect(target)
