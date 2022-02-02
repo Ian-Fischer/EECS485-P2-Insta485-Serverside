@@ -1,6 +1,9 @@
 <!DOCTYPE html>
     <head>
         <style>
+            .fullcomment {
+                display: inline-block;
+            }
             .posts {
                 background-color: rgba(122, 198, 248, 0.678);
                 width: fit-content;
@@ -76,15 +79,17 @@
                 <input type="submit" name="unlike" value="unlike"/>
             </form>
             {% for comment in comments %}
-                <a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a><p>{{comment.text}}</p>
-                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-                {% if comment.owner == logname %}
-                <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="delete"/>
-                    <input type="hidden" name="commentid" value="<FIXME_COMMENT_ID_HERE>"/>
-                    <input type="submit" name="uncomment" value="delete"/>
-                </form>
-                {% endif %}
+                <div class="fullcomment">
+                    <a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a><p>{{comment.text}}</p>
+                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                    {% if comment.owner == logname %}
+                    <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="operation" value="delete"/>
+                        <input type="hidden" name="commentid" value="<FIXME_COMMENT_ID_HERE>"/>
+                        <input type="submit" name="uncomment" value="delete"/>
+                    </form>
+                    {% endif %}
+                </div>
             {% endfor %}
             <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
             <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">

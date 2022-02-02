@@ -4,12 +4,31 @@ Insta485 index (main) view.
 URLs include:
 /
 """
+import re
 from re import L
 import arrow
 import flask
 import insta485
 import sqlite3
 import pdb
+import uuid 
+import hashlib
+
+def get_salt(password):
+    idx = password.find('$')
+    password = password[idx+1:]
+    idx = password.find('$')
+    password = password[:idx]
+    return password
+
+def hash_password(password, salt):
+    algorithm = 'sha512'
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+    return password_db_string
 
 def get_all_comments(postid, connection):
     comments = connection.execute(
@@ -88,9 +107,30 @@ def logout():
 
 @insta485.app.route('/accounts/login/', methods=['POST'])
 def login():
+    # if already logged in, redirect to the homepage
+    if 'logname' in flask.session:
+        return flask.redirect(flask.url_for('show_index'))
     # POST-only route for handling login requests
     flask.session['logname'] = flask.request.form['username']
-    return flask.redirect(flask.url_for('show_index'))
+    password = flask.request.form.get('password')
+
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+    curr_tbl_pass = connection.execute(
+        "SELECT U.password "
+        "FROM users U "
+        "WHERE U.username = ? ",
+        (logname, )
+    ).fetchall()
+    curr_password = curr_tbl_pass[0]['password']
+    hashed_password = hash_password(password, get_salt(curr_password))
+    if curr_password != hashed_password:
+        flask.session.clear()
+        return flask.redirect(flask.url_for('show_index'))
+    else:
+        return flask.redirect(flask.url_for('show_index'))
 
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
 def show_user(user_url_slug):
@@ -299,23 +339,40 @@ def show_edit():
 
 @insta485.app.route('/accounts/editing/', methods=['POST'])
 def edit_profile():
+
+    target = flask.request.args.get('target')
+
     fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
-    target, file =  flask.request.form.get('target'), flask.request.form.get('file')
+    file = flask.request.form.get('file')
     
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cur = conn.cursor()
     logname = flask.session['logname']
-
-    cursor.execute(
-        "UPDATE users "
-        "SET filename = ?, fullname = ?, email = ? "
-        "WHERE username = ? ",
-        (file, fullname, email, logname,)
-    )
-    cursor.commit()
+    if file:
+        cursor.execute(
+            "UPDATE users "
+            "SET filename = ? "
+            "WHERE username = ? ",
+            (file, logname,)
+        )
+    if fullname:
+        cursor.execute(
+                "UPDATE users "
+                "SET fullname = ? "
+                "WHERE username = ? ",
+                (fullname, logname,)
+            )
+    if email:
+        cursor.execute(
+            "UPDATE users "
+            "SET email = ? "
+            "WHERE username = ? ",
+            (email, logname,)
+        )
+    connection.commit()
+    return flask.redirect(target)
 
 
 @insta485.app.route('/accounts/password/', methods=['GET', 'POST'])
@@ -328,11 +385,6 @@ def show_password():
 
 @insta485.app.route('/accounts/changepass/', methods=['POST'])
 def edit_password():
-    
-    import uuid 
-    import hashlib
-
-    
     # get the passwords from the form
     # encrypt the passwords
     # check old passcode == password in db
@@ -347,14 +399,6 @@ def edit_password():
 
     logname = flask.session['logname']
     
-    algorithm = 'sha512'
-    salt = uuid.uuid4().hex
-    hash_obj = hashlib.new(algorithm)
-    password_salted = salt + password
-    hash_obj.update(password_salted.encode('utf-8'))
-    password_hash = hash_obj.hexdigest()
-    password_db_string = "$".join([algorithm, salt, password_hash])
-    
     curr_tbl_pass = connection.execute(
         "SELECT U.password "
         "FROM users U "
@@ -363,17 +407,13 @@ def edit_password():
     ).fetchall()
     
     curr_password = curr_tbl_pass[0]['password']
+    
+    password_db_string = hash_password(password, get_salt(curr_password))
 
     if curr_password != password_db_string or new_password1 != new_password2:
         return flask.redirect(flask.url_for('show_password'))
 
-    algorithm = 'sha512'
-    salt = uuid.uuid4().hex
-    hash_obj = hashlib.new(algorithm)
-    password_salted = salt + new_password1
-    hash_obj.update(password_salted.encode('utf-8'))
-    password_hash = hash_obj.hexdigest()
-    password_db_string = "$".join([algorithm, salt, password_hash])
+    password_db_string = hash_password(new_password1, get_salt(new_password1))
 
     connection.execute(
         "UPDATE users "
@@ -381,12 +421,43 @@ def edit_password():
         "WHERE username = ? ",
         (password_db_string, logname, )
     )
-
-
+    return flask.redirect(flask.url_for('show_user', user_url_slug=logname))
 
 @insta485.app.route('/accounts/delete/', methods=['POST'])
-def delete_account():
+def show_delete():
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
     logname = flask.session['logname']
+
+    context = {
+        'logname': logname
+    }
+
+    return flask.render_template("delete.html")
+
+@insta485.app.route('/accounts/delete/', methods=['POST'])
+def delete_account():
+    
+    target = flask.request.args.get('target')
+
+    connection = insta485.model.get_db()
+
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+
+    connection.execute(
+        "DELETE FROM users "
+        "WHERE username = ? ",
+        (logname, )
+    )
+    return flask.redirect(flask.url_for('show_index'))
+
+
+@insta485.app.route('/likes/', methods=['POST'])
+def like():
+    target = flask.request.args.get('target')
+    operation = flask.request.form.get('name')
+    pdb.set_trace()
+    print(operation)
