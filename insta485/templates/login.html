@@ -3,37 +3,51 @@
     <head>
         <title>insta485</title>
         <style>
-            .cande {
-                text-align: right;
+            ul {
+                position: sticky;
+                font-size: xx-large;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
             }
-            .navigation {
-                background-color: lightgray;
+            li {
+                display: inline
+            }
+            li a {
+                color: white;
+                text-align: center;
+                padding: 20px 20px;
+                text-decoration: none;
+            }
+            .leftstuff {
+                float: right;
             }
             .login {
+                border-width: 5px;
+                margin-left: auto;
+                margin-right: auto;
                 background-color: rgba(122, 198, 248, 0.678);
                 width: fit-content;
                 height: fit-content;
-                margin-left: 10px;
-                margin-right: 10px;
-                margin-top: 30px;
-                border-radius: 20px;
+                padding: 10px;
+                margin-top: 20px;
             }
         </style>
     </head>
     <body>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
             <li><a href="/">I(a)NSTAGRAM!!</a></li>
-            <li class="leftstuff"><a href="/explore/">explore</a></li>
-            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+            <li class="leftstuff"><a href="{{ url_for('login') }}">login</a></li>
         </ul>
-        <div class="loggin">
+        <div class="login">
             <form action="/accounts/login/" method="post">
-                <p><input type="text" name="username"></p>
-                <p><input type="text" name="password"></p>
-                <p><input type="submit" value="Login"></p>
+                <label>Username&nbsp;&nbsp;&nbsp;</label><input type="text" name="username"><br><br>
+                <label>Password&nbsp;&nbsp;&nbsp;&nbsp;</label><input type="text" name="password"><br><br>
+                <input type="submit" value="Login">
             </form>
         </div>
-        <div>
+        <div class="login">
             <p>Don't have an account? <a href="/accounts/create/">Sign up.</a></p>
         </div>
     </body>

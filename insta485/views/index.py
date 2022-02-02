@@ -20,6 +20,14 @@ def get_all_comments(postid, connection):
     ).fetchall()
     return [{'owner' : elt['owner'], 'text': elt['text']} for elt in comments]
 
+def get_likes(postid, connection):
+    return len(connection.execute(
+                "SELECT L.likeid "
+                "FROM likes L "
+                "WHERE L.postid = ? ",
+                (postid, )
+            ).fetchall())
+
 @insta485.app.route('/')
 def show_index():
     """Display / route."""
@@ -49,7 +57,8 @@ def show_index():
                 (user,user,)
             ).fetchall()
             for post in user_posts:
-                likes = len(connection.execute(
+                likes = get_likes(post['postid'],connection)
+                len(connection.execute(
                     "SELECT L.postid "
                     "FROM likes L "
                     "WHERE L.postid = ? ",
@@ -108,7 +117,9 @@ def show_user(user_url_slug):
         "FROM following F "
         "WHERE ? = F.username1 AND  ? = F.username2 ",
         (logname, username)
-    )
+    ).fetchall()
+
+    logname_follows_username_tbl = [elt['username1'] for elt in logname_follows_username_tbl]
 
     logname_follows_username = logname in logname_follows_username_tbl
     fullname = connection.execute(
@@ -152,6 +163,35 @@ def show_user(user_url_slug):
         'posts': posts
     }
     return flask.render_template("user.html", **context)
+
+
+@insta485.app.route('/posts/<post_url_slug>/', methods=['GET'])
+def show_post(post_url_slug):
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+    post = connection.execute(
+        "SELECT P.owner, P.filename as image, P.created, U.filename as profile_picture "
+        "FROM posts P, users U "
+        "WHERE P.postid = ? AND U.username = P.owner",
+        (post_url_slug, )
+    ).fetchall()
+    likes = get_likes(post_url_slug, connection)
+    comments = get_all_comments(post_url_slug, connection)
+
+    context = {
+        'logname': logname,
+        'postid': post_url_slug,
+        "owner": post[0][0],
+        "owner_img_url": insta485.app.config['UPLOAD_FOLDER']/post[0][3],
+        "img_url": insta485.app.config['UPLOAD_FOLDER']/post[0][1],
+        "timestamp": arrow.get(post[0][2]).to('US/Eastern').humanize(),
+        "likes": likes,
+        "comments": comments
+    }
+
+    return flask.render_template("post.html", **context)
 
 
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=['GET'])
@@ -232,3 +272,118 @@ def follow_unfollow():
 @insta485.app.route(str(insta485.app.config['UPLOAD_FOLDER']/'<path:filename>'))
 def send_file(filename):
     return flask.send_from_directory(insta485.app.config["UPLOAD_FOLDER"], filename)
+
+@insta485.app.route('/accounts/edit/', methods=['GET'])
+def show_edit():
+    # build context for edit page
+    # serve edit.html
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+    
+    profile_information = connection.execute(
+        "SELECT U.fullname, U.email, U.filename "
+        "FROM users U "
+        "WHERE username = ?",
+        (logname,)
+    ).fetchall()
+    context = {
+        "logname": logname,
+        "logname_profile_pic": insta485.app.config["UPLOAD_FOLDER"]/profile_information[0]['filename'],
+        "logname_fullname" : profile_information[0]['fullname'],
+        "logname_email": profile_information[0]['email']
+    }
+    return flask.render_template("edit.html", **context)
+
+
+@insta485.app.route('/accounts/editing/', methods=['POST'])
+def edit_profile():
+    fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
+    target, file =  flask.request.form.get('target'), flask.request.form.get('file')
+    
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+    
+    logname = flask.session['logname']
+
+    connection.execute(
+        "UPDATE users "
+        "SET filename = ?, fullname = ?, email = ? "
+        "WHERE username = ? ",
+        (file, fullname, email, logname,)
+    )
+
+
+@insta485.app.route('/accounts/password/', methods=['POST'])
+def show_password():
+    print('hello beanboy')
+    
+    
+
+@insta485.app.route('/accounts/changepass/', methods=['POST'])
+def make_pass_change():
+    
+    import uuid 
+    import hashlib
+
+    
+    # get the passwords from the form
+    # encrypt the passwords
+    # check old passcode == password in db
+    # update if it matches
+    # if not, just redirect to show_password
+    
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+    
+    logname = flask.session['logname']
+
+    password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
+    new_password2 = flask.request.form.get('new_password2')
+
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+
+    logname = flask.session['logname']
+    
+    algorithm = 'sha512'
+    salt = uuid.uuid4().hex
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+    
+    curr_tbl_pass = connection.execute(
+        "SELECT U.password "
+        "FROM users U "
+        "WHERE U.username = ? ",
+        (logname, )
+    ).fetchall()
+    
+    curr_password = curr_tbl_pass[0]['password']
+
+    if curr_password != password_db_string or new_password1 != new_password2:
+        return flask.redirect(flask.url_for('show_password'))
+
+    algorithm = 'sha512'
+    salt = uuid.uuid4().hex
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + new_password1
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+
+    connection.execute(
+        "UPDATE users "
+        "SET password = ? "
+        "WHERE username = ? ",
+        (password_db_string, logname, )
+    )
+
+
+
+@insta485.app.route('/accounts/delete/', methods=['POST'])
+def delete_account():
+    print("implement")

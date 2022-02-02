@@ -5,8 +5,8 @@
                 background-color: rgba(122, 198, 248, 0.678);
                 width: fit-content;
                 height: fit-content;
-                margin-left: 10px;
-                margin-right: 10px;
+                margin-left: auto;
+                margin-right: auto;
                 margin-top: 30px;
                 border-radius: 20px;
             }
@@ -14,28 +14,41 @@
                 width: 50px;
                 height: 50px;
             }
-            .navigation {
-                background-color: lightgray;
+            ul {
+                position: sticky;
+                font-size: xx-large;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
             }
-            .cande {
-                text-align: right;
+            li {
+                display: inline
+            }
+            li a {
+                color: white;
+                text-align: center;
+                padding: 20px 20px;
+                text-decoration: none;
+            }
+            .leftstuff {
+                float: right;
             }
         </style>
         <title>insta485</title>
     </head>
     <body>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
-            <li><a href="/"><img src="{{ url_for('send_file', filename='ianstagram.jpg') }}" style="height: 100px; width: 100px;">I(a)NSTAGRAM!!</a></li>
+            <li><a href="/">I(a)NSTAGRAM!!</a></li>
             <li class="leftstuff"><a href="/explore/">explore</a></li>
             <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
         </ul>  
         <div class="posts">
-            <a href="/users/{{owner}}/">
-                <img src="{{owner_img_url}}" alt="Profile picture" class="profilepicture"><p>{{owner}}</p>
-            </a>
-            <a href="/posts/{{postid}}/">
-                <p>{{timestamp}}</p>
-            </a>
+            <ul>
+                <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img src="{{owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
+                <a href="{{ url_for('show_user', user_url_slug=owner) }}" class="username"><b>{{owner}}</b></a>
+                <a href="/posts/{{postid}}/" class="time">{{timestamp}}</a>
+            </ul>
             <img src="{{img_url}}" alt="Post" class="posts">
             {% if likes == 1%}
                 <p> 1 like </p>

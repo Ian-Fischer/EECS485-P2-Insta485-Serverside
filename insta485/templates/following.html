@@ -3,12 +3,18 @@
     <head>
         <style>
             .follow {
-                border-style: groove;
-                border-color: black;
                 border-width: 5px;
                 margin-left: auto;
                 margin-right: auto;
-                background-color: gray;
+                background-color: rgba(122, 198, 248, 0.678);
+                width: fit-content;
+                height: fit-content;
+                padding: 10px;
+                margin-top: 20px;
+            }
+            img {
+                width: 200px;
+                height: 200px;
             }
             .cande {
                 text-align: right;
@@ -57,7 +63,7 @@
         </ul>
         {% for follow in following %}
             <div class="follow">
-                <img src="{{follow.user_img_url}}" alt="Profile picture" class="posts">
+                <img src="{{follow.user_img_url}}" alt="Profile picture">
                 <a href="{{ url_for('show_user', user_url_slug=follow.username)}}">
                     <p>{{follow.username}}</p>
                 </a>
