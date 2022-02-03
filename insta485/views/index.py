@@ -54,7 +54,6 @@ def show_index():
     # Connect to database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-
     if 'logname' not in flask.session:
         return flask.render_template("login.html")
     else:
@@ -101,6 +100,133 @@ def show_index():
         }
         return flask.render_template("index.html",  **context)
 
+@insta485.app.route('/accounts/', methods=['POST'])
+def handle_account():
+    operation = flask.request.form.get('operation')
+    if operation == 'login':
+        # get information
+        flask.session['logname'] = flask.request.form['username']
+        password = flask.request.form.get('password')
+        # connect to the db
+        connection = insta485.model.get_db()
+        connection.row_factory = sqlite3.Row
+
+        logname = flask.session['logname']
+        curr_tbl_pass = connection.execute(
+            "SELECT U.password "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (logname, )
+        ).fetchall()
+        curr_password = curr_tbl_pass[0]['password']
+        hashed_password = hash_password(password, get_salt(curr_password))
+        if curr_password != hashed_password:
+            flask.session.clear()
+            return flask.redirect(flask.url_for('show_index'))
+        else:
+            return flask.redirect(flask.url_for('show_index'))
+            
+    elif operation == 'create':
+        #TODO: implement
+        print('create')
+    elif operation == 'delete':
+        # get the target page
+        target = flask.request.args.get('target')
+        # if target url not specified then redirect to the home page
+        if not target:
+            target = '/'
+        connection = insta485.model.get_db()
+        connection.row_factory = sqlite3.Row
+        logname = flask.session['logname']
+        connection.execute(
+            "DELETE FROM users "
+            "WHERE username = ? ",
+            (logname, )
+        )
+        flask.session.clear()
+        return flask.redirect(target)
+        
+    elif operation == 'edit_account':
+
+        target = flask.request.args.get('target')
+
+        fullname, email = flask.request.form.get(
+            'fullname'), flask.request.form.get('email')
+        file = flask.request.form.get('file')
+
+        connection = insta485.model.get_db()
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+
+        logname = flask.session['logname']
+        if file:
+            cursor.execute(
+                "UPDATE users "
+                "SET filename = ? "
+                "WHERE username = ? ",
+                (file, logname,)
+            )
+        if fullname:
+            cursor.execute(
+                "UPDATE users "
+                "SET fullname = ? "
+                "WHERE username = ? ",
+                (fullname, logname,)
+            )
+        if email:
+            cursor.execute(
+                "UPDATE users "
+                "SET email = ? "
+                "WHERE username = ? ",
+                (email, logname,)
+            )
+        connection.commit()
+        return flask.redirect(target)
+
+    elif operation == 'update_password':
+
+        # check old passcode == password in db
+        # update if it matches
+        # if not, just redirect to show_password
+
+        password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
+        new_password2 = flask.request.form.get('new_password2')
+
+
+        target = flask.request.args.get('target')
+
+        connection = insta485.model.get_db()
+        connection.row_factory = sqlite3.Row
+
+        logname = flask.session['logname']
+            (logname, logname, )
+        curr_tbl_pass = connection.execute(
+            "SELECT U.password "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (logname, )
+        ).fetchall()
+    
+        curr_password = curr_tbl_pass[0]['password']
+    
+        password_db_string = hash_password(password, get_salt(curr_password))
+
+        if curr_password != password_db_string or new_password1 != new_password2:
+            user_dict['user_img_url'] = insta485.app.config['UPLOAD_FOLDER'] / \
+                profile_pic[0][0]
+
+        password_db_string = hash_password(new_password1, get_salt(new_password1))
+
+        connection.execute(
+            "UPDATE users "
+            "SET password = ? "
+            "WHERE username = ? ",
+            (password_db_string, logname, )
+
+        )
+        return flask.redirect(target)
+        
+
 @insta485.app.route('/explore/', methods=['GET'])
 def show_explore():
     connection = insta485.model.get_db()
@@ -142,30 +268,11 @@ def logout():
     flask.session.clear()
     return flask.redirect(flask.url_for('show_index'))
 
-@insta485.app.route('/accounts/login/', methods=['POST'])
+@insta485.app.route('/accounts/login/', methods=['GET'])
 def login():
     # if already logged in, redirect to the homepage
-    if 'logname' in flask.session:
-        return flask.redirect(flask.url_for('show_index'))
-    # POST-only route for handling login requests
-    flask.session['logname'] = flask.request.form['username']
-    password = flask.request.form.get('password')
-
-    connection = insta485.model.get_db()
-    connection.row_factory = sqlite3.Row
-
-    logname = flask.session['logname']
-    curr_tbl_pass = connection.execute(
-        "SELECT U.password "
-        "FROM users U "
-        "WHERE U.username = ? ",
-        (logname, )
-    ).fetchall()
-    curr_password = curr_tbl_pass[0]['password']
-    hashed_password = hash_password(password, get_salt(curr_password))
-    if curr_password != hashed_password:
-        flask.session.clear()
-        return flask.redirect(flask.url_for('show_index'))
+    if 'logname' not in flask.session:
+        return flask.redirect(flask.url_for('login'))
     else:
         return flask.redirect(flask.url_for('show_index'))
 
@@ -377,39 +484,6 @@ def show_edit():
 @insta485.app.route('/accounts/editing/', methods=['POST'])
 def edit_profile():
 
-    target = flask.request.args.get('target')
-
-    fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
-    file = flask.request.form.get('file')
-    
-    connection = insta485.model.get_db()
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
-
-    logname = flask.session['logname']
-    if file:
-        cursor.execute(
-            "UPDATE users "
-            "SET filename = ? "
-            "WHERE username = ? ",
-            (file, logname,)
-        )
-    if fullname:
-        cursor.execute(
-                "UPDATE users "
-                "SET fullname = ? "
-                "WHERE username = ? ",
-                (fullname, logname,)
-            )
-    if email:
-        cursor.execute(
-            "UPDATE users "
-            "SET email = ? "
-            "WHERE username = ? ",
-            (email, logname,)
-        )
-    connection.commit()
-    return flask.redirect(target)
 
 
 @insta485.app.route('/accounts/password/', methods=['GET', 'POST'])
@@ -422,46 +496,7 @@ def show_password():
 
 @insta485.app.route('/accounts/changepass/', methods=['POST'])
 def edit_password():
-    # get the passwords from the form
-    # encrypt the passwords
-    # check old passcode == password in db
-    # update if it matches
-    # if not, just redirect to show_password
-
-    password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
-    new_password2 = flask.request.form.get('new_password2')
-
-
-    target = flask.request.args.get('target')
-
-    connection = insta485.model.get_db()
-    connection.row_factory = sqlite3.Row
-
-    logname = flask.session['logname']
     
-    curr_tbl_pass = connection.execute(
-        "SELECT U.password "
-        "FROM users U "
-        "WHERE U.username = ? ",
-        (logname, )
-    ).fetchall()
-    
-    curr_password = curr_tbl_pass[0]['password']
-    
-    password_db_string = hash_password(password, get_salt(curr_password))
-
-    if curr_password != password_db_string or new_password1 != new_password2:
-        return flask.redirect(flask.url_for('show_password'))
-
-    password_db_string = hash_password(new_password1, get_salt(new_password1))
-
-    connection.execute(
-        "UPDATE users "
-        "SET password = ? "
-        "WHERE username = ? ",
-        (password_db_string, logname, )
-    )
-    return flask.redirect(target)
 
 
 @insta485.app.route('/accounts/delete/', methods=['GET', 'POST'])
@@ -477,26 +512,6 @@ def show_delete():
     }
 
     return flask.render_template("delete.html", **context)
-
-@insta485.app.route('/accounts/deleting/', methods=['POST'])
-def delete_account():
-    
-    target = flask.request.args.get('target')
-
-    connection = insta485.model.get_db()
-
-    connection.row_factory = sqlite3.Row
-
-    logname = flask.session['logname']
-
-    connection.execute(
-        "DELETE FROM users "
-        "WHERE username = ? ",
-        (logname, )
-    )
-    flask.session.clear()
-    
-    return flask.redirect(target)
 
 
 @insta485.app.route('/likes/', methods=['POST'])
@@ -590,9 +605,3 @@ def comment():
         return flask.redirect(target)
     # send to the target
     return flask.redirect(target)
-
-@insta485.app.route('/accounts/', methods=['GET', 'POST'])
-def handle_account():
-    operation = flask.request.form.get('operation')
-    if operation == 'login':
-        flask.redirect(flask.url_for('login'))
