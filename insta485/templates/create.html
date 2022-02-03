@@ -4,30 +4,56 @@
     <head>
         <title>insta485</title>
         <style>
-            .cande {
-                text-align: right;
+            ul {
+                position: sticky;
+                font-size: xx-large;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
             }
-            .navigation {
-                background-color: lightgray;
+            li {
+                display: inline
             }
-            .creating {
-                display: inline-block;
-                background-color: lightgray;
+            li a {
+                color: white;
+                text-align: center;
+                padding: 20px 20px;
+                text-decoration: none;
+            }
+            .leftstuff {
+                float: right;
+            }
+            body {
+                background: lightgrey;
+                color: white;
+            }
+            .box {
+                background-color: rgba(122, 198, 248, 0.678);
+                width: fit-content;
+                height: fit-content;
                 margin-left: auto;
                 margin-right: auto;
+                margin-top: 30px;
+                border-radius: 20px;
+                padding: 10px;
             }
         </style>
     </head>
     <body>
         <ul style="background-color: rgb(0, 95, 51, 0.5)">
             <li><a href="{{ url_for('show_index') }}">I(a)NSTAGRAM!!</a></li>
-            <li class="leftstuff"><a href="{{ url_for('show_explore') }}">explore</a></li>
-            <li class="leftstuff"><a href="{{ url_for('show_user', user_url_slug=logname) }}">{{logname}}</a></li>
+            <li class="leftstuff"><a href="{{ url_for('login') }}">login</a></li>
         </ul>
-        <div class="create">
-            <form action="/accounts/create/">
-                <label for="file">Photo</label>
-                <input type="file">
+        <div class="box">
+            <form action="{{ url_for('handle_account') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required/>
+                <input type="text" name="fullname" required/>
+                <input type="text" name="username" required/>
+                <input type="text" name="email" required/>
+                <input type="password" name="password" required/>
+                <input type="submit" name="signup" value="sign up"/>
+                <input type="hidden" name="operation" value="create"/>
             </form>
         </div>
     </body>

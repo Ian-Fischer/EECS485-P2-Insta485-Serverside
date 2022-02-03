@@ -425,6 +425,7 @@ def show_followers(user_url_slug):
                 } for elt in followers]
     context = {
         'logname': logname,
+        'username': user_url_slug,
         'followers': followers
     }
     connection.commit()
@@ -465,9 +466,9 @@ def show_following(user_url_slug):
                 } for elt in following]
     context = {
         'logname': logname,
+        'username': user_url_slug,
         'following': following
     }
-    connection.commit()
     return flask.render_template("following.html", **context)
 
 @insta485.app.route('/following/', methods=['POST'])
@@ -483,10 +484,10 @@ def follow_unfollow():
     target = flask.request.args.get('target')
     # get whether they follow or not
     follows = connection.execute(
-            'SELECT F.username2'
+            'SELECT F.username2 '
             'FROM following F '
             'WHERE F.username1 = ? AND F.username2 = ?',
-            (logname, username))
+            (logname, username)).fetchall()
     if operation == 'follow':
         # see if already follows
         if len(follows) == 1:
@@ -503,9 +504,9 @@ def follow_unfollow():
         if len(follows) == 0:
             return flask.abort(409)
         else:
-            connection.executre(
+            connection.execute(
                 "DELETE FROM following "
-                "WHERE F.username1 = ? AND F.username2 = ?",
+                "WHERE username1 = ? AND username2 = ?",
                 (logname, username,)
             )
             connection.commit()
@@ -573,11 +574,14 @@ def like():
 
     target = flask.request.args.get('target')
     connection = insta485.model.get_db()
+    if 'logname' not in flask.session:
+        return flask.redirect('login')
     logname = flask.session['logname']
     if not target:
         target = '/'
     operation = flask.request.form.get('operation')
     postid = flask.request.form.get('postid')
+
     post_info = connection.execute(
         "SELECT P.owner, P.created "
         "FROM posts P "
@@ -593,17 +597,19 @@ def like():
     
     if operation == 'like':
         # put the like in the database if it is not there
-        if len(check) != 1:
+        if len(check) == 0:
             connection.execute(
                 "INSERT INTO likes(owner, postid) "
                 "VALUES (?,?) ",
                 (logname, postid,))
-        connection.commit()
-        return flask.redirect(target)
-    
+            connection.commit()
+            return flask.redirect(target)
+        else:
+            return flask.abort(409)
+
     elif operation == 'unlike':
         # take the like out if it's there
-        if check:
+        if check == 1:
             connection.execute(
                 "DELETE FROM likes "
                 "WHERE owner = ? AND postid = ?",
@@ -612,8 +618,7 @@ def like():
         connection.commit()
         return flask.redirect(target)
     else:
-        connection.commit()
-        return flask.redirect(target)
+        return flask.abort(409)
 
 
 @insta485.app.route('/comments/', methods=['POST'])
