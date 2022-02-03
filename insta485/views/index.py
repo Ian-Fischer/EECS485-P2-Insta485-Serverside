@@ -556,7 +556,7 @@ def comment():
         target = flask.url_for('show_index')
     # changes only for someone who is logged in
     if 'logname' not in flask.session:
-        return flask.redirect(target)
+        return flask.redirect(flask.url_for('login'))
     logname = flask.session['logname']
     # get form information
     operation, postid = flask.request.form.get('operation'), flask.request.form.get('postid')
@@ -590,3 +590,9 @@ def comment():
         return flask.redirect(target)
     # send to the target
     return flask.redirect(target)
+
+@insta485.app.route('/accounts/', methods=['GET', 'POST'])
+def handle_account():
+    operation = flask.request.form.get('operation')
+    if operation == 'login':
+        flask.redirect(flask.url_for('login'))
