@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-{% block content %}
     <body>
         <div class="box">
             <h1>{{logname}}</h1>
-            <form action="{{ url_for('delete_account') }}?target={{ url_for('create') }}" method="post"
+            <form action="{{ url_for('handle_account') }}?target={{ url_for('create') }}" method="post"
                 enctype="multipart/form-data">
                 <input type="submit" name="delete" value="confirm delete account" />
                 <input type="hidden" name="operation" value="delete" />

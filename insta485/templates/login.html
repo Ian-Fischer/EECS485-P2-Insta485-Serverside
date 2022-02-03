@@ -41,10 +41,11 @@
             <li class="leftstuff"><a href="{{ url_for('login') }}">login</a></li>
         </ul>
         <div class="login">
-            <form action="/accounts/login/" method="post">
+            <form action="{{ url_for('handle_account') }}?target={{ url_for('show_index') }}" method="post">
                 <label>Username&nbsp;&nbsp;&nbsp;</label><input type="text" name="username"><br><br>
                 <label>Password&nbsp;&nbsp;&nbsp;&nbsp;</label><input type="text" name="password"><br><br>
                 <input type="submit" value="Login">
+                <input type="hidden" name="operation" value="login"/>
             </form>
         </div>
         <div class="login">
