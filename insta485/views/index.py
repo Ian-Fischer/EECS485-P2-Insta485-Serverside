@@ -48,14 +48,14 @@ def get_likes(postid, connection):
                 (postid, )
             ).fetchall())
 
-@insta485.app.route('/')
+@insta485.app.route('/', methods=['GET'])
 def show_index():
     """Display / route."""
     # Connect to database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
     if 'logname' not in flask.session:
-        return flask.render_template("login.html")
+        return flask.redirect(flask.url_for('login'))
     else:
         # 1. get all following
         logname = flask.session['logname']
@@ -103,13 +103,15 @@ def show_index():
 @insta485.app.route('/accounts/', methods=['POST'])
 def handle_account():
     operation = flask.request.form.get('operation')
+    target = flask.request.args.get('target')
+    if target is None:
+        target = '/'
     if operation == 'login':
         # check if any empty information
         if not flask.request.form.get('username') or not flask.request.form.get('password'):
             flask.abort(400)
         logname = flask.request.form.get('username')
         password = flask.request.form.get('password')
-        target = flask.request.args.get('target')
         # connect to the db
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
@@ -132,19 +134,16 @@ def handle_account():
         print('create')
     elif operation == 'delete':
         # get the target page
-        target = flask.request.args.get('target')
         if 'logname' not in flask.session:
             flask.abort(403)
         # if target url not specified then redirect to the home page
-        if not target:
-            target = '/'
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
         logname = flask.session['logname']
         connection.execute(
             "DELETE FROM users "
             "WHERE username = ? ",
-            (logname, )
+            (logname,)
         )
         flask.session.clear()
         return flask.redirect(target)
@@ -154,7 +153,6 @@ def handle_account():
         if 'logname' not in flask.session:
             flask.abort(403)
         # get information
-        target = flask.request.args.get('target')
         fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
         # check for empty fields
         if not fullname or not email:
@@ -167,21 +165,21 @@ def handle_account():
         logname = flask.session['logname']
         # TODO: WRONG, FIX FILE UPLOAD
         if file:
-            cursor.execute(
+            connection.execute(
                 "UPDATE users "
                 "SET filename = ? "
                 "WHERE username = ? ",
                 (file, logname,)
             )
         if fullname:
-            cursor.execute(
+            connection.execute(
                 "UPDATE users "
                 "SET fullname = ? "
                 "WHERE username = ? ",
                 (fullname, logname,)
             )
         if email:
-            cursor.execute(
+            connection.execute(
                 "UPDATE users "
                 "SET email = ? "
                 "WHERE username = ? ",
@@ -197,7 +195,6 @@ def handle_account():
         # get info
         password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
         new_password2 = flask.request.form.get('new_password2')
-        target = flask.request.args.get('target')
         # check for empty
         if not password or not new_password1 or not new_password2:
             flask.abort(400)
@@ -232,6 +229,8 @@ def handle_account():
 
 @insta485.app.route('/explore/', methods=['GET'])
 def show_explore():
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -269,18 +268,20 @@ def show_explore():
 @insta485.app.route('/accounts/logout/', methods=['POST'])
 def logout():
     flask.session.clear()
-    return flask.redirect(flask.url_for('show_index'))
+    return flask.redirect(flask.url_for('login'))
 
 @insta485.app.route('/accounts/login/', methods=['GET'])
 def login():
     # if already logged in, redirect to the homepage
     if 'logname' not in flask.session:
-        return flask.redirect(flask.url_for('login'))
+        return flask.render_template('login.html ')
     else:
         return flask.redirect(flask.url_for('show_index'))
 
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
 def show_user(user_url_slug):
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     # open database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
@@ -298,7 +299,7 @@ def show_user(user_url_slug):
         (username, )
     ).fetchall()
     if not usr:
-        flask.abort(404)
+        flask.abort(403)
     logname_follows_username_tbl = connection.execute(
         "SELECT F.username1 "
         "FROM following F "
@@ -354,9 +355,10 @@ def show_user(user_url_slug):
 
 @insta485.app.route('/posts/<post_url_slug>/', methods=['GET'])
 def show_post(post_url_slug):
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-
     logname = flask.session['logname']
     post = connection.execute(
         "SELECT P.owner, P.filename as image, P.created, U.filename as profile_picture "
@@ -364,6 +366,7 @@ def show_post(post_url_slug):
         "WHERE P.postid = ? AND U.username = P.owner",
         (post_url_slug, )
     ).fetchall()
+
     likes = get_likes(post_url_slug, connection)
     comments = get_all_comments(post_url_slug, connection)
 
@@ -383,6 +386,8 @@ def show_post(post_url_slug):
 
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=['GET'])
 def show_followers(user_url_slug):
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -418,6 +423,8 @@ def show_followers(user_url_slug):
 
 @insta485.app.route('/users/<user_url_slug>/following/', methods=['GET'])
 def show_following(user_url_slug):
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     # open database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
@@ -454,7 +461,26 @@ def show_following(user_url_slug):
 
 @insta485.app.route('/following/', methods=['POST'])
 def follow_unfollow():
+    """Follow and unfollow functionality."""
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
+    logname = flask.session['username']
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+    operation, username = flask.request.form.get('operation'), flask.request.form.get('username')
     target = flask.request.args.get('target')
+    # if operation == 'follow':
+    #     # see if already follows
+    #     follows = connection.execute(
+    #         'SELECT ? '
+    #         'FROM following F '
+    #         'WHERE F.username1 = ? AND F.username2 = ?',
+    #         (logname, username)
+    #     )
+    #     if len(follows) == 1:
+    #         flask.redirect(target)
+    #     else:
+
 
 @insta485.app.route(str(insta485.app.config['UPLOAD_FOLDER']/'<path:filename>'))
 def send_file(filename):
@@ -462,6 +488,8 @@ def send_file(filename):
 
 @insta485.app.route('/accounts/edit/', methods=['GET'])
 def show_edit():
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     # build context for edit page
     # serve edit.html
     connection = insta485.model.get_db()
@@ -485,13 +513,16 @@ def show_edit():
 
 @insta485.app.route('/accounts/password/', methods=['GET', 'POST'])
 def show_password():
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     # build context for edit password page
     # serve password.html
     return flask.render_template("password.html")
 
-@insta485.app.route('/accounts/delete/', methods=['GET', 'POST'])
+@insta485.app.route('/accounts/delete/', methods=['GET'])
 def show_delete():
-    
+    if 'logname' not in flask.session:
+        flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 

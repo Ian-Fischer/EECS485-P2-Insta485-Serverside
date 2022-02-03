@@ -1,0 +1,18 @@
+any get request needs to require logged in, if not redirect to login page
+
+only like or unlike button, show logically
+
+check for logname in session before any request
+
+follow OR unfollow button, show logically
+
+we need to redo how we serve files becuase how it is now is not right, 
+the AG is looking for relative paths to images ('/url/<filename>jpg) but ours is absolute
+
+actually integrate following and unfollowing
+
+style
+
+account and post create
+
+file upload for account edit
