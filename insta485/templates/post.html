@@ -3,7 +3,7 @@
     <body>
         <div class="posts">
             <ul>
-                <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img src="{{owner_img_url}}" alt="Profile picture" class="profilepicture"></a>
+                <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img src="{{ url_for('send_file', filename=owner_img_url) }}" alt="Profile picture" class="profilepicture"></a>
                 <a href="{{ url_for('show_user', user_url_slug=owner) }}" class="username"><b>{{owner}}</b></a>
                 <a href="{{ url_for('show_post', post_url_slug=postid)}}" class="time">{{timestamp}}</a>
                 <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
@@ -15,7 +15,7 @@
                 </form>
                 {% endif %}
             </ul>
-            <img src="{{img_url}}" alt="Post" class="posts">
+            <img src="{{ url_for('send_file', filename=img_url) }}" alt="Post" class="posts">
             {% if likes == 1%}
                 <p> 1 like </p>
             {% else %}

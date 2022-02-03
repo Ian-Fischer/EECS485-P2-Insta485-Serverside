@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <body>
+        <h3>Followers: </h3>
         {% for follower in followers %}
             <div class="follower">
-                <img src="{{follower.user_img_url}}" alt="Profile picture" class="larger_profpic">
+                <img src="{{ url_for('send_file', filename=follower.user_img_url) }}" alt="Profile picture" class="larger_profpic">
                 <a href="{{ url_for('show_user', user_url_slug=follower.username) }}">
                     <p>{{follower.username}}</p>
                 </a>

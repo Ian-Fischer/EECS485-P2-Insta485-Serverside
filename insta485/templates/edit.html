@@ -3,7 +3,7 @@
     <body>
         <div class="box">
             <ul>
-                <li><img src="{{logname_profile_pic}}"></li>
+                <li><img src="{{ url_for('send_file', filename=logname_profile_pic) }}"></li>
                 <li>{{logname}}</li><br>
             </ul>
         </div>

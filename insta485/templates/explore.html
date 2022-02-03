@@ -3,7 +3,7 @@
     <body>
         {% for user in not_following %}
             <div class="box">
-                <img src="{{user.user_img_url}}" alt="profilepicture" class="larger_profpic">
+                <img src="{{ url_for('send_file', filename=user.user_img_url) }}" alt="profilepicture" class="larger_profpic">
                 <a href="{{ url_for('show_user', user_url_slug=user.username) }}" class="username">{{user.username}}</a>
                 <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                 <form action="<FIXME_FOLLOWING_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">

@@ -4,6 +4,7 @@ Insta485 index (main) view.
 URLs include:
 /
 """
+import profile
 import re
 from re import L
 import arrow
@@ -86,8 +87,8 @@ def show_index():
                 posts.append({
                     "postid" : post['postid'],
                     "owner" : post['owner'],
-                    "owner_img_url" : insta485.app.config['UPLOAD_FOLDER']/post['ufilename'],
-                    "img_url" : insta485.app.config['UPLOAD_FOLDER']/post['pfilename'],
+                    "owner_img_url" : post['ufilename'],
+                    "img_url" : post['pfilename'],
                     "timestamp" : arrow.get(post['created']).to('US/Eastern').humanize(),
                     "likes" : likes,
                     "comments" : comments
@@ -109,22 +110,25 @@ def handle_account():
     if operation == 'login':
         # check if any empty information
         if not flask.request.form.get('username') or not flask.request.form.get('password'):
-            flask.abort(400)
+            return flask.abort(400)
         logname = flask.request.form.get('username')
         password = flask.request.form.get('password')
         # connect to the db
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
+        # check if the user exists
         curr_tbl_pass = connection.execute(
             "SELECT U.password "
             "FROM users U "
             "WHERE U.username = ? ",
             (logname, )
         ).fetchall()
+        if not curr_tbl_pass:
+            return flask.abort(403)
         curr_password = curr_tbl_pass[0]['password']
         hashed_password = hash_password(password, get_salt(curr_password))
         if curr_password != hashed_password:
-            flask.abort(403)
+            return flask.abort(403)
         else:
             flask.session['logname'] = logname
             return flask.redirect(target)
@@ -135,7 +139,7 @@ def handle_account():
     elif operation == 'delete':
         # get the target page
         if 'logname' not in flask.session:
-            flask.abort(403)
+            return flask.abort(403)
         # if target url not specified then redirect to the home page
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
@@ -145,18 +149,19 @@ def handle_account():
             "WHERE username = ? ",
             (logname,)
         )
+        connection.commit()
         flask.session.clear()
         return flask.redirect(target)
         
     elif operation == 'edit_account':
         # see if logged in
         if 'logname' not in flask.session:
-            flask.abort(403)
+            return flask.abort(403)
         # get information
         fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
         # check for empty fields
         if not fullname or not email:
-            flask.abort(400)
+            return flask.abort(400)
         file = flask.request.form.get('file')
         # establish connection
         connection = insta485.model.get_db()
@@ -191,13 +196,13 @@ def handle_account():
     elif operation == 'update_password':
         # check if logged in
         if 'logname' not in flask.session:
-            flask.abort(403)
+            return flask.abort(403)
         # get info
         password, new_password1 = flask.request.form.get('password'), flask.request.form.get('new_password1')
         new_password2 = flask.request.form.get('new_password2')
         # check for empty
         if not password or not new_password1 or not new_password2:
-            flask.abort(400)
+            return flask.abort(400)
         # establish connection
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
@@ -213,9 +218,9 @@ def handle_account():
         password_db_string = hash_password(password, get_salt(curr_password))
         # check it got password right
         if curr_password != password_db_string:
-            flask.abort(403)
+            return flask.abort(403)
         if new_password1 != new_password2:
-            flask.abort(401)
+            return flask.abort(401)
         # TODO: new hash, don't use old salt won't work, do complete password alg. from spec
         password_db_string = hash_password(new_password1, get_salt(new_password1))
         connection.execute(
@@ -224,13 +229,14 @@ def handle_account():
             "WHERE username = ? ",
             (password_db_string, logname, )
         )
+        connection.commit()
         return flask.redirect(target)
         
 
 @insta485.app.route('/explore/', methods=['GET'])
 def show_explore():
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -242,8 +248,10 @@ def show_explore():
         "SELECT F.username2 "
         "FROM following F "
         "WHERE F.username1 = ? OR F.username2 = ?",
-        (logname,logname, )
+        (logname,logname,)
     ).fetchall()
+
+    users = [elt['username'] for elt in users]
 
     not_following = []
     for user in users:
@@ -251,18 +259,18 @@ def show_explore():
             "SELECT U.filename "
             "FROM users U "
             "WHERE U.username = ? ",
-            (user[0], )
+            (user, )
         ).fetchall()
         user_dict = {}
-        user_dict['username'] = user[0]
-        user_dict['user_img_url'] = insta485.app.config['UPLOAD_FOLDER']/profile_pic[0][0]
+        user_dict['username'] = user
+        user_dict['user_img_url'] = profile_pic[0]['filename']
         not_following.append(user_dict)
 
     context = {
         'logname': logname,
         'not_following': not_following
     }
-
+    connection.commit()
     return flask.render_template("explore.html", **context)
 
 @insta485.app.route('/accounts/logout/', methods=['POST'])
@@ -274,14 +282,14 @@ def logout():
 def login():
     # if already logged in, redirect to the homepage
     if 'logname' not in flask.session:
-        return flask.render_template('login.html ')
+        return flask.render_template('login.html')
     else:
         return flask.redirect(flask.url_for('show_index'))
 
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
 def show_user(user_url_slug):
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     # open database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
@@ -299,7 +307,7 @@ def show_user(user_url_slug):
         (username, )
     ).fetchall()
     if not usr:
-        flask.abort(403)
+        return flask.abort(403)
     logname_follows_username_tbl = connection.execute(
         "SELECT F.username1 "
         "FROM following F "
@@ -338,7 +346,7 @@ def show_user(user_url_slug):
         "WHERE ? = P.owner ",
         (username,)
     )
-    posts = [{'postid': elt['postid'], 'img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename']} for elt in posts_tbl]
+    posts = [{'postid': elt['postid'], 'img_url': elt['filename']} for elt in posts_tbl]
     total_posts = len(posts)
     context = {
         'logname': logname,
@@ -350,13 +358,14 @@ def show_user(user_url_slug):
         'total_posts': total_posts,
         'posts': posts
     }
+    connection.commit()
     return flask.render_template("user.html", **context)
 
 
 @insta485.app.route('/posts/<post_url_slug>/', methods=['GET'])
 def show_post(post_url_slug):
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
     logname = flask.session['logname']
@@ -374,20 +383,20 @@ def show_post(post_url_slug):
         'logname': logname,
         'postid': post_url_slug,
         "owner": post[0][0],
-        "owner_img_url": insta485.app.config['UPLOAD_FOLDER']/post[0][3],
-        "img_url": insta485.app.config['UPLOAD_FOLDER']/post[0][1],
+        "owner_img_url": post[0][3],
+        "img_url": post[0][1],
         "timestamp": arrow.get(post[0][2]).to('US/Eastern').humanize(),
         "likes": likes,
         "comments": comments
     }
-
+    connection.commit()
     return flask.render_template("post.html", **context)
 
 
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=['GET'])
 def show_followers(user_url_slug):
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -411,20 +420,21 @@ def show_followers(user_url_slug):
 
     followers = [{
                     'username': elt['username1'], 
-                    'user_img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename'], 
+                    'user_img_url': elt['filename'], 
                     'logname_follows_username': elt['username1'] in logname_follower
                 } for elt in followers]
     context = {
         'logname': logname,
         'followers': followers
     }
+    connection.commit()
     return flask.render_template("followers.html", **context)
     
 
 @insta485.app.route('/users/<user_url_slug>/following/', methods=['GET'])
 def show_following(user_url_slug):
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     # open database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
@@ -450,46 +460,68 @@ def show_following(user_url_slug):
 
     following = [{
                     'username': elt['username2'], 
-                    'user_img_url': insta485.app.config['UPLOAD_FOLDER']/elt['filename'], 
+                    'user_img_url': elt['filename'], 
                     'logname_follows_username': elt['username2'] in logname_following
                 } for elt in following]
     context = {
         'logname': logname,
         'following': following
     }
+    connection.commit()
     return flask.render_template("following.html", **context)
 
 @insta485.app.route('/following/', methods=['POST'])
 def follow_unfollow():
     """Follow and unfollow functionality."""
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
-    logname = flask.session['username']
+        return flask.redirect(flask.url_for('login'))
+    logname = flask.session['logname']
+    # establish connection
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
     operation, username = flask.request.form.get('operation'), flask.request.form.get('username')
     target = flask.request.args.get('target')
-    # if operation == 'follow':
-    #     # see if already follows
-    #     follows = connection.execute(
-    #         'SELECT ? '
-    #         'FROM following F '
-    #         'WHERE F.username1 = ? AND F.username2 = ?',
-    #         (logname, username)
-    #     )
-    #     if len(follows) == 1:
-    #         flask.redirect(target)
-    #     else:
+    # get whether they follow or not
+    follows = connection.execute(
+            'SELECT F.username2'
+            'FROM following F '
+            'WHERE F.username1 = ? AND F.username2 = ?',
+            (logname, username))
+    if operation == 'follow':
+        # see if already follows
+        if len(follows) == 1:
+            return flask.abort(409)
+        else:
+            connection.execute(
+                "INSERT INTO following(username1, username2) "
+                "VALUES (?,?) ",
+                (logname, username,)
+            )
+            connection.commit()
+    if operation == 'unfollow':
+        # see if they follow
+        if len(follows) == 0:
+            return flask.abort(409)
+        else:
+            connection.executre(
+                "DELETE FROM following "
+                "WHERE F.username1 = ? AND F.username2 = ?",
+                (logname, username,)
+            )
+            connection.commit()
+    return flask.redirect(target)
 
 
-@insta485.app.route(str(insta485.app.config['UPLOAD_FOLDER']/'<path:filename>'))
+@insta485.app.route('/uploads/<filename>')
 def send_file(filename):
+    if 'logname' not in flask.session:
+        return flask.abort(403)
     return flask.send_from_directory(insta485.app.config["UPLOAD_FOLDER"], filename)
 
 @insta485.app.route('/accounts/edit/', methods=['GET'])
 def show_edit():
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     # build context for edit page
     # serve edit.html
     connection = insta485.model.get_db()
@@ -505,16 +537,17 @@ def show_edit():
     ).fetchall()
     context = {
         "logname": logname,
-        "logname_profile_pic": insta485.app.config["UPLOAD_FOLDER"]/profile_information[0]['filename'],
+        "logname_profile_pic": profile_information[0]['filename'],
         "logname_fullname" : profile_information[0]['fullname'],
         "logname_email": profile_information[0]['email']
     }
+    connection.commit()
     return flask.render_template("edit.html", **context)
 
-@insta485.app.route('/accounts/password/', methods=['GET', 'POST'])
+@insta485.app.route('/accounts/password/', methods=['GET'])
 def show_password():
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     # build context for edit password page
     # serve password.html
     return flask.render_template("password.html")
@@ -522,7 +555,7 @@ def show_password():
 @insta485.app.route('/accounts/delete/', methods=['GET'])
 def show_delete():
     if 'logname' not in flask.session:
-        flask.redirect(flask.url_for('login'))
+        return flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
 
@@ -531,7 +564,7 @@ def show_delete():
     context = {
         'logname': logname
     }
-
+    connection.commit()
     return flask.render_template("delete.html", **context)
 
 
@@ -565,6 +598,7 @@ def like():
                 "INSERT INTO likes(owner, postid) "
                 "VALUES (?,?) ",
                 (logname, postid,))
+        connection.commit()
         return flask.redirect(target)
     
     elif operation == 'unlike':
@@ -575,8 +609,10 @@ def like():
                 "WHERE owner = ? AND postid = ?",
                 (logname, postid, )
             )
+        connection.commit()
         return flask.redirect(target)
     else:
+        connection.commit()
         return flask.redirect(target)
 
 
@@ -620,9 +656,12 @@ def comment():
                     "WHERE commentid = ? ",
                     (commentid,))
     elif not text:
-        flask.abort(400)
+        connection.commit()
+        return flask.abort(400)
     else:
         # something doesn't add up do nothing!
+        connection.commit()
         return flask.redirect(target)
     # send to the target
+    connection.commit()
     return flask.redirect(target)

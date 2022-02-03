@@ -9,28 +9,28 @@ tests/test_accounts_public.py::test_accounts_create FAILED               [  2%]
 tests/test_accounts_public.py::test_accounts_edit FAILED                 [  4%]
 tests/test_accounts_public.py::test_accounts_password PASSED             [  6%]
 tests/test_accounts_public.py::test_accounts_delete FAILED               [  8%]
-tests/test_accounts_public.py::test_accounts_uploads_permission FAILED   [ 10%]
+tests/test_accounts_public.py::test_accounts_uploads_permission PASSED   [ 10%]
 tests/test_database_public.py::test_sql_schema PASSED                    [ 12%]
 tests/test_database_public.py::test_likeids PASSED                       [ 14%]
 tests/test_database_public.py::test_posts_autoincrement PASSED           [ 16%]
 tests/test_database_public.py::test_sql_data_users_posts PASSED          [ 18%]
-tests/test_explore.py::test_awdeorio_default FAILED                      [ 20%]
+tests/test_explore.py::test_awdeorio_default PASSED                      [ 20%]
 tests/test_explore.py::test_follow FAILED                                [ 22%]
 tests/test_explore.py::test_empty FAILED                                 [ 25%]
 tests/test_followers_public.py::test_awdeorio_followers FAILED           [ 27%]
-tests/test_followers_public.py::test_files FAILED                        [ 29%]
+tests/test_followers_public.py::test_files PASSED                        [ 29%]
 tests/test_followers_public.py::test_unfollow FAILED                     [ 31%]
 tests/test_followers_public.py::test_follow FAILED                       [ 33%]
-tests/test_following.py::test_awdeorio FAILED                            [ 35%]
+tests/test_following.py::test_awdeorio PASSED                            [ 35%]
 tests/test_following.py::test_unfollow FAILED                            [ 37%]
 tests/test_following.py::test_not_following PASSED                       [ 39%]
-tests/test_index.py::test_images FAILED                                  [ 41%]
+tests/test_index.py::test_images PASSED                                  [ 41%]
 tests/test_index.py::test_links PASSED                                   [ 43%]
 tests/test_index.py::test_likes PASSED                                   [ 45%]
 tests/test_index.py::test_timestamps PASSED                              [ 47%]
 tests/test_index.py::test_comments PASSED                                [ 50%]
 tests/test_login_logout.py::test_index_redirect PASSED                   [ 52%]
-tests/test_login_logout.py::test_login_page_content FAILED               [ 54%]
+tests/test_login_logout.py::test_login_page_content PASSED               [ 54%]
 tests/test_login_logout.py::test_login PASSED                            [ 56%]
 tests/test_login_logout.py::test_logout PASSED                           [ 58%]
 tests/test_post_public.py::test_postid_1 FAILED                          [ 60%]
@@ -198,7 +198,7 @@ create
 ______________________________ test_accounts_edit ______________________________
 
 client = <FlaskClient <Flask 'insta485'>>
-mocker = <pytest_mock.plugin.MockerFixture object at 0x10a743f70>
+mocker = <pytest_mock.plugin.MockerFixture object at 0x106aefb20>
 
     def test_accounts_edit(client, mocker):
         """Change name, email and photo.
@@ -327,71 +327,18 @@ client = <FlaskClient <Flask 'insta485'>>
         assert urlpath == "/accounts/create/"
     
         # User can no longer access post 1, should be redirected to login
->       response = client.get("/posts/1/")
-
-tests/test_accounts_public.py:250: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-env/lib/python3.10/site-packages/werkzeug/test.py:1129: in get
-    return self.open(*args, **kw)
-env/lib/python3.10/site-packages/flask/testing.py:216: in open
-    return super().open(  # type: ignore
-env/lib/python3.10/site-packages/werkzeug/test.py:1074: in open
-    response = self.run_wsgi_app(request.environ, buffered=buffered)
-env/lib/python3.10/site-packages/werkzeug/test.py:945: in run_wsgi_app
-    rv = run_wsgi_app(self.application, environ, buffered=buffered)
-env/lib/python3.10/site-packages/werkzeug/test.py:1231: in run_wsgi_app
-    app_rv = app(environ, start_response)
-env/lib/python3.10/site-packages/flask/app.py:2091: in __call__
-    return self.wsgi_app(environ, start_response)
-env/lib/python3.10/site-packages/flask/app.py:2076: in wsgi_app
-    response = self.handle_exception(e)
-env/lib/python3.10/site-packages/flask/app.py:2073: in wsgi_app
-    response = self.full_dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1518: in full_dispatch_request
-    rv = self.handle_user_exception(e)
-env/lib/python3.10/site-packages/flask/app.py:1516: in full_dispatch_request
-    rv = self.dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1502: in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-insta485/views/index.py:362: in show_post
-    logname = flask.session['logname']
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-self = <SecureCookieSession {}>, key = 'logname'
-
-    def __getitem__(self, key: str) -> t.Any:
-        self.accessed = True
->       return super().__getitem__(key)
-E       KeyError: 'logname'
-
-env/lib/python3.10/site-packages/flask/sessions.py:79: KeyError
-_______________________ test_accounts_uploads_permission _______________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_accounts_uploads_permission(client):
-        """Verify that only authenticated users can see uploads.
+        response = client.get("/posts/1/")
+        assert response.status_code == 302
+        urlpath = urlparse(response.location).path
+        assert urlpath == "/accounts/login/"
     
-        Note: 'client' is a fixture fuction that provides a Flask test server
-        interface with a clean database.  It is implemented in conftest.py and
-        reused by many tests.  Docs: https://docs.pytest.org/en/latest/fixture.html
-        """
-        response = client.get(
-            "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg"
-        )
->       assert response.status_code == 403
-E       assert 404 == 403
-E         +404
-E         -403
-
-tests/test_accounts_public.py:310: AssertionError
-____________________________ test_awdeorio_default _____________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_awdeorio_default(client):
-        """Verify default content at /explore/ with awdeorio logged in."""
-        # Login
+        # User can no longer access post 3, should be redirected to login
+        response = client.get("/posts/3/")
+        assert response.status_code == 302
+        urlpath = urlparse(response.location).path
+        assert urlpath == "/accounts/login/"
+    
+        # Log in should fail
         response = client.post(
             "/accounts/",
             data={
@@ -400,32 +347,35 @@ client = <FlaskClient <Flask 'insta485'>>
                 "operation": "login"
             },
         )
+        assert response.status_code == 403
+    
+        # User pages should be gone
+        response = client.get("/users/awdeorio/")
+        assert response.status_code == 302
+        response = client.get("/users/awdeorio/following/")
+        assert response.status_code == 302
+        response = client.get("/users/awdeorio/followers/")
         assert response.status_code == 302
     
-        # Load and parse explore page
-        response = client.get("/explore/")
-        assert response.status_code == 200
-        soup = bs4.BeautifulSoup(response.data, "html.parser")
-        srcs = [x.get("src") for x in soup.find_all('img')]
-        links = [x.get("href") for x in soup.find_all("a")]
-        buttons = [submit.get("name") for button in soup.find_all('form')
-                   for submit in button.find_all("input") if submit]
-    
-        # Verify links in header
-        assert "/" in links
-        assert "/explore/" in links
-        assert "/users/awdeorio/" in links
-    
-        # Verify links specific to /explore/
-        assert "/users/jag/" in links
-        assert "/users/jflinn/" not in links
-        assert "/users/michjc/" not in links
-    
-        # Verify images
->       assert "/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" in srcs
-E       AssertionError: assert '/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg']
+        # Log in as user jag
+        response = client.post(
+            "/accounts/",
+            data={
+                "username": "jag",
+                "password": "password",
+                "operation": "login"
+            },
+        )
+        # Verify awdeorio's images were deleted
+        response = client.get(
+            "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg"
+        )
+>       assert response.status_code == 404
+E       assert 200 == 404
+E         +200
+E         -404
 
-tests/test_explore.py:47: AssertionError
+tests/test_accounts_public.py:293: AssertionError
 _________________________________ test_follow __________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -469,24 +419,90 @@ env/lib/python3.10/site-packages/flask/app.py:2076: in wsgi_app
     response = self.handle_exception(e)
 env/lib/python3.10/site-packages/flask/app.py:2073: in wsgi_app
     response = self.full_dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1518: in full_dispatch_request
-    rv = self.handle_user_exception(e)
-env/lib/python3.10/site-packages/flask/app.py:1516: in full_dispatch_request
-    rv = self.dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1502: in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-insta485/views/index.py:467: in follow_unfollow
-    logname = flask.session['username']
+env/lib/python3.10/site-packages/flask/app.py:1519: in full_dispatch_request
+    return self.finalize_request(rv)
+env/lib/python3.10/site-packages/flask/app.py:1538: in finalize_request
+    response = self.make_response(rv)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <SecureCookieSession {'logname': 'awdeorio'}>, key = 'username'
+self = <Flask 'insta485'>, rv = None
 
-    def __getitem__(self, key: str) -> t.Any:
-        self.accessed = True
->       return super().__getitem__(key)
-E       KeyError: 'username'
+    def make_response(self, rv: ResponseReturnValue) -> Response:
+        """Convert the return value from a view function to an instance of
+        :attr:`response_class`.
+    
+        :param rv: the return value from the view function. The view function
+            must return a response. Returning ``None``, or the view ending
+            without returning, is not allowed. The following types are allowed
+            for ``view_rv``:
+    
+            ``str``
+                A response object is created with the string encoded to UTF-8
+                as the body.
+    
+            ``bytes``
+                A response object is created with the bytes as the body.
+    
+            ``dict``
+                A dictionary that will be jsonify'd before being returned.
+    
+            ``tuple``
+                Either ``(body, status, headers)``, ``(body, status)``, or
+                ``(body, headers)``, where ``body`` is any of the other types
+                allowed here, ``status`` is a string or an integer, and
+                ``headers`` is a dictionary or a list of ``(key, value)``
+                tuples. If ``body`` is a :attr:`response_class` instance,
+                ``status`` overwrites the exiting value and ``headers`` are
+                extended.
+    
+            :attr:`response_class`
+                The object is returned unchanged.
+    
+            other :class:`~werkzeug.wrappers.Response` class
+                The object is coerced to :attr:`response_class`.
+    
+            :func:`callable`
+                The function is called as a WSGI application. The result is
+                used to create a response object.
+    
+        .. versionchanged:: 0.9
+           Previously a tuple was interpreted as the arguments for the
+           response object.
+        """
+    
+        status = headers = None
+    
+        # unpack tuple returns
+        if isinstance(rv, tuple):
+            len_rv = len(rv)
+    
+            # a 3-tuple is unpacked directly
+            if len_rv == 3:
+                rv, status, headers = rv
+            # decide if a 2-tuple has status or headers
+            elif len_rv == 2:
+                if isinstance(rv[1], (Headers, dict, tuple, list)):
+                    rv, headers = rv
+                else:
+                    rv, status = rv
+            # other sized tuples are not allowed
+            else:
+                raise TypeError(
+                    "The view function did not return a valid response tuple."
+                    " The tuple must have the form (body, status, headers),"
+                    " (body, status), or (body, headers)."
+                )
+    
+        # the body must not be None
+        if rv is None:
+>           raise TypeError(
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response. The function either returned"
+                " None or ended without a return statement."
+            )
+E           TypeError: The view function for 'follow_unfollow' did not return a valid response. The function either returned None or ended without a return statement.
 
-env/lib/python3.10/site-packages/flask/sessions.py:79: KeyError
+env/lib/python3.10/site-packages/flask/app.py:1701: TypeError
 __________________________________ test_empty __________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -531,24 +547,90 @@ env/lib/python3.10/site-packages/flask/app.py:2076: in wsgi_app
     response = self.handle_exception(e)
 env/lib/python3.10/site-packages/flask/app.py:2073: in wsgi_app
     response = self.full_dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1518: in full_dispatch_request
-    rv = self.handle_user_exception(e)
-env/lib/python3.10/site-packages/flask/app.py:1516: in full_dispatch_request
-    rv = self.dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1502: in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-insta485/views/index.py:467: in follow_unfollow
-    logname = flask.session['username']
+env/lib/python3.10/site-packages/flask/app.py:1519: in full_dispatch_request
+    return self.finalize_request(rv)
+env/lib/python3.10/site-packages/flask/app.py:1538: in finalize_request
+    response = self.make_response(rv)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <SecureCookieSession {'logname': 'awdeorio'}>, key = 'username'
+self = <Flask 'insta485'>, rv = None
 
-    def __getitem__(self, key: str) -> t.Any:
-        self.accessed = True
->       return super().__getitem__(key)
-E       KeyError: 'username'
+    def make_response(self, rv: ResponseReturnValue) -> Response:
+        """Convert the return value from a view function to an instance of
+        :attr:`response_class`.
+    
+        :param rv: the return value from the view function. The view function
+            must return a response. Returning ``None``, or the view ending
+            without returning, is not allowed. The following types are allowed
+            for ``view_rv``:
+    
+            ``str``
+                A response object is created with the string encoded to UTF-8
+                as the body.
+    
+            ``bytes``
+                A response object is created with the bytes as the body.
+    
+            ``dict``
+                A dictionary that will be jsonify'd before being returned.
+    
+            ``tuple``
+                Either ``(body, status, headers)``, ``(body, status)``, or
+                ``(body, headers)``, where ``body`` is any of the other types
+                allowed here, ``status`` is a string or an integer, and
+                ``headers`` is a dictionary or a list of ``(key, value)``
+                tuples. If ``body`` is a :attr:`response_class` instance,
+                ``status`` overwrites the exiting value and ``headers`` are
+                extended.
+    
+            :attr:`response_class`
+                The object is returned unchanged.
+    
+            other :class:`~werkzeug.wrappers.Response` class
+                The object is coerced to :attr:`response_class`.
+    
+            :func:`callable`
+                The function is called as a WSGI application. The result is
+                used to create a response object.
+    
+        .. versionchanged:: 0.9
+           Previously a tuple was interpreted as the arguments for the
+           response object.
+        """
+    
+        status = headers = None
+    
+        # unpack tuple returns
+        if isinstance(rv, tuple):
+            len_rv = len(rv)
+    
+            # a 3-tuple is unpacked directly
+            if len_rv == 3:
+                rv, status, headers = rv
+            # decide if a 2-tuple has status or headers
+            elif len_rv == 2:
+                if isinstance(rv[1], (Headers, dict, tuple, list)):
+                    rv, headers = rv
+                else:
+                    rv, status = rv
+            # other sized tuples are not allowed
+            else:
+                raise TypeError(
+                    "The view function did not return a valid response tuple."
+                    " The tuple must have the form (body, status, headers),"
+                    " (body, status), or (body, headers)."
+                )
+    
+        # the body must not be None
+        if rv is None:
+>           raise TypeError(
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response. The function either returned"
+                " None or ended without a return statement."
+            )
+E           TypeError: The view function for 'follow_unfollow' did not return a valid response. The function either returned None or ended without a return statement.
 
-env/lib/python3.10/site-packages/flask/sessions.py:79: KeyError
+env/lib/python3.10/site-packages/flask/app.py:1701: TypeError
 ___________________________ test_awdeorio_followers ____________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -588,37 +670,23 @@ client = <FlaskClient <Flask 'insta485'>>
         assert "/users/jag/" not in links
     
         # Check for images: Mike, Jason, Jag
->       assert "/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg" in srcs
-E       AssertionError: assert '/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/505083b8b56c97429a728b68f31b0b2a089e511...rs/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg']
-
-tests/test_followers_public.py:49: AssertionError
-__________________________________ test_files __________________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_files(client):
-        """Verify all expected files exist."""
-        # Log in
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 302
+        assert "/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg" in srcs
+        assert "/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" in srcs
+        assert "/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" not in srcs
     
-        # Load images
-        response = client.get(
-            "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg"
-        )
->       assert response.status_code == 200
-E       assert 404 == 200
-E         +404
-E         -200
+        # Check for text
+        assert text.lower().count("following") == 2
+        assert "jflinn" in text
+        assert "following" in text.lower()
+        assert "michjc" in text
+        assert "followers" in text.lower()
+        assert "not following" not in text.lower()
+    
+        # Check for buttons
+>       assert "unfollow" in buttons
+E       AssertionError: assert 'unfollow' in []
 
-tests/test_followers_public.py:85: AssertionError
+tests/test_followers_public.py:62: AssertionError
 ________________________________ test_unfollow _________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -685,39 +753,6 @@ client = <FlaskClient <Flask 'insta485'>>
 E       AssertionError: assert 'unfollow' in []
 
 tests/test_followers_public.py:179: AssertionError
-________________________________ test_awdeorio _________________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_awdeorio(client):
-        """Check default content at /users/awdeorio/following/ URL."""
-        # Login
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 302
-    
-        # Load and parse following page
-        response = client.get("/users/awdeorio/following/")
-        assert response.status_code == 200
-        soup = bs4.BeautifulSoup(response.data, "html.parser")
-        text = soup.get_text()
-        text = re.sub(r"\s+", " ", text)
-        links = [x.get("href") for x in soup.find_all("a")]
-        srcs = [x.get("src") for x in soup.find_all('img')]
-    
-        # Verify text
->       assert text.lower().count("following") == 3
-E       assert 2 == 3
-E         +2
-E         -3
-
-tests/test_following.py:38: AssertionError
 ________________________________ test_unfollow _________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -761,75 +796,90 @@ env/lib/python3.10/site-packages/flask/app.py:2076: in wsgi_app
     response = self.handle_exception(e)
 env/lib/python3.10/site-packages/flask/app.py:2073: in wsgi_app
     response = self.full_dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1518: in full_dispatch_request
-    rv = self.handle_user_exception(e)
-env/lib/python3.10/site-packages/flask/app.py:1516: in full_dispatch_request
-    rv = self.dispatch_request()
-env/lib/python3.10/site-packages/flask/app.py:1502: in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-insta485/views/index.py:467: in follow_unfollow
-    logname = flask.session['username']
+env/lib/python3.10/site-packages/flask/app.py:1519: in full_dispatch_request
+    return self.finalize_request(rv)
+env/lib/python3.10/site-packages/flask/app.py:1538: in finalize_request
+    response = self.make_response(rv)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = <SecureCookieSession {'logname': 'awdeorio'}>, key = 'username'
+self = <Flask 'insta485'>, rv = None
 
-    def __getitem__(self, key: str) -> t.Any:
-        self.accessed = True
->       return super().__getitem__(key)
-E       KeyError: 'username'
-
-env/lib/python3.10/site-packages/flask/sessions.py:79: KeyError
-_________________________________ test_images __________________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_images(client):
-        """Verify all images are present in / URL.
+    def make_response(self, rv: ResponseReturnValue) -> Response:
+        """Convert the return value from a view function to an instance of
+        :attr:`response_class`.
     
-        Note: 'client' is a fixture fuction that provides a Flask test server
-        interface with a clean database.  It is implemented in conftest.py and
-        reused by many tests.  Docs: https://docs.pytest.org/en/latest/fixture.html
+        :param rv: the return value from the view function. The view function
+            must return a response. Returning ``None``, or the view ending
+            without returning, is not allowed. The following types are allowed
+            for ``view_rv``:
+    
+            ``str``
+                A response object is created with the string encoded to UTF-8
+                as the body.
+    
+            ``bytes``
+                A response object is created with the bytes as the body.
+    
+            ``dict``
+                A dictionary that will be jsonify'd before being returned.
+    
+            ``tuple``
+                Either ``(body, status, headers)``, ``(body, status)``, or
+                ``(body, headers)``, where ``body`` is any of the other types
+                allowed here, ``status`` is a string or an integer, and
+                ``headers`` is a dictionary or a list of ``(key, value)``
+                tuples. If ``body`` is a :attr:`response_class` instance,
+                ``status`` overwrites the exiting value and ``headers`` are
+                extended.
+    
+            :attr:`response_class`
+                The object is returned unchanged.
+    
+            other :class:`~werkzeug.wrappers.Response` class
+                The object is coerced to :attr:`response_class`.
+    
+            :func:`callable`
+                The function is called as a WSGI application. The result is
+                used to create a response object.
+    
+        .. versionchanged:: 0.9
+           Previously a tuple was interpreted as the arguments for the
+           response object.
         """
-        # Log in
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 302
     
-        # Load and parse index page
-        response = client.get("/")
-        assert response.status_code == 200
-        soup = bs4.BeautifulSoup(response.data, "html.parser")
-        srcs = [x.get("src") for x in soup.find_all('img')]
+        status = headers = None
     
-        # Verify images present of Flinn, DeOrio, postid 1, postid 2, postid 3
->       assert "/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" in srcs
-E       AssertionError: assert '/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/505083b8b56c97429a728b68f31b0b2a089e511...rs/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg']
-
-tests/test_index.py:37: AssertionError
-___________________________ test_login_page_content ____________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_login_page_content(client):
-        """Verify links and form on /accounts/login/ page.
+        # unpack tuple returns
+        if isinstance(rv, tuple):
+            len_rv = len(rv)
     
-        Note: 'client' is a fixture fuction that provides a Flask test server
-        interface with a clean database.  It is implemented in conftest.py and
-        reused by many tests.  Docs: https://docs.pytest.org/en/latest/fixture.html
-        """
-        response = client.get("/accounts/login/")
->       assert response.status_code == 200
-E       assert 302 == 200
-E         +302
-E         -200
+            # a 3-tuple is unpacked directly
+            if len_rv == 3:
+                rv, status, headers = rv
+            # decide if a 2-tuple has status or headers
+            elif len_rv == 2:
+                if isinstance(rv[1], (Headers, dict, tuple, list)):
+                    rv, headers = rv
+                else:
+                    rv, status = rv
+            # other sized tuples are not allowed
+            else:
+                raise TypeError(
+                    "The view function did not return a valid response tuple."
+                    " The tuple must have the form (body, status, headers),"
+                    " (body, status), or (body, headers)."
+                )
+    
+        # the body must not be None
+        if rv is None:
+>           raise TypeError(
+                f"The view function for {request.endpoint!r} did not"
+                " return a valid response. The function either returned"
+                " None or ended without a return statement."
+            )
+E           TypeError: The view function for 'follow_unfollow' did not return a valid response. The function either returned None or ended without a return statement.
 
-tests/test_login_logout.py:33: AssertionError
+env/lib/python3.10/site-packages/flask/app.py:1701: TypeError
 ________________________________ test_postid_1 _________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -868,10 +918,48 @@ client = <FlaskClient <Flask 'insta485'>>
         assert "/users/jag/" not in links
     
         # Verify images present of Drew, postid 1
->       assert "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" in srcs
-E       AssertionError: assert '/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391a...rs/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg']
+        assert "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" in srcs
+        assert "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg" in srcs
+    
+        # Verify that none of the other user images are present
+        assert "/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" not in srcs
+        assert "/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg" not in srcs
+        assert "/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" not in srcs
+    
+        # Verify that none of the other post's images are present
+        assert "/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" not in srcs
+        assert "/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg" not in srcs
+        assert "/uploads/2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg" not in srcs
+    
+        # Verify expected content is in text on generated HTML page
+        assert text.count("awdeorio") == 3
+        assert "3 likes" in text
+        assert "Walking the plank #chickensofinstagram" in text
+        assert "This was after trying to teach them to do a #crossword" in text
+        assert "jflinn" in text
+    
+        # Verify unexpected content is not in text on generated HTML page
+        assert "michjc" not in text
+        assert "jag" not in text
+        assert "I <3 chickens" not in text
+        assert "Cute overload!" not in text
+        assert "Sick #crossword" not in text
+        assert "Saw this on the diag yesterday!" not in text
+    
+        # Verify expected buttons (based on their name) are present in the page
+        assert "commentid" in buttons
+        assert "uncomment" in buttons
+        assert "postid" in buttons
+        assert "unlike" in buttons
+        assert "text" in buttons
+        assert "comment" in buttons
+        assert "delete" in buttons
+    
+        # Verify unexpected buttons are not present in the page
+>       assert "like" not in buttons
+E       AssertionError: assert 'like' not in ['operation', 'postid', 'delete', 'operation', 'postid', 'like', ...]
 
-tests/test_post_public.py:50: AssertionError
+tests/test_post_public.py:88: AssertionError
 ________________________________ test_postid_2 _________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -916,10 +1004,48 @@ client = <FlaskClient <Flask 'insta485'>>
         assert "/users/jag/" not in links
     
         # Verify images present of Jason, postid 2
->       assert "/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" in srcs
-E       AssertionError: assert '/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/505083b8b56c97429a728b68f31b0b2a089e511...rs/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg']
+        assert "/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" in srcs
+        assert "/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg" in srcs
+    
+        # Verify that none of the other user images are present
+        assert "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" not in srcs
+        assert "/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" not in srcs
+        assert "/uploads/5ecde7677b83304132cb2871516ea50032ff7a4f.jpg" not in srcs
+    
+        # Verify that none of the other post's images are present
+        assert "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg" not in srcs
+        assert "/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" not in srcs
+        assert "/uploads/2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg" not in srcs
+    
+        # Verify expected content is in text on generated HTML page
+        assert text.count("awdeorio") == 2
+        assert "2 likes" in text
+        assert "jflinn" in text
+        assert "Sick #crossword" in text
+    
+        # Verify unexpected content is not in text on generated HTML page
+        assert "michjc" not in text
+        assert "jag" not in text
+        assert "Walking the plank #chickensofinstagram" not in text
+        assert "This was after trying to teach them to do a #crossword" not in text
+        assert "I <3 chickens" not in text
+        assert "Cute overload!" not in text
+        assert "Saw this on the diag yesterday!" not in text
+    
+        # Verify expected buttons (based on their name) are present in the page
+        assert "commentid" in buttons
+        assert "uncomment" in buttons
+        assert "postid" in buttons
+        assert "unlike" in buttons
+        assert "text" in buttons
+        assert "comment" in buttons
+    
+        # Verify unexpected buttons are not present in the page
+        assert "delete" not in buttons
+>       assert "like" not in buttons
+E       AssertionError: assert 'like' not in ['operation', 'postid', 'like', 'operation', 'postid', 'unlike', ...]
 
-tests/test_post_public.py:133: AssertionError
+tests/test_post_public.py:171: AssertionError
 __________________________ test_duplicate_like_unlike __________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -1068,75 +1194,68 @@ E               subprocess.CalledProcessError: Command '['pycodestyle', 'setup.p
 insta485/__init__.py:5:80: E501 line too long (88 > 79 characters)
 insta485/model.py:45:26: W292 no newline at end of file
 insta485/views/__init__.py:2:44: W292 no newline at end of file
-insta485/views/index.py:15:12: W291 trailing whitespace
-insta485/views/index.py:18:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:25:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:34:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:41:21: E203 whitespace before ':'
-insta485/views/index.py:41:80: E501 line too long (109 > 79 characters)
-insta485/views/index.py:43:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:51:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:73:80: E501 line too long (134 > 79 characters)
-insta485/views/index.py:76:22: E231 missing whitespace after ','
-insta485/views/index.py:79:49: E231 missing whitespace after ','
-insta485/views/index.py:87:29: E203 whitespace before ':'
-insta485/views/index.py:88:28: E203 whitespace before ':'
-insta485/views/index.py:89:36: E203 whitespace before ':'
-insta485/views/index.py:89:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:90:30: E203 whitespace before ':'
-insta485/views/index.py:90:80: E501 line too long (87 > 79 characters)
-insta485/views/index.py:91:32: E203 whitespace before ':'
-insta485/views/index.py:91:80: E501 line too long (89 > 79 characters)
-insta485/views/index.py:92:28: E203 whitespace before ':'
-insta485/views/index.py:93:31: E203 whitespace before ':'
-insta485/views/index.py:95:80: E501 line too long (82 > 79 characters)
-insta485/views/index.py:103:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:111:80: E501 line too long (92 > 79 characters)
-insta485/views/index.py:131:1: W293 blank line contains whitespace
-insta485/views/index.py:133:9: E265 block comment should start with '# '
-insta485/views/index.py:150:1: W293 blank line contains whitespace
-insta485/views/index.py:156:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:196:80: E501 line too long (109 > 79 characters)
-insta485/views/index.py:219:80: E501 line too long (92 > 79 characters)
-insta485/views/index.py:220:80: E501 line too long (82 > 79 characters)
-insta485/views/index.py:228:1: W293 blank line contains whitespace
-insta485/views/index.py:245:17: E231 missing whitespace after ','
-insta485/views/index.py:258:80: E501 line too long (90 > 79 characters)
-insta485/views/index.py:268:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:273:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:16:12: W291 trailing whitespace
+insta485/views/index.py:19:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:26:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:35:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:42:21: E203 whitespace before ':'
+insta485/views/index.py:42:80: E501 line too long (109 > 79 characters)
+insta485/views/index.py:44:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:52:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:74:80: E501 line too long (134 > 79 characters)
+insta485/views/index.py:77:22: E231 missing whitespace after ','
+insta485/views/index.py:80:49: E231 missing whitespace after ','
+insta485/views/index.py:88:29: E203 whitespace before ':'
+insta485/views/index.py:89:28: E203 whitespace before ':'
+insta485/views/index.py:90:36: E203 whitespace before ':'
+insta485/views/index.py:91:30: E203 whitespace before ':'
+insta485/views/index.py:92:32: E203 whitespace before ':'
+insta485/views/index.py:92:80: E501 line too long (89 > 79 characters)
+insta485/views/index.py:93:28: E203 whitespace before ':'
+insta485/views/index.py:94:31: E203 whitespace before ':'
+insta485/views/index.py:96:80: E501 line too long (82 > 79 characters)
+insta485/views/index.py:104:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:112:80: E501 line too long (92 > 79 characters)
+insta485/views/index.py:135:1: W293 blank line contains whitespace
+insta485/views/index.py:137:9: E265 block comment should start with '# '
+insta485/views/index.py:155:1: W293 blank line contains whitespace
+insta485/views/index.py:161:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:201:80: E501 line too long (109 > 79 characters)
+insta485/views/index.py:224:80: E501 line too long (92 > 79 characters)
+insta485/views/index.py:225:80: E501 line too long (82 > 79 characters)
+insta485/views/index.py:234:1: W293 blank line contains whitespace
+insta485/views/index.py:251:17: E231 missing whitespace after ','
+insta485/views/index.py:276:1: E302 expected 2 blank lines, found 1
 insta485/views/index.py:281:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:289:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:310:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:341:80: E501 line too long (125 > 79 characters)
-insta485/views/index.py:364:80: E501 line too long (88 > 79 characters)
-insta485/views/index.py:402:1: W293 blank line contains whitespace
-insta485/views/index.py:413:50: W291 trailing whitespace
-insta485/views/index.py:414:80: E501 line too long (89 > 79 characters)
-insta485/views/index.py:414:90: W291 trailing whitespace
-insta485/views/index.py:415:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:422:1: W293 blank line contains whitespace
-insta485/views/index.py:433:5: E303 too many blank lines (2)
-insta485/views/index.py:452:50: W291 trailing whitespace
-insta485/views/index.py:453:80: E501 line too long (89 > 79 characters)
-insta485/views/index.py:453:90: W291 trailing whitespace
-insta485/views/index.py:454:80: E501 line too long (85 > 79 characters)
-insta485/views/index.py:462:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:470:80: E501 line too long (97 > 79 characters)
-insta485/views/index.py:485:80: E501 line too long (80 > 79 characters)
-insta485/views/index.py:487:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:489:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:499:1: W293 blank line contains whitespace
-insta485/views/index.py:508:80: E501 line too long (103 > 79 characters)
-insta485/views/index.py:509:27: E203 whitespace before ':'
-insta485/views/index.py:514:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:522:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:558:20: E231 missing whitespace after ','
-insta485/views/index.py:559:17: W291 trailing whitespace
-insta485/views/index.py:560:1: W293 blank line contains whitespace
-insta485/views/index.py:569:1: W293 blank line contains whitespace
-insta485/views/index.py:590:49: W291 trailing whitespace
-insta485/views/index.py:598:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:599:80: E501 line too long (89 > 79 characters)
+insta485/views/index.py:289:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:297:80: E501 line too long (81 > 79 characters)
+insta485/views/index.py:318:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:349:80: E501 line too long (88 > 79 characters)
+insta485/views/index.py:373:80: E501 line too long (88 > 79 characters)
+insta485/views/index.py:411:1: W293 blank line contains whitespace
+insta485/views/index.py:422:50: W291 trailing whitespace
+insta485/views/index.py:423:53: W291 trailing whitespace
+insta485/views/index.py:424:80: E501 line too long (84 > 79 characters)
+insta485/views/index.py:432:1: W293 blank line contains whitespace
+insta485/views/index.py:443:5: E303 too many blank lines (2)
+insta485/views/index.py:462:50: W291 trailing whitespace
+insta485/views/index.py:463:53: W291 trailing whitespace
+insta485/views/index.py:464:80: E501 line too long (85 > 79 characters)
+insta485/views/index.py:473:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:481:80: E501 line too long (97 > 79 characters)
+insta485/views/index.py:501:80: E501 line too long (84 > 79 characters)
+insta485/views/index.py:503:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:513:1: W293 blank line contains whitespace
+insta485/views/index.py:523:27: E203 whitespace before ':'
+insta485/views/index.py:529:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:537:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:573:20: E231 missing whitespace after ','
+insta485/views/index.py:574:17: W291 trailing whitespace
+insta485/views/index.py:575:1: W293 blank line contains whitespace
+insta485/views/index.py:585:1: W293 blank line contains whitespace
+insta485/views/index.py:608:49: W291 trailing whitespace
+insta485/views/index.py:616:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:617:80: E501 line too long (89 > 79 characters)
 _______________________________ test_pydocstyle ________________________________
 
     def test_pydocstyle():
@@ -1222,41 +1341,41 @@ E               subprocess.CalledProcessError: Command '['pydocstyle', 'setup.py
 
 /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/subprocess.py:524: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
-insta485/views/index.py:18 in public function `get_salt`:
+insta485/views/index.py:19 in public function `get_salt`:
         D103: Missing docstring in public function
-insta485/views/index.py:25 in public function `hash_password`:
+insta485/views/index.py:26 in public function `hash_password`:
         D103: Missing docstring in public function
-insta485/views/index.py:34 in public function `get_all_comments`:
+insta485/views/index.py:35 in public function `get_all_comments`:
         D103: Missing docstring in public function
-insta485/views/index.py:43 in public function `get_likes`:
+insta485/views/index.py:44 in public function `get_likes`:
         D103: Missing docstring in public function
-insta485/views/index.py:104 in public function `handle_account`:
+insta485/views/index.py:105 in public function `handle_account`:
         D103: Missing docstring in public function
-insta485/views/index.py:231 in public function `show_explore`:
+insta485/views/index.py:237 in public function `show_explore`:
         D103: Missing docstring in public function
-insta485/views/index.py:269 in public function `logout`:
+insta485/views/index.py:277 in public function `logout`:
         D103: Missing docstring in public function
-insta485/views/index.py:274 in public function `login`:
+insta485/views/index.py:282 in public function `login`:
         D103: Missing docstring in public function
-insta485/views/index.py:282 in public function `show_user`:
+insta485/views/index.py:290 in public function `show_user`:
         D103: Missing docstring in public function
-insta485/views/index.py:357 in public function `show_post`:
+insta485/views/index.py:366 in public function `show_post`:
         D103: Missing docstring in public function
-insta485/views/index.py:388 in public function `show_followers`:
+insta485/views/index.py:397 in public function `show_followers`:
         D103: Missing docstring in public function
-insta485/views/index.py:425 in public function `show_following`:
+insta485/views/index.py:435 in public function `show_following`:
         D103: Missing docstring in public function
-insta485/views/index.py:486 in public function `send_file`:
+insta485/views/index.py:498 in public function `send_file`:
         D103: Missing docstring in public function
-insta485/views/index.py:490 in public function `show_edit`:
+insta485/views/index.py:504 in public function `show_edit`:
         D103: Missing docstring in public function
-insta485/views/index.py:515 in public function `show_password`:
+insta485/views/index.py:530 in public function `show_password`:
         D103: Missing docstring in public function
-insta485/views/index.py:523 in public function `show_delete`:
+insta485/views/index.py:538 in public function `show_delete`:
         D103: Missing docstring in public function
-insta485/views/index.py:539 in public function `like`:
+insta485/views/index.py:554 in public function `like`:
         D103: Missing docstring in public function
-insta485/views/index.py:584 in public function `comment`:
+insta485/views/index.py:602 in public function `comment`:
         D103: Missing docstring in public function
 _________________________________ test_pylint __________________________________
 
@@ -1355,73 +1474,75 @@ E               subprocess.CalledProcessError: Command '['pylint', '--rcfile', P
 ************* Module insta485.model
 insta485/model.py:45:0: C0304: Final newline missing (missing-final-newline)
 ************* Module insta485.views.index
-insta485/views/index.py:133:9: W0511: TODO: implement (fixme)
-insta485/views/index.py:166:9: W0511: TODO: WRONG, FIX FILE UPLOAD (fixme)
-insta485/views/index.py:219:9: W0511: TODO: new hash, don't use old salt won't work, do complete password alg. from spec (fixme)
-insta485/views/index.py:15:11: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:41:0: C0301: Line too long (109/100) (line-too-long)
-insta485/views/index.py:73:0: C0301: Line too long (134/100) (line-too-long)
-insta485/views/index.py:131:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:150:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:196:0: C0301: Line too long (109/100) (line-too-long)
-insta485/views/index.py:228:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:341:0: C0301: Line too long (125/100) (line-too-long)
-insta485/views/index.py:402:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:413:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:414:89: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:422:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:452:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:453:89: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:499:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:508:0: C0301: Line too long (103/100) (line-too-long)
-insta485/views/index.py:559:16: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:560:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:569:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:590:48: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:18:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:25:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:34:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:43:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:57:4: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:104:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:104:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:164:8: W0612: Unused variable 'cursor' (unused-variable)
-insta485/views/index.py:104:0: R0912: Too many branches (19/12) (too-many-branches)
-insta485/views/index.py:104:0: R0915: Too many statements (66/50) (too-many-statements)
-insta485/views/index.py:231:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:269:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:274:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:276:4: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:137:9: W0511: TODO: implement (fixme)
+insta485/views/index.py:171:9: W0511: TODO: WRONG, FIX FILE UPLOAD (fixme)
+insta485/views/index.py:224:9: W0511: TODO: new hash, don't use old salt won't work, do complete password alg. from spec (fixme)
+insta485/views/index.py:16:11: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:42:0: C0301: Line too long (109/100) (line-too-long)
+insta485/views/index.py:74:0: C0301: Line too long (134/100) (line-too-long)
+insta485/views/index.py:135:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:155:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:201:0: C0301: Line too long (109/100) (line-too-long)
+insta485/views/index.py:234:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:411:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:422:49: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:423:52: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:432:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:462:49: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:463:52: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:513:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:574:16: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:575:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:585:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:608:48: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:26:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:35:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:44:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:58:4: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:105:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:130:8: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:105:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+insta485/views/index.py:169:8: W0612: Unused variable 'cursor' (unused-variable)
+insta485/views/index.py:105:0: R0911: Too many return statements (14/6) (too-many-return-statements)
+insta485/views/index.py:105:0: R0912: Too many branches (20/12) (too-many-branches)
+insta485/views/index.py:105:0: R0915: Too many statements (60/50) (too-many-statements)
+insta485/views/index.py:237:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:277:0: C0116: Missing function or method docstring (missing-function-docstring)
 insta485/views/index.py:282:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:357:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:388:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:425:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:467:4: W0612: Unused variable 'logname' (unused-variable)
-insta485/views/index.py:470:4: W0612: Unused variable 'operation' (unused-variable)
-insta485/views/index.py:470:15: W0612: Unused variable 'username' (unused-variable)
-insta485/views/index.py:471:4: W0612: Unused variable 'target' (unused-variable)
-insta485/views/index.py:486:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:490:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:515:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:523:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:539:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:561:4: R1705: Unnecessary "elif" after "return" (no-else-return)
-insta485/views/index.py:548:4: W0612: Unused variable 'post_info' (unused-variable)
-insta485/views/index.py:584:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:7:0: W0611: Unused import re (unused-import)
-insta485/views/index.py:8:0: W0611: Unused L imported from re (unused-import)
-insta485/views/index.py:11:0: W0611: Unused empty imported from pyparsing (unused-import)
-insta485/views/index.py:14:0: W0611: Unused import pdb (unused-import)
-insta485/views/index.py:15:0: W0611: Unused import uuid (unused-import)
-insta485/views/index.py:13:0: C0411: standard import "import sqlite3" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:14:0: C0411: standard import "import pdb" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:15:0: C0411: standard import "import uuid" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:16:0: C0411: standard import "import hashlib" should be placed before "import arrow" (wrong-import-order)
+insta485/views/index.py:284:4: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:290:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:366:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:397:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:435:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:474:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+insta485/views/index.py:478:4: W0612: Unused variable 'logname' (unused-variable)
+insta485/views/index.py:481:4: W0612: Unused variable 'operation' (unused-variable)
+insta485/views/index.py:481:15: W0612: Unused variable 'username' (unused-variable)
+insta485/views/index.py:482:4: W0612: Unused variable 'target' (unused-variable)
+insta485/views/index.py:498:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:504:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:530:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:538:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:554:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:576:4: R1705: Unnecessary "elif" after "return" (no-else-return)
+insta485/views/index.py:563:4: W0612: Unused variable 'post_info' (unused-variable)
+insta485/views/index.py:602:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:7:0: W0611: Unused import profile (unused-import)
+insta485/views/index.py:8:0: W0611: Unused import re (unused-import)
+insta485/views/index.py:9:0: W0611: Unused L imported from re (unused-import)
+insta485/views/index.py:12:0: W0611: Unused empty imported from pyparsing (unused-import)
+insta485/views/index.py:15:0: W0611: Unused import pdb (unused-import)
+insta485/views/index.py:16:0: W0611: Unused import uuid (unused-import)
+insta485/views/index.py:14:0: C0411: standard import "import sqlite3" should be placed before "import arrow" (wrong-import-order)
+insta485/views/index.py:15:0: C0411: standard import "import pdb" should be placed before "import arrow" (wrong-import-order)
+insta485/views/index.py:16:0: C0411: standard import "import uuid" should be placed before "import arrow" (wrong-import-order)
+insta485/views/index.py:17:0: C0411: standard import "import hashlib" should be placed before "import arrow" (wrong-import-order)
 ************* Module insta485.views.__init__
 insta485/views/__init__.py:2:0: C0304: Final newline missing (missing-final-newline)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.92/10 (previous run: 7.92/10, +0.00)
+Your code has been rated at 8.00/10 (previous run: 8.00/10, +0.00)
 
 __________________________________ test_html ___________________________________
 
@@ -1607,10 +1728,27 @@ client = <FlaskClient <Flask 'insta485'>>
         assert "/posts/4/" not in links
     
         # Verify images: post 1,2,3,4
->       assert "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg" in srcs
-E       AssertionError: assert '/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg' in ['/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/122a7d27ca1d7420a1072f695d9290fad4501a4...rs/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/var/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg']
+        assert "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg" in srcs
+        assert "/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg" not in srcs
+        assert "/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" in srcs
+        assert "/uploads/2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg" not in srcs
+    
+        # Verify text
+        assert "2 posts" in text
+        assert "2 followers" in text.lower()
+        assert "2 following" in text.lower()
+        assert "Andrew DeOrio" in text
+        assert "Edit profile" in text
+        assert "not following" not in text.lower()
+        assert "login" not in text
+        assert text.count("awdeorio") == 2
+        assert text.lower().count("following") == 1
+    
+        # Verify buttons
+>       assert "file" in buttons
+E       AssertionError: assert 'file' in ['logout']
 
-tests/test_user_public.py:59: AssertionError
+tests/test_user_public.py:76: AssertionError
 _________________________________ test_upload __________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -1651,27 +1789,21 @@ tests/test_user_public.py:110: AssertionError
 =========================== short test summary info ============================
 FAILED tests/test_accounts_public.py::test_accounts_create - TypeError: The v...
 FAILED tests/test_accounts_public.py::test_accounts_edit - AssertionError: as...
-FAILED tests/test_accounts_public.py::test_accounts_delete - KeyError: 'logname'
-FAILED tests/test_accounts_public.py::test_accounts_uploads_permission - asse...
-FAILED tests/test_explore.py::test_awdeorio_default - AssertionError: assert ...
-FAILED tests/test_explore.py::test_follow - KeyError: 'username'
-FAILED tests/test_explore.py::test_empty - KeyError: 'username'
+FAILED tests/test_accounts_public.py::test_accounts_delete - assert 200 == 404
+FAILED tests/test_explore.py::test_follow - TypeError: The view function for ...
+FAILED tests/test_explore.py::test_empty - TypeError: The view function for '...
 FAILED tests/test_followers_public.py::test_awdeorio_followers - AssertionErr...
-FAILED tests/test_followers_public.py::test_files - assert 404 == 200
 FAILED tests/test_followers_public.py::test_unfollow - AssertionError: assert...
 FAILED tests/test_followers_public.py::test_follow - AssertionError: assert '...
-FAILED tests/test_following.py::test_awdeorio - assert 2 == 3
-FAILED tests/test_following.py::test_unfollow - KeyError: 'username'
-FAILED tests/test_index.py::test_images - AssertionError: assert '/uploads/50...
-FAILED tests/test_login_logout.py::test_login_page_content - assert 302 == 200
-FAILED tests/test_post_public.py::test_postid_1 - AssertionError: assert '/up...
-FAILED tests/test_post_public.py::test_postid_2 - AssertionError: assert '/up...
+FAILED tests/test_following.py::test_unfollow - TypeError: The view function ...
+FAILED tests/test_post_public.py::test_postid_1 - AssertionError: assert 'lik...
+FAILED tests/test_post_public.py::test_postid_2 - AssertionError: assert 'lik...
 FAILED tests/test_post_public.py::test_duplicate_like_unlike - assert 302 == 409
 FAILED tests/test_post_public.py::test_delete_post - assert 404 == 302
 FAILED tests/test_style.py::test_pycodestyle - subprocess.CalledProcessError:...
 FAILED tests/test_style.py::test_pydocstyle - subprocess.CalledProcessError: ...
 FAILED tests/test_style.py::test_pylint - subprocess.CalledProcessError: Comm...
 FAILED tests/test_style.py::test_html - assert 404 == 200
-FAILED tests/test_user_public.py::test_awdeorio - AssertionError: assert '/up...
+FAILED tests/test_user_public.py::test_awdeorio - AssertionError: assert 'fil...
 FAILED tests/test_user_public.py::test_upload - assert 404 == 302
-======================== 25 failed, 23 passed in 16.72s ========================
+======================== 19 failed, 29 passed in 14.13s ========================
