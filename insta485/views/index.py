@@ -173,7 +173,7 @@ def handle_account():
         connection.execute(
             "INSERT INTO users(username, fullname, email, filename, password) "
             "VALUES (?,?,?,?,?) ",
-            (username, fullname, email, filename, password)
+            (username, fullname, email, filename, password,)
         )
         connection.commit()
         # after changes are commited, redirect to the target
@@ -194,7 +194,7 @@ def handle_account():
             "FROM users U "
             "WHERE U.username = ? ",
             (logname,)
-        )
+        ).fetchall()
         if len(to_delete) == 0:
             return flask.abort(404)
         connection.execute(
