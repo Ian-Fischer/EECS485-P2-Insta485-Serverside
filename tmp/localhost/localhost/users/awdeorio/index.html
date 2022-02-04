@@ -163,6 +163,11 @@
                 <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
                     <input type="submit" name="logout" value="Logout"/>
                 </form>
+                <form action="/posts/?target=/users/awdeorio/" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" accept="image/*" required/>
+                    <input type="submit" name="create_post" value="upload new post"/>
+                    <input type="hidden" name="operation" value="create"/>
+                </form>
             
             
             <p>Andrew DeOrio</p>

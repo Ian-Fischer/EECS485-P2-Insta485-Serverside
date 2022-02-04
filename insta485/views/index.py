@@ -727,4 +727,61 @@ def comment():
 
 @insta485.app.route('/posts/', methods=['POST'])
 def handle_posts():
-    print('the quick brown fox jumpsover the lazy bITCH')
+    # check to see if logged in
+    if 'logname' not in flask.session:
+        return flask.redirect(flask.url_for('login'))
+    # snag that target
+    target = flask.request.args.get('target')
+    # db4eva
+    connection = insta485.model.get_db()
+    connection.row_factory = sqlite3.Row
+    # if it fits it sits
+    if target is None:
+        target = flask.url_for('show_user', user_url_slug=flask.session['logname'])
+    # opopopopopopopopopopopop
+    operation = flask.request.form.get('operation')
+    #c
+    if operation == 'create':
+        # Unpack flask object
+        fileobj = flask.request.files["file"]
+        # empty file = abort 400 
+        if fileobj is None:
+            return flask.abort(400)
+        filename = fileobj.filename
+        # Compute base name (filename without directory).  We use a UUID to avoid
+        # clashes with existing files, and ensure that the name is compatible with the
+        # filesystem.
+        stem = uuid.uuid4().hex
+        suffix = pathlib.Path(filename).suffix
+        uuid_basename = f"{stem}{suffix}"
+        # Save to disk
+        path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+        fileobj.save(path)
+        # now file is done, make the post
+        connection.execute(
+            "INSERT INTO posts(filename, owner) "
+            "VALUES (?,?) ",
+            (filename, flask.session['logname'],)
+        )
+        return flask.redirect(target)
+    elif operation == 'delete':
+        # check if the post exists
+        postid = flask.request.form.get('postid')
+        checking = connection.execute(
+            'SELECT P.owner '
+            'FROM posts P '
+            'WHERE P.postid = ? ',
+            (postid,)
+        ).fetchall()
+        if len(checking) != 0:
+            return flask.abort(404)
+        if checking[0]['owner'] != flask.sesion['logname']:
+            return flask.abort(403)
+        connection.execute(
+            'DELETE FROM posts '
+            'WHERE postid = ? ',
+            (postid,)
+        )
+        connection.commit()
+        return flask.redirect(target)
+

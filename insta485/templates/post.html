@@ -8,9 +8,9 @@
                 <a href="{{ url_for('show_post', post_url_slug=postid)}}" class="time">{{timestamp}}</a>
                 <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                 {% if owner == logname %}
-                <form action="<FIXME_POSTS_URL_HERE>?target=<FIXME_LOGGED_IN_USER_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+                <form action="{{ url_for('handle_posts') }}?target={{ url_for('show_user', user_url_slug=logname) }}" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="operation" value="delete"/>
-                    <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                    <input type="hidden" name="postid" value="{{postid}}"/>
                     <input type="submit" name="delete" value="delete this post"/>
                 </form>
                 {% endif %}
