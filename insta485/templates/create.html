@@ -47,12 +47,12 @@
         </ul>
         <div class="box">
             <form action="{{ url_for('handle_account') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" required/>
-                <input type="text" name="fullname" required/>
-                <input type="text" name="username" required/>
-                <input type="text" name="email" required/>
-                <input type="password" name="password" required/>
-                <input type="submit" name="signup" value="sign up"/>
+                <label>Profile Piccy: </label><input type="file" name="file" required/>
+                <label>fullname</label><input type="text" name="fullname" required/>
+                <label>username</label><input type="text" name="username" required/>
+                <label>gimme dat email</label><input type="text" name="email" required/>
+                <label>password: shhh -- secret!</label><input type="password" name="password" required/>
+                <label>full send shotty for the boys?</label><input type="submit" name="signup" value="sign up"/>
                 <input type="hidden" name="operation" value="create"/>
             </form>
         </div>

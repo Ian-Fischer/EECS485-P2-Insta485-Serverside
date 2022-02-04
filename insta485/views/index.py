@@ -6,6 +6,7 @@ URLs include:
 """
 import profile
 import re
+import os 
 from re import L
 import arrow
 import flask
@@ -169,14 +170,14 @@ def handle_account():
         connection.execute(
             "INSERT INTO users(username, fullname, email, filename, password) "
             "VALUES (?,?,?,?,?) ",
-            (username, fullname, email, filename, password,)
+            (username, fullname, email, uuid_basename, password,)
         )
         connection.commit()
         flask.session['logname'] = username
         # after changes are commited, redirect to the target
         return flask.redirect(target)
         
-
+    # TODO: IAN NICOLE IAN NICOLE this straight up does not work
     elif operation == 'delete':
         # get the target page
         if 'logname' not in flask.session:
@@ -210,17 +211,16 @@ def handle_account():
         # get information
         fullname, email = flask.request.form.get('fullname'), flask.request.form.get('email')
         # check for empty fields
-        if not fullname or not email:
+        if fullname == None or email == None:
             return flask.abort(400)
-        file = flask.request.form.get('file')
         # establish connection
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         logname = flask.session['logname']
-        # deal with uploaded file
-        if file is not None:
-            fileobj = flask.request.files["file"]
+        # deal with uploaded file (whatever it is)
+        fileobj = flask.request.files["file"]
+        if fileobj != None:
             filename = fileobj.filename
             stem = uuid.uuid4().hex
             suffix = pathlib.Path(filename).suffix
@@ -232,25 +232,22 @@ def handle_account():
                 "UPDATE users "
                 "SET filename = ? "
                 "WHERE username = ? ",
-                (file, logname,)
+                (uuid_basename, logname,)
             )
             connection.commit()
-        if fullname:
-            connection.execute(
-                "UPDATE users "
-                "SET fullname = ? "
-                "WHERE username = ? ",
-                (fullname, logname,)
-            )
-            connection.commit()
-        if email:
-            connection.execute(
-                "UPDATE users "
-                "SET email = ? "
-                "WHERE username = ? ",
-                (email, logname,)
-            )
-            connection.commit()
+        connection.execute(
+            "UPDATE users "
+            "SET fullname = ? "
+            "WHERE username = ? ",
+            (fullname, logname,)
+        )
+        connection.execute(
+            "UPDATE users "
+            "SET email = ? "
+            "WHERE username = ? ",
+            (email, logname,)
+        )
+        connection.commit()
         return flask.redirect(target)
 
     elif operation == 'update_password':
@@ -761,14 +758,14 @@ def handle_posts():
         connection.execute(
             "INSERT INTO posts(filename, owner) "
             "VALUES (?,?) ",
-            (filename, flask.session['logname'],)
+            (uuid_basename, flask.session['logname'],)
         )
         return flask.redirect(target)
     elif operation == 'delete':
         # check if the post exists
         postid = flask.request.form.get('postid')
         checking = connection.execute(
-            'SELECT P.owner '
+            'SELECT P.owner, P.filename '
             'FROM posts P '
             'WHERE P.postid = ? ',
             (postid,)
@@ -777,11 +774,20 @@ def handle_posts():
             return flask.abort(404)
         if checking[0]['owner'] != flask.sesion['logname']:
             return flask.abort(403)
+        # delete the post
         connection.execute(
             'DELETE FROM posts '
             'WHERE postid = ? ',
             (postid,)
         )
         connection.commit()
+        # delete the file
+        # TODO: IAN NICOLE IAN NICOLE IAN NICOLE DELETE THE FILE FROM THE SYSTEM
         return flask.redirect(target)
 
+@insta485.app.route('/accounts/create/', methods=['GET'])
+def show_create():
+    if 'logname' in flask.session:
+        return flask.redirect(flask.url_for('show_edit'))
+    else:
+        return flask.render_template('create.html')

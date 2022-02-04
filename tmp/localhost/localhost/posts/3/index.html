@@ -147,7 +147,6 @@
                 <a href="/users/awdeorio/"><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="profilepicture"></a>
                 <a href="/users/awdeorio/" class="username"><b>awdeorio</b></a>
                 <a href="/posts/3/" class="time">just now</a>
-                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                 
                 <form action="/posts/?target=/users/awdeorio/" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="operation" value="delete"/>
@@ -170,7 +169,6 @@
             
                 <div class="fullcomment">
                     <p><a href="/users/awdeorio/"><b>awdeorio</b></a> #chickensofinstagram</p>
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                     
                         <form action="/comments/?target=/posts/3/" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="operation" value="delete"/>
@@ -182,20 +180,18 @@
             
                 <div class="fullcomment">
                     <p><a href="/users/jflinn/"><b>jflinn</b></a> I &lt;3 chickens</p>
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                     
                 </div>
             
                 <div class="fullcomment">
                     <p><a href="/users/michjc/"><b>michjc</b></a> Cute overload!</p>
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
                     
                 </div>
             
             <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="<FIXME_COMMENTS_URL_HERE>?target=<FIXME_CURRENT_PAGE_URL_HERE>" method="post" enctype="multipart/form-data">
+            <form action="/comments/?target=/posts/3/" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                <input type="hidden" name="postid" value="3"/>
                 <input type="text" name="text" required/>
                 <input type="submit" name="comment" value="comment"/>
             </form>
