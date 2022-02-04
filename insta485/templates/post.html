@@ -21,16 +21,19 @@
             {% else %}
                 <p> {{likes}} likes </p>
             {% endif %}
-            <form action="{{ url_for('like') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="like"/>
-                <input type="hidden" name="postid" value="{{postid}}"/>
-                <input type="submit" name="like" value="like"/>
-            </form>
-            <form action="{{ url_for('like') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="unlike"/>
-                <input type="hidden" name="postid" value="{{postid}}"/>
-                <input type="submit" name="unlike" value="unlike"/>
-            </form>
+            {% if logname_liked == false %}
+                <form action="{{ url_for('like') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="like"/>
+                    <input type="hidden" name="postid" value="{{postid}}"/>
+                    <input type="submit" name="like" value="like"/>
+                </form>
+            {% else %}
+                <form action="{{ url_for('like') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="unlike"/>
+                    <input type="hidden" name="postid" value="{{postid}}"/>
+                    <input type="submit" name="unlike" value="unlike"/>
+                </form>
+            {% endif %}
             {% for comment in comments %}
                 <div class="fullcomment">
                     <p><a href="{{ url_for('show_user', user_url_slug=comment.owner)}}"><b>{{comment.owner}}</b></a> {{comment.text}}</p>

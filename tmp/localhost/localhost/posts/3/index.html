@@ -160,16 +160,13 @@
             
                 <p> 1 like </p>
             
-            <form action="/likes/?target=/posts/3/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="like"/>
-                <input type="hidden" name="postid" value="3"/>
-                <input type="submit" name="like" value="like"/>
-            </form>
-            <form action="/likes/?target=/posts/3/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="unlike"/>
-                <input type="hidden" name="postid" value="3"/>
-                <input type="submit" name="unlike" value="unlike"/>
-            </form>
+            
+                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="unlike"/>
+                    <input type="hidden" name="postid" value="3"/>
+                    <input type="submit" name="unlike" value="unlike"/>
+                </form>
+            
             
                 <div class="fullcomment">
                     <p><a href="/users/awdeorio/"><b>awdeorio</b></a> #chickensofinstagram</p>

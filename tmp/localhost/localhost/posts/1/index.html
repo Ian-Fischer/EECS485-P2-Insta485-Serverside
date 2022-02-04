@@ -160,16 +160,13 @@
             
                 <p> 3 likes </p>
             
-            <form action="/likes/?target=/posts/1/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="like"/>
-                <input type="hidden" name="postid" value="1"/>
-                <input type="submit" name="like" value="like"/>
-            </form>
-            <form action="/likes/?target=/posts/1/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="unlike"/>
-                <input type="hidden" name="postid" value="1"/>
-                <input type="submit" name="unlike" value="unlike"/>
-            </form>
+            
+                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="unlike"/>
+                    <input type="hidden" name="postid" value="1"/>
+                    <input type="submit" name="unlike" value="unlike"/>
+                </form>
+            
             
                 <div class="fullcomment">
                     <p><a href="/users/jflinn/"><b>jflinn</b></a> Walking the plank #chickensofinstagram</p>

@@ -15,6 +15,7 @@ import sqlite3
 import pdb
 import uuid 
 import hashlib
+import pathlib
 
 def get_salt(password):
     idx = password.find('$')
@@ -42,12 +43,14 @@ def get_all_comments(postid, connection):
     return [{'owner' : elt['owner'], 'text': elt['text'], 'commentid': elt['commentid']} for elt in comments]
 
 def get_likes(postid, connection):
-    return len(connection.execute(
-                "SELECT L.likeid "
+    likes = connection.execute(
+                "SELECT L.owner "
                 "FROM likes L "
                 "WHERE L.postid = ? ",
-                (postid, )
-            ).fetchall())
+                (postid,)).fetchall()
+    likes = [elt['owner'] for elt in likes]
+    logname_liked = flask.session['logname'] in likes
+    return likes, logname_liked
 
 @insta485.app.route('/', methods=['GET'])
 def show_index():
@@ -77,12 +80,7 @@ def show_index():
                 (user,user,)
             ).fetchall()
             for post in user_posts:
-                likes = get_likes(post['postid'],connection)
-                len(connection.execute(
-                    "SELECT L.postid "
-                    "FROM likes L "
-                    "WHERE L.postid = ? ",
-                    (post['postid'],)).fetchall())
+                likes, logname_liked = get_likes(post['postid'],connection)
                 comments = get_all_comments(post['postid'], connection)
                 posts.append({
                     "postid" : post['postid'],
@@ -90,8 +88,9 @@ def show_index():
                     "owner_img_url" : post['ufilename'],
                     "img_url" : post['pfilename'],
                     "timestamp" : arrow.get(post['created']).to('US/Eastern').humanize(),
-                    "likes" : likes,
-                    "comments" : comments
+                    "likes" : len(likes),
+                    "comments" : comments,
+                    "logname_liked": logname_liked
                 })
         # now we have gone through all the following and collected all their posts
         # build context
@@ -134,8 +133,53 @@ def handle_account():
             return flask.redirect(target)
             
     elif operation == 'create':
-        #TODO: implement
-        print('create')
+        # check session, get logname
+        if 'logname' not in flask.session:
+            return flask.redirect(flask.url_for('login'))
+        logname = flask.session['logname']
+        # get form data
+        username, fullname = flask.request.form.get('username'), flask.request.form.get('fullname')
+        email, password = flask.request.form.get('email'), flask.request.form.get('password')
+        # set up db connect
+        connection = insta485.model.get_db()
+        connection.row_factory = sqlite3.Row
+        # Unpack flask object
+        fileobj = flask.request.files["file"]
+        filename = fileobj.filename
+        # check for empty fields
+        if None in [username, fullname, email, password, filename, fileobj]:
+            return flask.abort(400)
+        # check to see if the user already exists
+        user = connection.execute(
+            "SELECT U.username "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (logname,)
+        )
+        # check to see if the user exists
+        if len(user) > 0:
+            return flask.abort(403)
+        # SHOULD BE GOOD TO CREATE 
+        # Compute base name (filename without directory).  We use a UUID to avoid
+        # clashes with existing files, and ensure that the name is compatible with the
+        # filesystem.
+        stem = uuid.uuid4().hex
+        suffix = pathlib.Path(filename).suffix
+        uuid_basename = f"{stem}{suffix}"
+        # Save to disk
+        path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+        fileobj.save(path)
+        # now that the file is saved, update user table
+        connection.execute(
+            "INSERT INTO users(username, fullname, email, filename, password) "
+            "VALUES (?,?,?,?,?) ",
+            (username, fullname, email, filename, password)
+        )
+        connection.commit()
+        # after changes are commited, redirect to the target
+        return flask.redirect(target)
+        
+
     elif operation == 'delete':
         # get the target page
         if 'logname' not in flask.session:
@@ -144,6 +188,15 @@ def handle_account():
         connection = insta485.model.get_db()
         connection.row_factory = sqlite3.Row
         logname = flask.session['logname']
+        # check to see if the user exists
+        to_delete = connection.execute(
+            "SELECT U.username "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (logname,)
+        )
+        if len(to_delete) == 0:
+            return flask.abort(404)
         connection.execute(
             "DELETE FROM users "
             "WHERE username = ? ",
@@ -168,14 +221,23 @@ def handle_account():
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         logname = flask.session['logname']
-        # TODO: WRONG, FIX FILE UPLOAD
-        if file:
+        # deal with uploaded file
+        if file is not None:
+            fileobj = flask.request.files["file"]
+            filename = fileobj.filename
+            stem = uuid.uuid4().hex
+            suffix = pathlib.Path(filename).suffix
+            uuid_basename = f"{stem}{suffix}"
+            # Save to disk
+            path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+            fileobj.save(path)
             connection.execute(
                 "UPDATE users "
                 "SET filename = ? "
                 "WHERE username = ? ",
                 (file, logname,)
             )
+            connection.commit()
         if fullname:
             connection.execute(
                 "UPDATE users "
@@ -376,7 +438,7 @@ def show_post(post_url_slug):
         (post_url_slug, )
     ).fetchall()
 
-    likes = get_likes(post_url_slug, connection)
+    likes, logname_liked = get_likes(post_url_slug, connection)
     comments = get_all_comments(post_url_slug, connection)
 
     context = {
@@ -386,8 +448,9 @@ def show_post(post_url_slug):
         "owner_img_url": post[0][3],
         "img_url": post[0][1],
         "timestamp": arrow.get(post[0][2]).to('US/Eastern').humanize(),
-        "likes": likes,
-        "comments": comments
+        "likes": len(likes),
+        "comments": comments,
+        "logname_liked": logname_liked
     }
     connection.commit()
     return flask.render_template("post.html", **context)
@@ -571,7 +634,6 @@ def show_delete():
 
 @insta485.app.route('/likes/', methods=['POST'])
 def like():
-
     target = flask.request.args.get('target')
     connection = insta485.model.get_db()
     if 'logname' not in flask.session:
@@ -581,13 +643,6 @@ def like():
         target = '/'
     operation = flask.request.form.get('operation')
     postid = flask.request.form.get('postid')
-
-    post_info = connection.execute(
-        "SELECT P.owner, P.created "
-        "FROM posts P "
-        "WHERE P.postid = ?",
-        (postid,)
-    )
     check = connection.execute(
             "SELECT L.likeid "
             "FROM likes L "
@@ -609,16 +664,16 @@ def like():
 
     elif operation == 'unlike':
         # take the like out if it's there
-        if check == 1:
+        if len(check) == 1:
             connection.execute(
                 "DELETE FROM likes "
                 "WHERE owner = ? AND postid = ?",
                 (logname, postid, )
             )
-        connection.commit()
-        return flask.redirect(target)
-    else:
-        return flask.abort(409)
+            connection.commit()
+            return flask.redirect(target)
+        else:
+            return flask.abort(409)
 
 
 @insta485.app.route('/comments/', methods=['POST'])

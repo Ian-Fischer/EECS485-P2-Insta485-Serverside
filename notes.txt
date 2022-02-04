@@ -1,8 +1,5 @@
-Buttons:
-    - if the user has liked the post, only show the unlike button
-    - if the user has liked the posit, only show the like button
-    - if the user tries to like again or unlike again (via curl request to /posts/?target=URL with operation=like,unlike), 
-      we need to abort 409 (via return flask.abort(409))
+Create Post
 
+Delete Post
 
-    
+Check all commands work as expected with curl
