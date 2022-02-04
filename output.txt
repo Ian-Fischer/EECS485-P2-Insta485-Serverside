@@ -5,7 +5,7 @@ rootdir: /Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside
 plugins: mock-3.7.0
 collecting ... collected 48 items
 
-tests/test_accounts_public.py::test_accounts_create FAILED               [  2%]
+tests/test_accounts_public.py::test_accounts_create PASSED               [  2%]
 tests/test_accounts_public.py::test_accounts_edit FAILED                 [  4%]
 tests/test_accounts_public.py::test_accounts_password PASSED             [  6%]
 tests/test_accounts_public.py::test_accounts_delete FAILED               [  8%]
@@ -55,54 +55,10 @@ tests/test_user_public.py::test_awdeorio FAILED                          [ 97%]
 tests/test_user_public.py::test_upload FAILED                            [100%]
 
 =================================== FAILURES ===================================
-_____________________________ test_accounts_create _____________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_accounts_create(client):
-        """Create an account and verify that we've got a new empty user.
-    
-        Note: 'client' is a fixture fuction that provides a Flask test server
-        interface with a clean database.  It is implemented in conftest.py and
-        reused by many tests.  Docs: https://docs.pytest.org/en/latest/fixture.html
-        """
-        # Connect to the database
-        connection = sqlite3.connect("var/insta485.sqlite3")
-        connection.execute("PRAGMA foreign_keys = ON")
-    
-        # Number of posts and users before adding a user
-        cur = connection.execute("SELECT COUNT(*) from users")
-        num_users_before = cur.fetchone()[0]
-        cur = connection.execute("SELECT COUNT(*) from posts")
-        num_posts_before = cur.fetchone()[0]
-    
-        # Add a user
-        avatar_path = utils.TEST_DIR/"testdata/fox.jpg"
-        with avatar_path.open('rb') as avatar:
-            query_string = urlencode({"target": "/"})
-            response = client.post(
-                f"/accounts/?{query_string}",
-                data={
-                    "username": "fakeuser", "fullname": "Fake User",
-                    "email": "fakeuser@umich.edu",
-                    "password": "password",
-                    "file": avatar,
-                    "operation": "create"
-                }
-            )
-    
-        assert response.status_code == 302
-        urlpath = urlparse(response.location).path
->       assert urlpath == "/"
-E       AssertionError: assert '/accounts/login/' == '/'
-E         - /
-E         + /accounts/login/
-
-tests/test_accounts_public.py:48: AssertionError
 ______________________________ test_accounts_edit ______________________________
 
 client = <FlaskClient <Flask 'insta485'>>
-mocker = <pytest_mock.plugin.MockerFixture object at 0x10a483be0>
+mocker = <pytest_mock.plugin.MockerFixture object at 0x11204e200>
 
     def test_accounts_edit(client, mocker):
         """Change name, email and photo.
@@ -419,50 +375,50 @@ insta485/views/index.py:95:80: E501 line too long (82 > 79 characters)
 insta485/views/index.py:103:1: E302 expected 2 blank lines, found 1
 insta485/views/index.py:111:80: E501 line too long (92 > 79 characters)
 insta485/views/index.py:134:1: W293 blank line contains whitespace
-insta485/views/index.py:141:80: E501 line too long (99 > 79 characters)
-insta485/views/index.py:142:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:162:35: W291 trailing whitespace
-insta485/views/index.py:163:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:164:80: E501 line too long (86 > 79 characters)
-insta485/views/index.py:181:1: W293 blank line contains whitespace
-insta485/views/index.py:183:5: E303 too many blank lines (2)
-insta485/views/index.py:208:1: W293 blank line contains whitespace
-insta485/views/index.py:214:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:263:80: E501 line too long (109 > 79 characters)
-insta485/views/index.py:286:80: E501 line too long (92 > 79 characters)
-insta485/views/index.py:287:80: E501 line too long (82 > 79 characters)
-insta485/views/index.py:296:1: W293 blank line contains whitespace
-insta485/views/index.py:313:17: E231 missing whitespace after ','
-insta485/views/index.py:338:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:343:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:351:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:359:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:380:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:411:80: E501 line too long (88 > 79 characters)
-insta485/views/index.py:435:80: E501 line too long (88 > 79 characters)
-insta485/views/index.py:474:1: W293 blank line contains whitespace
-insta485/views/index.py:485:50: W291 trailing whitespace
-insta485/views/index.py:486:53: W291 trailing whitespace
-insta485/views/index.py:487:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:496:1: W293 blank line contains whitespace
-insta485/views/index.py:507:5: E303 too many blank lines (2)
-insta485/views/index.py:526:50: W291 trailing whitespace
-insta485/views/index.py:527:53: W291 trailing whitespace
-insta485/views/index.py:528:80: E501 line too long (85 > 79 characters)
-insta485/views/index.py:537:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:546:80: E501 line too long (97 > 79 characters)
-insta485/views/index.py:583:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:585:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:595:1: W293 blank line contains whitespace
-insta485/views/index.py:605:27: E203 whitespace before ':'
-insta485/views/index.py:611:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:619:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:650:20: E231 missing whitespace after ','
-insta485/views/index.py:651:17: W291 trailing whitespace
-insta485/views/index.py:652:1: W293 blank line contains whitespace
-insta485/views/index.py:686:49: W291 trailing whitespace
-insta485/views/index.py:694:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:695:80: E501 line too long (89 > 79 characters)
+insta485/views/index.py:137:80: E501 line too long (99 > 79 characters)
+insta485/views/index.py:138:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:158:35: W291 trailing whitespace
+insta485/views/index.py:159:80: E501 line too long (81 > 79 characters)
+insta485/views/index.py:160:80: E501 line too long (86 > 79 characters)
+insta485/views/index.py:178:1: W293 blank line contains whitespace
+insta485/views/index.py:180:5: E303 too many blank lines (2)
+insta485/views/index.py:205:1: W293 blank line contains whitespace
+insta485/views/index.py:211:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:261:80: E501 line too long (109 > 79 characters)
+insta485/views/index.py:284:80: E501 line too long (92 > 79 characters)
+insta485/views/index.py:285:80: E501 line too long (82 > 79 characters)
+insta485/views/index.py:294:1: W293 blank line contains whitespace
+insta485/views/index.py:311:17: E231 missing whitespace after ','
+insta485/views/index.py:336:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:341:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:349:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:357:80: E501 line too long (81 > 79 characters)
+insta485/views/index.py:378:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:409:80: E501 line too long (88 > 79 characters)
+insta485/views/index.py:433:80: E501 line too long (88 > 79 characters)
+insta485/views/index.py:472:1: W293 blank line contains whitespace
+insta485/views/index.py:483:50: W291 trailing whitespace
+insta485/views/index.py:484:53: W291 trailing whitespace
+insta485/views/index.py:485:80: E501 line too long (84 > 79 characters)
+insta485/views/index.py:494:1: W293 blank line contains whitespace
+insta485/views/index.py:505:5: E303 too many blank lines (2)
+insta485/views/index.py:524:50: W291 trailing whitespace
+insta485/views/index.py:525:53: W291 trailing whitespace
+insta485/views/index.py:526:80: E501 line too long (85 > 79 characters)
+insta485/views/index.py:535:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:544:80: E501 line too long (97 > 79 characters)
+insta485/views/index.py:581:80: E501 line too long (84 > 79 characters)
+insta485/views/index.py:583:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:593:1: W293 blank line contains whitespace
+insta485/views/index.py:603:27: E203 whitespace before ':'
+insta485/views/index.py:609:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:617:1: E302 expected 2 blank lines, found 1
+insta485/views/index.py:648:20: E231 missing whitespace after ','
+insta485/views/index.py:649:17: W291 trailing whitespace
+insta485/views/index.py:650:1: W293 blank line contains whitespace
+insta485/views/index.py:684:49: W291 trailing whitespace
+insta485/views/index.py:692:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:693:80: E501 line too long (89 > 79 characters)
 _______________________________ test_pydocstyle ________________________________
 
     def test_pydocstyle():
@@ -558,31 +514,31 @@ insta485/views/index.py:45 in public function `get_likes`:
         D103: Missing docstring in public function
 insta485/views/index.py:104 in public function `handle_account`:
         D103: Missing docstring in public function
-insta485/views/index.py:299 in public function `show_explore`:
+insta485/views/index.py:297 in public function `show_explore`:
         D103: Missing docstring in public function
-insta485/views/index.py:339 in public function `logout`:
+insta485/views/index.py:337 in public function `logout`:
         D103: Missing docstring in public function
-insta485/views/index.py:344 in public function `login`:
+insta485/views/index.py:342 in public function `login`:
         D103: Missing docstring in public function
-insta485/views/index.py:352 in public function `show_user`:
+insta485/views/index.py:350 in public function `show_user`:
         D103: Missing docstring in public function
-insta485/views/index.py:428 in public function `show_post`:
+insta485/views/index.py:426 in public function `show_post`:
         D103: Missing docstring in public function
-insta485/views/index.py:460 in public function `show_followers`:
+insta485/views/index.py:458 in public function `show_followers`:
         D103: Missing docstring in public function
-insta485/views/index.py:499 in public function `show_following`:
+insta485/views/index.py:497 in public function `show_following`:
         D103: Missing docstring in public function
-insta485/views/index.py:580 in public function `send_file`:
+insta485/views/index.py:578 in public function `send_file`:
         D103: Missing docstring in public function
-insta485/views/index.py:586 in public function `show_edit`:
+insta485/views/index.py:584 in public function `show_edit`:
         D103: Missing docstring in public function
-insta485/views/index.py:612 in public function `show_password`:
+insta485/views/index.py:610 in public function `show_password`:
         D103: Missing docstring in public function
-insta485/views/index.py:620 in public function `show_delete`:
+insta485/views/index.py:618 in public function `show_delete`:
         D103: Missing docstring in public function
-insta485/views/index.py:636 in public function `like`:
+insta485/views/index.py:634 in public function `like`:
         D103: Missing docstring in public function
-insta485/views/index.py:680 in public function `comment`:
+insta485/views/index.py:678 in public function `comment`:
         D103: Missing docstring in public function
 _________________________________ test_pylint __________________________________
 
@@ -681,26 +637,26 @@ E               subprocess.CalledProcessError: Command '['pylint', '--rcfile', P
 ************* Module insta485.model
 insta485/model.py:45:0: C0304: Final newline missing (missing-final-newline)
 ************* Module insta485.views.index
-insta485/views/index.py:286:9: W0511: TODO: new hash, don't use old salt won't work, do complete password alg. from spec (fixme)
+insta485/views/index.py:284:9: W0511: TODO: new hash, don't use old salt won't work, do complete password alg. from spec (fixme)
 insta485/views/index.py:16:11: C0303: Trailing whitespace (trailing-whitespace)
 insta485/views/index.py:43:0: C0301: Line too long (109/100) (line-too-long)
 insta485/views/index.py:77:0: C0301: Line too long (134/100) (line-too-long)
 insta485/views/index.py:134:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:162:34: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:181:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:208:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:263:0: C0301: Line too long (109/100) (line-too-long)
-insta485/views/index.py:296:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:474:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:485:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:486:52: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:496:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:526:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:527:52: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:595:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:651:16: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:652:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:686:48: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:158:34: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:178:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:205:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:261:0: C0301: Line too long (109/100) (line-too-long)
+insta485/views/index.py:294:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:472:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:483:49: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:484:52: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:494:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:524:49: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:525:52: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:593:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:649:16: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:650:0: C0303: Trailing whitespace (trailing-whitespace)
+insta485/views/index.py:684:48: C0303: Trailing whitespace (trailing-whitespace)
 insta485/views/index.py:20:0: C0116: Missing function or method docstring (missing-function-docstring)
 insta485/views/index.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
 insta485/views/index.py:36:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -710,29 +666,29 @@ insta485/views/index.py:104:0: C0116: Missing function or method docstring (miss
 insta485/views/index.py:104:0: R0914: Too many local variables (24/15) (too-many-locals)
 insta485/views/index.py:129:8: R1705: Unnecessary "else" after "return" (no-else-return)
 insta485/views/index.py:104:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:222:8: W0612: Unused variable 'cursor' (unused-variable)
-insta485/views/index.py:104:0: R0911: Too many return statements (19/6) (too-many-return-statements)
-insta485/views/index.py:104:0: R0912: Too many branches (24/12) (too-many-branches)
+insta485/views/index.py:219:8: W0612: Unused variable 'cursor' (unused-variable)
+insta485/views/index.py:104:0: R0911: Too many return statements (18/6) (too-many-return-statements)
+insta485/views/index.py:104:0: R0912: Too many branches (23/12) (too-many-branches)
 insta485/views/index.py:104:0: R0915: Too many statements (87/50) (too-many-statements)
-insta485/views/index.py:299:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:339:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:344:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:346:4: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:352:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:428:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:460:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:499:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:556:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:567:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:580:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:586:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:612:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:620:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:636:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:655:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:667:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:636:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:680:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:297:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:337:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:342:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:344:4: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:350:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:426:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:458:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:497:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:554:8: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:565:8: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:578:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:584:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:610:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:618:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:634:0: C0116: Missing function or method docstring (missing-function-docstring)
+insta485/views/index.py:653:8: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:665:8: R1705: Unnecessary "else" after "return" (no-else-return)
+insta485/views/index.py:634:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+insta485/views/index.py:678:0: C0116: Missing function or method docstring (missing-function-docstring)
 insta485/views/index.py:7:0: W0611: Unused import profile (unused-import)
 insta485/views/index.py:8:0: W0611: Unused import re (unused-import)
 insta485/views/index.py:9:0: W0611: Unused L imported from re (unused-import)
@@ -747,7 +703,7 @@ insta485/views/index.py:18:0: C0411: standard import "import pathlib" should be 
 insta485/views/__init__.py:2:0: C0304: Final newline missing (missing-final-newline)
 
 ------------------------------------------------------------------
-Your code has been rated at 8.30/10 (previous run: 8.30/10, +0.00)
+Your code has been rated at 8.29/10 (previous run: 8.29/10, +0.00)
 
 __________________________________ test_html ___________________________________
 
@@ -992,7 +948,6 @@ E         -302
 
 tests/test_user_public.py:110: AssertionError
 =========================== short test summary info ============================
-FAILED tests/test_accounts_public.py::test_accounts_create - AssertionError: ...
 FAILED tests/test_accounts_public.py::test_accounts_edit - AssertionError: as...
 FAILED tests/test_accounts_public.py::test_accounts_delete - assert 200 == 404
 FAILED tests/test_post_public.py::test_delete_post - assert 404 == 302
@@ -1002,4 +957,4 @@ FAILED tests/test_style.py::test_pylint - subprocess.CalledProcessError: Comm...
 FAILED tests/test_style.py::test_html - assert 404 == 200
 FAILED tests/test_user_public.py::test_awdeorio - AssertionError: assert 'fil...
 FAILED tests/test_user_public.py::test_upload - assert 404 == 302
-======================== 10 failed, 38 passed in 13.26s ========================
+======================== 9 failed, 39 passed in 13.99s =========================

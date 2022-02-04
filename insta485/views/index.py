@@ -133,10 +133,6 @@ def handle_account():
             return flask.redirect(target)
             
     elif operation == 'create':
-        # check session, get logname
-        if 'logname' not in flask.session:
-            return flask.redirect(flask.url_for('login'))
-        logname = flask.session['logname']
         # get form data
         username, fullname = flask.request.form.get('username'), flask.request.form.get('fullname')
         email, password = flask.request.form.get('email'), flask.request.form.get('password')
@@ -154,8 +150,8 @@ def handle_account():
             "SELECT U.username "
             "FROM users U "
             "WHERE U.username = ? ",
-            (logname,)
-        )
+            (username,)
+        ).fetchall()
         # check to see if the user exists
         if len(user) > 0:
             return flask.abort(403)
@@ -176,6 +172,7 @@ def handle_account():
             (username, fullname, email, filename, password,)
         )
         connection.commit()
+        flask.session['logname'] = username
         # after changes are commited, redirect to the target
         return flask.redirect(target)
         
@@ -245,6 +242,7 @@ def handle_account():
                 "WHERE username = ? ",
                 (fullname, logname,)
             )
+            connection.commit()
         if email:
             connection.execute(
                 "UPDATE users "
@@ -252,7 +250,7 @@ def handle_account():
                 "WHERE username = ? ",
                 (email, logname,)
             )
-        connection.commit()
+            connection.commit()
         return flask.redirect(target)
 
     elif operation == 'update_password':
@@ -725,3 +723,8 @@ def comment():
     # send to the target
     connection.commit()
     return flask.redirect(target)
+
+
+@insta485.app.route('/posts/', methods=['POST'])
+def handle_posts():
+    print('the quick brown fox jumpsover the lazy bITCH')
