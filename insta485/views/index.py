@@ -187,6 +187,19 @@ def handle_account():
         connection.row_factory = sqlite3.Row
         logname = flask.session['logname']
         # check to see if the user exists
+        checking = connection.execute(
+            'SELECT P.filename '
+            'FROM posts P '
+            'WHERE P.owner = ? ',
+            (logname,)
+        ).fetchall()
+        for item in checking:
+            # Unpack flask object
+            # empty file = abort 400 
+            filename = item["filename"]
+            # Save to disk
+            path = insta485.app.config["UPLOAD_FOLDER"]/filename
+            path.unlink()
         to_delete = connection.execute(
             "SELECT U.username "
             "FROM users U "
@@ -724,19 +737,21 @@ def comment():
 
 @insta485.app.route('/posts/', methods=['POST'])
 def handle_posts():
-    # check to see if logged in
-    if 'logname' not in flask.session:
-        return flask.redirect(flask.url_for('login'))
-    # snag that target
-    target = flask.request.args.get('target')
-    # db4eva
+    # connect to db
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-    # if it fits it sits
-    if target is None:
-        target = flask.url_for('show_user', user_url_slug=flask.session['logname'])
-    # opopopopopopopopopopopop
+    # get the target
+    target = flask.request.args.get('target')
+    # if not specified then set to the home page 
+    # changes only for someone who is logged in
+    if 'logname' not in flask.session:
+        return flask.redirect(flask.url_for('login'))
+    logname = flask.session['logname']
+    if not target:
+        target = flask.url_for('show_user', user_url_slug=logname)
+    # get form information
     operation = flask.request.form.get('operation')
+
     #c
     if operation == 'create':
         # Unpack flask object
@@ -770,10 +785,16 @@ def handle_posts():
             'WHERE P.postid = ? ',
             (postid,)
         ).fetchall()
-        if len(checking) != 0:
+        if len(checking) == 0:
             return flask.abort(404)
-        if checking[0]['owner'] != flask.sesion['logname']:
+        if checking[0]['owner'] != flask.session['logname']:
             return flask.abort(403)
+        # Unpack flask object
+        # empty file = abort 400 
+        filename = checking[0]["filename"]
+        # Save to disk
+        path = insta485.app.config["UPLOAD_FOLDER"]/filename
+        path.unlink()
         # delete the post
         connection.execute(
             'DELETE FROM posts '

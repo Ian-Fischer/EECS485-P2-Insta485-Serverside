@@ -141,45 +141,52 @@
             <li class="leftstuff"><a href="/users/awdeorio/">awdeorio</a></li>
         </ul>
         
-    <body>
-        <div class="posts">
-            <ul>
-                <a href="/users/jflinn/"><img src="/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" alt="Profile picture" class="profilepicture"></a>
-                <a href="/users/jflinn/" class="username"><b>jflinn</b></a>
-                <a href="/posts/2/" class="time">just now</a>
-                
-            </ul>
-            <img src="/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg" alt="Post" class="posts">
+
+<body>
+    <div class="posts">
+        <ul>
+            <a href="/users/jflinn/"><img
+                    src="/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" alt="Profile picture"
+                    class="profilepicture"></a>
+            <a href="/users/jflinn/" class="username"><b>jflinn</b></a>
+            <a href="/posts/2/" class="time">just now</a>
             
-                <p> 2 likes </p>
+        </ul>
+        <img src="/uploads/ad7790405c539894d25ab8dcf0b79eed3341e109.jpg" alt="Post" class="posts">
+        
+        <p> 2 likes </p>
+        
+        
+        <form action="/likes/?target=/posts/2/" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="unlike" />
+            <input type="hidden" name="postid" value="2" />
+            <input type="submit" name="unlike" value="unlike" />
+        </form>
+        
+        
+        <div class="fullcomment">
+            <p><a href="/users/awdeorio/"><b>awdeorio</b></a>
+                Sick #crossword</p>
             
-            
-                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="unlike"/>
-                    <input type="hidden" name="postid" value="2"/>
-                    <input type="submit" name="unlike" value="unlike"/>
-                </form>
-            
-            
-                <div class="fullcomment">
-                    <p><a href="/users/awdeorio/"><b>awdeorio</b></a> Sick #crossword</p>
-                    
-                        <form action="/comments/?target=/posts/2/" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="operation" value="delete"/>
-                            <input type="hidden" name="commentid" value="4"/>
-                            <input type="submit" name="uncomment" value="delete"/>
-                        </form>
-                    
-                </div>
-            
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="/comments/?target=/posts/2/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="2"/>
-                <input type="text" name="text" required/>
-                <input type="submit" name="comment" value="comment"/>
+            <form action="/comments/?target=/posts/2/" method="post"
+                enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete" />
+                <input type="hidden" name="commentid" value="4" />
+                <input type="submit" name="uncomment" value="delete" />
             </form>
-    </body>
+            
+        </div>
+        
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="/comments/?target=/posts/2/" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create" />
+            <input type="hidden" name="postid" value="2" />
+            <input type="text" name="text" required />
+            <input type="submit" name="comment" value="comment" />
+        </form>
+</body>
 
     </body>
 </html>

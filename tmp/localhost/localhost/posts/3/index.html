@@ -141,61 +141,72 @@
             <li class="leftstuff"><a href="/users/awdeorio/">awdeorio</a></li>
         </ul>
         
-    <body>
-        <div class="posts">
-            <ul>
-                <a href="/users/awdeorio/"><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="profilepicture"></a>
-                <a href="/users/awdeorio/" class="username"><b>awdeorio</b></a>
-                <a href="/posts/3/" class="time">just now</a>
-                
-                <form action="/posts/?target=/users/awdeorio/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="delete"/>
-                    <input type="hidden" name="postid" value="3"/>
-                    <input type="submit" name="delete" value="delete this post"/>
-                </form>
-                
-            </ul>
-            <img src="/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" alt="Post" class="posts">
+
+<body>
+    <div class="posts">
+        <ul>
+            <a href="/users/awdeorio/"><img
+                    src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture"
+                    class="profilepicture"></a>
+            <a href="/users/awdeorio/" class="username"><b>awdeorio</b></a>
+            <a href="/posts/3/" class="time">just now</a>
             
-                <p> 1 like </p>
-            
-            
-                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="unlike"/>
-                    <input type="hidden" name="postid" value="3"/>
-                    <input type="submit" name="unlike" value="unlike"/>
-                </form>
-            
-            
-                <div class="fullcomment">
-                    <p><a href="/users/awdeorio/"><b>awdeorio</b></a> #chickensofinstagram</p>
-                    
-                        <form action="/comments/?target=/posts/3/" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="operation" value="delete"/>
-                            <input type="hidden" name="commentid" value="1"/>
-                            <input type="submit" name="uncomment" value="delete"/>
-                        </form>
-                    
-                </div>
-            
-                <div class="fullcomment">
-                    <p><a href="/users/jflinn/"><b>jflinn</b></a> I &lt;3 chickens</p>
-                    
-                </div>
-            
-                <div class="fullcomment">
-                    <p><a href="/users/michjc/"><b>michjc</b></a> Cute overload!</p>
-                    
-                </div>
-            
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="/comments/?target=/posts/3/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="3"/>
-                <input type="text" name="text" required/>
-                <input type="submit" name="comment" value="comment"/>
+            <form action="/posts/?target=/users/awdeorio/"
+                method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete" />
+                <input type="hidden" name="postid" value="3" />
+                <input type="submit" name="delete" value="delete this post" />
+                <input type="hidden" name="operation" value="delete" />
             </form>
-    </body>
+            
+        </ul>
+        <img src="/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" alt="Post" class="posts">
+        
+        <p> 1 like </p>
+        
+        
+        <form action="/likes/?target=/posts/3/" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="unlike" />
+            <input type="hidden" name="postid" value="3" />
+            <input type="submit" name="unlike" value="unlike" />
+        </form>
+        
+        
+        <div class="fullcomment">
+            <p><a href="/users/awdeorio/"><b>awdeorio</b></a>
+                #chickensofinstagram</p>
+            
+            <form action="/comments/?target=/posts/3/" method="post"
+                enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete" />
+                <input type="hidden" name="commentid" value="1" />
+                <input type="submit" name="uncomment" value="delete" />
+            </form>
+            
+        </div>
+        
+        <div class="fullcomment">
+            <p><a href="/users/jflinn/"><b>jflinn</b></a>
+                I &lt;3 chickens</p>
+            
+        </div>
+        
+        <div class="fullcomment">
+            <p><a href="/users/michjc/"><b>michjc</b></a>
+                Cute overload!</p>
+            
+        </div>
+        
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="/comments/?target=/posts/3/" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create" />
+            <input type="hidden" name="postid" value="3" />
+            <input type="text" name="text" required />
+            <input type="submit" name="comment" value="comment" />
+        </form>
+</body>
 
     </body>
 </html>

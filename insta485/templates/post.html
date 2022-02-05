@@ -1,56 +1,66 @@
 {% extends "base.html" %}
 {% block content %}
-    <body>
-        <div class="posts">
-            <ul>
-                <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img src="{{ url_for('send_file', filename=owner_img_url) }}" alt="Profile picture" class="profilepicture"></a>
-                <a href="{{ url_for('show_user', user_url_slug=owner) }}" class="username"><b>{{owner}}</b></a>
-                <a href="{{ url_for('show_post', post_url_slug=postid)}}" class="time">{{timestamp}}</a>
-                {% if owner == logname %}
-                <form action="{{ url_for('handle_posts') }}?target={{ url_for('show_user', user_url_slug=logname) }}" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="delete"/>
-                    <input type="hidden" name="postid" value="{{postid}}"/>
-                    <input type="submit" name="delete" value="delete this post"/>
-                </form>
-                {% endif %}
-            </ul>
-            <img src="{{ url_for('send_file', filename=img_url) }}" alt="Post" class="posts">
-            {% if likes == 1%}
-                <p> 1 like </p>
-            {% else %}
-                <p> {{likes}} likes </p>
-            {% endif %}
-            {% if logname_liked == false %}
-                <form action="{{ url_for('like') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="like"/>
-                    <input type="hidden" name="postid" value="{{postid}}"/>
-                    <input type="submit" name="like" value="like"/>
-                </form>
-            {% else %}
-                <form action="{{ url_for('like') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="unlike"/>
-                    <input type="hidden" name="postid" value="{{postid}}"/>
-                    <input type="submit" name="unlike" value="unlike"/>
-                </form>
-            {% endif %}
-            {% for comment in comments %}
-                <div class="fullcomment">
-                    <p><a href="{{ url_for('show_user', user_url_slug=comment.owner)}}"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
-                    {% if comment.owner == logname %}
-                        <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid)}}" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="operation" value="delete"/>
-                            <input type="hidden" name="commentid" value="{{comment.commentid}}"/>
-                            <input type="submit" name="uncomment" value="delete"/>
-                        </form>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="{{postid}}"/>
-                <input type="text" name="text" required/>
-                <input type="submit" name="comment" value="comment"/>
+
+<body>
+    <div class="posts">
+        <ul>
+            <a href="{{ url_for('show_user', user_url_slug=owner) }}"><img
+                    src="{{ url_for('send_file', filename=owner_img_url) }}" alt="Profile picture"
+                    class="profilepicture"></a>
+            <a href="{{ url_for('show_user', user_url_slug=owner) }}" class="username"><b>{{owner}}</b></a>
+            <a href="{{ url_for('show_post', post_url_slug=postid)}}" class="time">{{timestamp}}</a>
+            {% if owner == logname %}
+            <form action="{{ url_for('handle_posts') }}?target={{ url_for('show_user', user_url_slug=logname) }}"
+                method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete" />
+                <input type="hidden" name="postid" value="{{postid}}" />
+                <input type="submit" name="delete" value="delete this post" />
+                <input type="hidden" name="operation" value="delete" />
             </form>
-    </body>
+            {% endif %}
+        </ul>
+        <img src="{{ url_for('send_file', filename=img_url) }}" alt="Post" class="posts">
+        {% if likes == 1%}
+        <p> 1 like </p>
+        {% else %}
+        <p> {{likes}} likes </p>
+        {% endif %}
+        {% if logname_liked == false %}
+        <form action="{{ url_for('like') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="like" />
+            <input type="hidden" name="postid" value="{{postid}}" />
+            <input type="submit" name="like" value="like" />
+        </form>
+        {% else %}
+        <form action="{{ url_for('like') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="unlike" />
+            <input type="hidden" name="postid" value="{{postid}}" />
+            <input type="submit" name="unlike" value="unlike" />
+        </form>
+        {% endif %}
+        {% for comment in comments %}
+        <div class="fullcomment">
+            <p><a href="{{ url_for('show_user', user_url_slug=comment.owner)}}"><b>{{comment.owner}}</b></a>
+                {{comment.text}}</p>
+            {% if comment.owner == logname %}
+            <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid)}}" method="post"
+                enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete" />
+                <input type="hidden" name="commentid" value="{{comment.commentid}}" />
+                <input type="submit" name="uncomment" value="delete" />
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create" />
+            <input type="hidden" name="postid" value="{{postid}}" />
+            <input type="text" name="text" required />
+            <input type="submit" name="comment" value="comment" />
+        </form>
+</body>
 {% endblock %}
