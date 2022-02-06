@@ -3,6 +3,9 @@
     <head>
         <title>insta485</title>
         <style>
+            #ian {
+                display: block;
+            }
             .header {
                 margin-left: auto;
                 margin-right: auto;
@@ -141,29 +144,27 @@
             <li class="leftstuff"><a href="/users/awdeorio/">awdeorio</a></li>
         </ul>
         
-    <body>
-        <div class="box">
-            <ul>
-                <li><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg"></li>
-                <li>awdeorio</li><br>
-            </ul>
-        </div>
-        <div class="box">
-            <form action="/accounts/?target=/accounts/edit/" method="post" enctype="multipart/form-data">
-                <label>Photo  </label><input type="file" name="file" accept="image/*" /><br>
-                <label>Name  </label><input type="text" name="fullname" value="Andrew DeOrio" required /><br>
-                <label>Email  </label><input type="text" name="email" value="awdeorio@umich.edu" required /><br>
-                <input type="submit" name="update" value="submit" />
-                <input type="hidden" name="operation" value="edit_account" />
-            </form>
-        </div>
-        <div class="box">
-            <ul>
-                <a href="/accounts/password/"><li>Change Password</li><br></a>
-                <a href="/accounts/delete/"><li>Delete Account</li>
-            </ul>
-        </div>
-    </body>
+    <div class="box">
+        <ul>
+            <li><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture"></li>
+            <li>awdeorio</li>
+        </ul>
+    </div>
+    <div class="box">
+        <form action="/accounts/?target=/accounts/edit/" method="post" enctype="multipart/form-data">
+            <label>Photo  </label><input type="file" name="file" accept="image/*" />
+            <label>Name  </label><input type="text" name="fullname" value="Andrew DeOrio" required />
+            <label>Email  </label><input type="text" name="email" value="awdeorio@umich.edu" required />
+            <input type="submit" name="update" value="submit" />
+            <input type="hidden" name="operation" value="edit_account" />
+        </form>
+    </div>
+    <div class="box">
+        <ul id="ian">
+            <li><a href="/accounts/password/">Change Password</a></li>
+            <li><a href="/accounts/delete/">Delete Account</a></li>
+        </ul>
+    </div>
 
     </body>
 </html>

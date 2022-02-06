@@ -1,26 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-    <body>
-        <div class="box">
-            <ul>
-                <li><img src="{{ url_for('send_file', filename=logname_profile_pic) }}"></li>
-                <li>{{logname}}</li><br>
-            </ul>
-        </div>
-        <div class="box">
-            <form action="{{ url_for('handle_account') }}?target={{ url_for('show_edit') }}" method="post" enctype="multipart/form-data">
-                <label>Photo  </label><input type="file" name="file" accept="image/*" /><br>
-                <label>Name  </label><input type="text" name="fullname" value="{{logname_fullname}}" required /><br>
-                <label>Email  </label><input type="text" name="email" value="{{logname_email}}" required /><br>
-                <input type="submit" name="update" value="submit" />
-                <input type="hidden" name="operation" value="edit_account" />
-            </form>
-        </div>
-        <div class="box">
-            <ul>
-                <a href="{{ url_for('show_password')}}"><li>Change Password</li><br></a>
-                <a href="{{ url_for('show_delete')}}"><li>Delete Account</li>
-            </ul>
-        </div>
-    </body>
+    <div class="box">
+        <ul>
+            <li><img src="{{ url_for('send_file', filename=logname_profile_pic) }}" alt="Profile picture"></li>
+            <li>{{logname}}</li>
+        </ul>
+    </div>
+    <div class="box">
+        <form action="{{ url_for('handle_account') }}?target={{ url_for('show_edit') }}" method="post" enctype="multipart/form-data">
+            <label>Photo  </label><input type="file" name="file" accept="image/*" />
+            <label>Name  </label><input type="text" name="fullname" value="{{logname_fullname}}" required />
+            <label>Email  </label><input type="text" name="email" value="{{logname_email}}" required />
+            <input type="submit" name="update" value="submit" />
+            <input type="hidden" name="operation" value="edit_account" />
+        </form>
+    </div>
+    <div class="box">
+        <ul id="ian">
+            <li><a href="{{ url_for('show_password')}}">Change Password</a></li>
+            <li><a href="{{ url_for('show_delete')}}">Delete Account</a></li>
+        </ul>
+    </div>
 {% endblock %}

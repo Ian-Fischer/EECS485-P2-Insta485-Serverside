@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-    <body>
-        {% for user in not_following %}
-            <div class="box">
-                <img src="{{ url_for('send_file', filename=user.user_img_url) }}" alt="profilepicture" class="larger_profpic">
-                <a href="{{ url_for('show_user', user_url_slug=user.username) }}" class="username">{{user.username}}</a>
-                <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('show_explore') }}" method="post" enctype="multipart/form-data">
-                    <input type="submit" name="follow" value="follow"/>
-                    <input type="hidden" name="username" value="user.username"/>
-                    <input type="hidden" name="operation" value="follow"/>
-                </form>
-            </div>
-        {% endfor %}
-    </body>
+    {% for user in not_following %}
+        <div class="box">
+            <img src="{{ url_for('send_file', filename=user.user_img_url) }}" alt="profilepicture" class="larger_profpic">
+            <a href="{{ url_for('show_user', user_url_slug=user.username) }}" class="username">{{user.username}}</a>
+            <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('show_explore') }}" method="post" enctype="multipart/form-data">
+                <input type="submit" name="follow" value="follow"/>
+                <input type="hidden" name="username" value="user.username"/>
+                <input type="hidden" name="operation" value="follow"/>
+            </form>
+        </div>
+    {% endfor %}
 {% endblock %}

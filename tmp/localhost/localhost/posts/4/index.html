@@ -3,6 +3,9 @@
     <head>
         <title>insta485</title>
         <style>
+            #ian {
+                display: block;
+            }
             .header {
                 margin-left: auto;
                 margin-right: auto;
@@ -141,35 +144,32 @@
             <li class="leftstuff"><a href="/users/awdeorio/">awdeorio</a></li>
         </ul>
         
-
-<body>
     <div class="posts">
         <ul>
-            <a href="/users/jag/"><img
+            <li><a href="/users/jag/"><img
                     src="/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" alt="Profile picture"
-                    class="profilepicture"></a>
-            <a href="/users/jag/" class="username"><b>jag</b></a>
-            <a href="/posts/4/" class="time">just now</a>
+                    class="profilepicture"></a></li>
+            <li><a href="/users/jag/" class="username"><b>jag</b></a></li>
+            <li><a href="/posts/4/" class="time">just now</a></li>
             
         </ul>
         <img src="/uploads/2ec7cf8ae158b3b1f40065abfb33e81143707842.jpg" alt="Post" class="posts">
         
-        <p> 0 likes </p>
+            <p> 0 likes </p>
         
         
-        <form action="/likes/?target=/posts/4/" method="post"
-            enctype="multipart/form-data">
-            <input type="hidden" name="operation" value="like" />
-            <input type="hidden" name="postid" value="4" />
-            <input type="submit" name="like" value="like" />
-        </form>
+            <form action="/likes/?target=/posts/4/" method="post"
+                enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="like" />
+                <input type="hidden" name="postid" value="4" />
+                <input type="submit" name="like" value="like" />
+            </form>
         
         
-        <div class="fullcomment">
-            <p><a href="/users/jag/"><b>jag</b></a>
-                Saw this on the diag yesterday!</p>
-            
-        </div>
+            <div class="fullcomment">
+                <p><a href="/users/jag/"><b>jag</b></a>Saw this on the diag yesterday!</p>
+                
+            </div>
         
         <form action="/comments/?target=/posts/4/" method="post"
             enctype="multipart/form-data">
@@ -178,7 +178,7 @@
             <input type="text" name="text" required />
             <input type="submit" name="comment" value="comment" />
         </form>
-</body>
+    </div>
 
     </body>
 </html>

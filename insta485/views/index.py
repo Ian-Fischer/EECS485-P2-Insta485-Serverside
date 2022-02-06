@@ -144,6 +144,7 @@ def show_index():
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
 def show_user(user_url_slug):
     """Display /users/<user_url_slug>/ route."""
+    # check to see if logged in, else red. to login
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
     # open database
@@ -169,6 +170,7 @@ def show_user(user_url_slug):
     ).fetchall()
     checking = [elt['username1'] for elt in logname_follows_username_tbl]
     logname_follows_username = logname in checking
+    # get fullname
     fullname = connection.execute(
         "SELECT U.fullname "
         "FROM users U "
@@ -176,20 +178,21 @@ def show_user(user_url_slug):
         (username,)
     ).fetchall()
     fullname = fullname[0]['fullname']
+    # get list of following
     l_following = len(connection.execute(
         "SELECT F.username2 "
         "FROM following F "
         "WHERE ? = F.username1 ",
         (username, )
     ).fetchall())
-
+    # get list of followers
     l_followers = len(connection.execute(
         "SELECT F.username1 "
         "FROM following F "
         "WHERE ? = F.username2 ",
         (username, )
     ).fetchall())
-
+    # get posts and corresponding pics
     posts_tbl = connection.execute(
         "SELECT P.postid, P.filename "
         "FROM posts P "
@@ -199,6 +202,7 @@ def show_user(user_url_slug):
     posts = [{'postid': elt['postid'],
               'img_url': elt['filename']} for elt in posts_tbl]
     total_posts = len(posts)
+    # build context
     context = {
         'logname': logname,
         'username': username,
@@ -209,20 +213,23 @@ def show_user(user_url_slug):
         'total_posts': total_posts,
         'posts': posts
     }
-    connection.commit()
+    # render
     return flask.render_template("user.html", **context)
 
 
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=['GET'])
 def followers(user_url_slug):
     """Display /users/<user_url_slug>/followers/ route."""
+    # check to see if logged in, else redirect to login
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
+    # database connection
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-
+    # get logname, username
     logname = flask.session['logname']
     username = user_url_slug
+    # get user follows and who logged in follows
     c_followers = connection.execute(
         "SELECT F.username1, U.filename "
         "FROM following F, users U "
@@ -235,9 +242,8 @@ def followers(user_url_slug):
         "WHERE ? = F.username1",
         (logname,)
     ).fetchall()
-
+    # build contexzt
     l_follower = [elt['username2'] for elt in logname_follower]
-
     c_followers = [{
                     'username': elt['username1'],
                     'user_img_url': elt['filename'],
@@ -248,40 +254,42 @@ def followers(user_url_slug):
         'username': user_url_slug,
         'followers': c_followers
     }
-    connection.commit()
+    # render
     return flask.render_template("followers.html", **context)
 
 
 @insta485.app.route('/users/<user_url_slug>/following/', methods=['GET'])
 def following(user_url_slug):
     """Display /users/<user_url_slug>/following/ route."""
+    # if not logged in redirect to login
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
+    # connect to db
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-
+    # get logname and username
     logname = flask.session['logname']
     username = user_url_slug
+    # user following and logname following
     u_following = connection.execute(
         "SELECT F.username2, U.filename "
         "FROM following F, users U "
         "WHERE ? = F.username1 AND F.username2 = U.username ",
         (username,)
     ).fetchall()
-
     l_following = connection.execute(
         "SELECT F.username2 "
         "FROM following F "
         "WHERE ? = F.username1",
         (logname,)
     ).fetchall()
-
     l_following = [elt['username2'] for elt in l_following]
     c_following = [{
                     'username': elt['username2'],
                     'user_img_url': elt['filename'],
                     'logname_follows_username': elt['username2'] in l_following
-                } for elt in u_following]
+                    } for elt in u_following]
+    #  build context and render
     context = {
         'logname': logname,
         'username': user_url_slug,
@@ -293,8 +301,10 @@ def following(user_url_slug):
 @insta485.app.route('/posts/<post_url_slug>/', methods=['GET'])
 def show_post(post_url_slug):
     """Display /posts/<post_url_slug>/ route."""
+    # if not logged in, redirect to login
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
+    # connect to database
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
     logname = flask.session['logname']
@@ -304,13 +314,13 @@ def show_post(post_url_slug):
         "WHERE P.postid = ? AND U.username = P.owner",
         (post_url_slug, )
     ).fetchall()
-
+    # if there is no post, abort
     if not post:
         return flask.abort(404)
-
+    # get likes and comments
     likes, logname_liked = get_likes(post_url_slug, connection)
     comments = get_all_comments(post_url_slug, connection)
-
+    # build context and render
     context = {
         'logname': logname,
         'postid': post_url_slug,
@@ -322,18 +332,18 @@ def show_post(post_url_slug):
         "comments": comments,
         "logname_liked": logname_liked
     }
-    connection.commit()
     return flask.render_template("post.html", **context)
 
 
 @insta485.app.route('/explore/', methods=['GET'])
 def show_explore():
     """Display /explore/ route."""
+    # if not logged in, redirect to login
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
     connection = insta485.model.get_db()
     connection.row_factory = sqlite3.Row
-
+    # get users for explore
     logname = flask.session['logname']
     users = connection.execute(
         "SELECT U.username "
@@ -344,9 +354,8 @@ def show_explore():
         "WHERE F.username1 = ? OR F.username2 = ?",
         (logname, logname, )
     ).fetchall()
-
     users = [elt['username'] for elt in users]
-
+    # get not following
     not_following = []
     for user in users:
         profile_pic = connection.execute(
@@ -359,12 +368,11 @@ def show_explore():
         user_dict['username'] = user
         user_dict['user_img_url'] = profile_pic[0]['filename']
         not_following.append(user_dict)
-
+    # build context and render
     context = {
         'logname': logname,
         'not_following': not_following
     }
-    connection.commit()
     return flask.render_template("explore.html", **context)
 
 

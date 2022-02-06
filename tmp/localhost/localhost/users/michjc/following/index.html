@@ -3,6 +3,9 @@
     <head>
         <title>insta485</title>
         <style>
+            #ian {
+                display: block;
+            }
             .header {
                 margin-left: auto;
                 margin-right: auto;
@@ -141,33 +144,31 @@
             <li class="leftstuff"><a href="/users/awdeorio/">awdeorio</a></li>
         </ul>
         
-    <body>
-        <h3 class="header">Following: </h3>
-        
-            <div class="follow">
-                <img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="larger_profpic">
-                <a href="/users/awdeorio/">
-                    <p>awdeorio</p>
-                </a>
-                
-            </div>
-        
-            <div class="follow">
-                <img src="/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" alt="Profile picture" class="larger_profpic">
-                <a href="/users/jag/">
-                    <p>jag</p>
-                </a>
-                
-                    <p>not following</p>
-                    <form action="/following/?target=/users/michjc/following/" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="follow" value="follow"/>
-                        <input type="hidden" name="username" value="jag"/>
-                        <input type="hidden" name="operation" value="follow"/>
-                    </form>
-                
-            </div>
-         
-    </body>
+    <h3 class="header">Following: </h3>
+    
+        <div class="follow">
+            <img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="larger_profpic">
+            <a href="/users/awdeorio/">
+                <p>awdeorio</p>
+            </a>
+            
+        </div>
+    
+        <div class="follow">
+            <img src="/uploads/73ab33bd357c3fd42292487b825880958c595655.jpg" alt="Profile picture" class="larger_profpic">
+            <a href="/users/jag/">
+                <p>jag</p>
+            </a>
+            
+                <p>not following</p>
+                <form action="/following/?target=/users/michjc/following/" method="post" enctype="multipart/form-data">
+                    <input type="submit" name="follow" value="follow"/>
+                    <input type="hidden" name="username" value="jag"/>
+                    <input type="hidden" name="operation" value="follow"/>
+                </form>
+            
+        </div>
+     
 
     </body>
 </html>

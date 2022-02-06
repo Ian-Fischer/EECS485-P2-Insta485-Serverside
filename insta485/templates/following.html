@@ -1,29 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-    <body>
-        <h3 class="header">Following: </h3>
-        {% for follow in following %}
-            <div class="follow">
-                <img src="{{ url_for('send_file', filename=follow.user_img_url) }}" alt="Profile picture" class="larger_profpic">
-                <a href="{{ url_for('show_user', user_url_slug=follow.username)}}">
-                    <p>{{follow.username}}</p>
-                </a>
-                {% if follow.logname_follows_username and logname != follow.username %}
-                    <p>following</p>
-                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="unfollow" value="unfollow"/>
-                        <input type="hidden" name="username" value="{{follow.username}}"/>
-                        <input type="hidden" name="operation" value="unfollow"/>
-                    </form>
-                {% elif not follow.logname_follows_username and logname != follow.username %}
-                    <p>not following</p>
-                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="follow" value="follow"/>
-                        <input type="hidden" name="username" value="{{follow.username}}"/>
-                        <input type="hidden" name="operation" value="follow"/>
-                    </form>
-                {% endif %}
-            </div>
-        {% endfor %} 
-    </body>
+    <h3 class="header">Following: </h3>
+    {% for follow in following %}
+        <div class="follow">
+            <img src="{{ url_for('send_file', filename=follow.user_img_url) }}" alt="Profile picture" class="larger_profpic">
+            <a href="{{ url_for('show_user', user_url_slug=follow.username)}}">
+                <p>{{follow.username}}</p>
+            </a>
+            {% if follow.logname_follows_username and logname != follow.username %}
+                <p>following</p>
+                <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
+                    <input type="submit" name="unfollow" value="unfollow"/>
+                    <input type="hidden" name="username" value="{{follow.username}}"/>
+                    <input type="hidden" name="operation" value="unfollow"/>
+                </form>
+            {% elif not follow.logname_follows_username and logname != follow.username %}
+                <p>not following</p>
+                <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
+                    <input type="submit" name="follow" value="follow"/>
+                    <input type="hidden" name="username" value="{{follow.username}}"/>
+                    <input type="hidden" name="operation" value="follow"/>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %} 
 {% endblock %}
