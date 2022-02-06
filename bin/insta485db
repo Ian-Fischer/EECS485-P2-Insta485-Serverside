@@ -1,8 +1,9 @@
 #!/bin/bash
 # insta485db
 
-# stop on errors
+# stop on errors, print commands
 set -Eeuo pipefail
+set -x
 
 usage() {
     echo "Usage: $0 (create|destory|reset|dump)"
@@ -16,8 +17,9 @@ fi
 # Parse argument. $1 is the first argument
 case $1 in 
     "create")
-        if [ -d "var/insta485.sqlite3" ]; then
-            echo "Error database already exists."
+        if [ -f "var/insta485.sqlite3" ]
+        then
+            echo "Error: database already exists."
         else
             mkdir -p var/uploads
             sqlite3 var/insta485.sqlite3 < sql/schema.sql
@@ -39,11 +41,16 @@ case $1 in
         ;;
     
     "dump")
-        sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM comments'
-        sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM following'
-        sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM likes'
-        sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM posts'
-        sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM users'
+        if [ ! -f "var/insta485.sqlite3" ]
+        then
+            echo "Error: database does not exist."
+        else
+            sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM comments'
+            sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM following'
+            sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM likes'
+            sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM posts'
+            sqlite3 -batch -line var/insta485.sqlite3 'SELECT * FROM users'
+        fi
         ;;
     *)
         usage
