@@ -69,9 +69,11 @@ def get_all_comments(postid, connection):
         "WHERE C.postid = ? ",
         (postid,)
     ).fetchall()
-    return [{'owner': elt['owner'],
-             'text': elt['text'],
-             'commentid': elt['commentid']} for elt in comments]
+    output = [{'owner': elt['owner'],
+               'text': elt['text'],
+               'commentid': elt['commentid']} for elt in comments]
+    output = sorted(output, key=lambda k: k['commentid'])
+    return output
 
 
 def get_likes(postid, connection):
@@ -134,6 +136,7 @@ def show_index():
                 "logname_liked": logname_liked
             })
     # build context
+    posts = sorted(posts, key=lambda p: p['postid'], reverse=True)
     context = {
         "logname": logname,
         "posts": posts
@@ -761,7 +764,7 @@ def follow_unfollow():
     follows = connection.execute(
             'SELECT F.username2 '
             'FROM following F '
-            'WHERE F.username1 = ? AND F.username2 = ?',
+            'WHERE F.username1 = ? AND F.username2 = ? ',
             (logname, username)).fetchall()
     # FOLLOW
     if operation == 'follow':
@@ -772,7 +775,7 @@ def follow_unfollow():
         connection.execute(
             "INSERT INTO following(username1, username2) "
             "VALUES (?,?) ",
-            (logname, username,)
+            (logname, username, )
         )
         connection.commit()
     # UNFOLLOW
@@ -783,8 +786,8 @@ def follow_unfollow():
         # if they do, commit the deletion and redirect
         connection.execute(
             "DELETE FROM following "
-            "WHERE username1 = ? AND username2 = ?",
-            (logname, username,)
+            "WHERE username1 = ? AND username2 = ? ",
+            (logname, username, )
         )
         connection.commit()
     # redirect after committing changes

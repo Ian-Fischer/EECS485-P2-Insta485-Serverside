@@ -147,6 +147,38 @@
     
         <div class="posts">
             <ul>
+                <li><a href="/users/awdeorio/"><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="profilepicture"></a></li>
+                <li><a href="/users/awdeorio/" class="username"><b>awdeorio</b></a></li>
+                <li><a href="/posts/3/" class="time">just now</a></li>
+            </ul>
+            <img src="/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
+            
+                <p>1 like</p>
+            
+            
+                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="operation" value="unlike"/>
+                    <input type="hidden" name="postid" value="3"/>
+                    <input type="submit" name="unlike" value="unlike"/>
+                </form>
+            
+            
+                <p><a href="/users/awdeorio/"><b>awdeorio</b></a> #chickensofinstagram</p>
+            
+                <p><a href="/users/jflinn/"><b>jflinn</b></a> I &lt;3 chickens</p>
+            
+                <p><a href="/users/michjc/"><b>michjc</b></a> Cute overload!</p>
+            
+            <form action="/comments/?target=/" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="create"/>
+                <input type="hidden" name="postid" value="3"/>
+                <input type="text" name="text" required/>
+                <input type="submit" name="comment" value="comment"/>
+            </form>
+        </div>
+    
+        <div class="posts">
+            <ul>
                 <li><a href="/users/jflinn/"><img src="/uploads/505083b8b56c97429a728b68f31b0b2a089e5113.jpg" alt="Profile picture" class="profilepicture"></a></li>
                 <li><a href="/users/jflinn/" class="username"><b>jflinn</b></a></li>
                 <li><a href="/posts/2/" class="time">just now</a></li>
@@ -198,38 +230,6 @@
             <form action="/comments/?target=/" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="operation" value="create"/>
                 <input type="hidden" name="postid" value="1"/>
-                <input type="text" name="text" required/>
-                <input type="submit" name="comment" value="comment"/>
-            </form>
-        </div>
-    
-        <div class="posts">
-            <ul>
-                <li><a href="/users/awdeorio/"><img src="/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg" alt="Profile picture" class="profilepicture"></a></li>
-                <li><a href="/users/awdeorio/" class="username"><b>awdeorio</b></a></li>
-                <li><a href="/posts/3/" class="time">just now</a></li>
-            </ul>
-            <img src="/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
-            
-                <p>1 like</p>
-            
-            
-                <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="unlike"/>
-                    <input type="hidden" name="postid" value="3"/>
-                    <input type="submit" name="unlike" value="unlike"/>
-                </form>
-            
-            
-                <p><a href="/users/awdeorio/"><b>awdeorio</b></a> #chickensofinstagram</p>
-            
-                <p><a href="/users/jflinn/"><b>jflinn</b></a> I &lt;3 chickens</p>
-            
-                <p><a href="/users/michjc/"><b>michjc</b></a> Cute overload!</p>
-            
-            <form action="/comments/?target=/" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="create"/>
-                <input type="hidden" name="postid" value="3"/>
                 <input type="text" name="text" required/>
                 <input type="submit" name="comment" value="comment"/>
             </form>
