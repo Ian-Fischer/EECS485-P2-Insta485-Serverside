@@ -8,7 +8,7 @@ collecting ... collected 48 items
 tests/test_accounts_public.py::test_accounts_create PASSED               [  2%]
 tests/test_accounts_public.py::test_accounts_edit PASSED                 [  4%]
 tests/test_accounts_public.py::test_accounts_password PASSED             [  6%]
-tests/test_accounts_public.py::test_accounts_delete FAILED               [  8%]
+tests/test_accounts_public.py::test_accounts_delete PASSED               [  8%]
 tests/test_accounts_public.py::test_accounts_uploads_permission PASSED   [ 10%]
 tests/test_database_public.py::test_sql_schema PASSED                    [ 12%]
 tests/test_database_public.py::test_likeids PASSED                       [ 14%]
@@ -40,604 +40,21 @@ tests/test_post_public.py::test_delete_comment PASSED                    [ 66%]
 tests/test_post_public.py::test_like_unlike PASSED                       [ 68%]
 tests/test_post_public.py::test_duplicate_like_unlike PASSED             [ 70%]
 tests/test_post_public.py::test_comment PASSED                           [ 72%]
-tests/test_post_public.py::test_delete_post FAILED                       [ 75%]
+tests/test_post_public.py::test_delete_post PASSED                       [ 75%]
 tests/test_scripts.py::test_insta485db_destroy PASSED                    [ 77%]
 tests/test_scripts.py::test_insta485db_create PASSED                     [ 79%]
 tests/test_scripts.py::test_insta485db_reset PASSED                      [ 81%]
 tests/test_scripts.py::test_insta485db_dump PASSED                       [ 83%]
 tests/test_scripts.py::test_insta485run PASSED                           [ 85%]
 tests/test_scripts.py::test_insta485test PASSED                          [ 87%]
-tests/test_style.py::test_pycodestyle FAILED                             [ 89%]
-tests/test_style.py::test_pydocstyle FAILED                              [ 91%]
-tests/test_style.py::test_pylint FAILED                                  [ 93%]
+tests/test_style.py::test_pycodestyle PASSED                             [ 89%]
+tests/test_style.py::test_pydocstyle PASSED                              [ 91%]
+tests/test_style.py::test_pylint PASSED                                  [ 93%]
 tests/test_style.py::test_html FAILED                                    [ 95%]
 tests/test_user_public.py::test_awdeorio PASSED                          [ 97%]
 tests/test_user_public.py::test_upload PASSED                            [100%]
 
 =================================== FAILURES ===================================
-_____________________________ test_accounts_delete _____________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_accounts_delete(client):
-        """Delete account and verify that everything is gone.
-    
-        Note: 'client' is a fixture fuction that provides a Flask test server
-        interface with a clean database.  It is implemented in conftest.py and
-        reused by many tests.  Docs: https://docs.pytest.org/en/latest/fixture.html
-        """
-        # Log in
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 302
-    
-        # Delete account
-        query_string = urlencode({"target": "/accounts/create/"})
-        response = client.post(
-            f"/accounts/?{query_string}",
-            data={
-                "delete": "confirm delete account",
-                "operation": "delete"
-            }
-        )
-        assert response.status_code == 302
-        urlpath = urlparse(response.location).path
-        assert urlpath == "/accounts/create/"
-    
-        # User can no longer access post 1, should be redirected to login
-        response = client.get("/posts/1/")
-        assert response.status_code == 302
-        urlpath = urlparse(response.location).path
-        assert urlpath == "/accounts/login/"
-    
-        # User can no longer access post 3, should be redirected to login
-        response = client.get("/posts/3/")
-        assert response.status_code == 302
-        urlpath = urlparse(response.location).path
-        assert urlpath == "/accounts/login/"
-    
-        # Log in should fail
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 403
-    
-        # User pages should be gone
-        response = client.get("/users/awdeorio/")
-        assert response.status_code == 302
-        response = client.get("/users/awdeorio/following/")
-        assert response.status_code == 302
-        response = client.get("/users/awdeorio/followers/")
-        assert response.status_code == 302
-    
-        # Log in as user jag
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "jag",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        # Verify awdeorio's images were deleted
-        response = client.get(
-            "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg"
-        )
->       assert response.status_code == 404
-E       assert 200 == 404
-E         +200
-E         -404
-
-tests/test_accounts_public.py:293: AssertionError
-_______________________________ test_delete_post _______________________________
-
-client = <FlaskClient <Flask 'insta485'>>
-
-    def test_delete_post(client):
-        """Delete post.  Make sure comments are gone and photo deleted."""
-        # Log in
-        response = client.post(
-            "/accounts/",
-            data={
-                "username": "awdeorio",
-                "password": "password",
-                "operation": "login"
-            },
-        )
-        assert response.status_code == 302
-    
-        # Delete the post owned by awdeorio and redirect to user page
-        response = client.post(
-            "/posts/",
-            data={"postid": "1", "operation": "delete"}
-        )
->       assert response.status_code == 302
-E       assert 404 == 302
-E         +404
-E         -302
-
-tests/test_post_public.py:375: AssertionError
-_______________________________ test_pycodestyle _______________________________
-
-    def test_pycodestyle():
-        """Run pycodestyle."""
-        assert_no_prohibited_terms("nopep8", "noqa", "pylint")
->       subprocess.run(["pycodestyle", "setup.py", "insta485"], check=True)
-
-tests/test_style.py:26: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-input = None, capture_output = False, timeout = None, check = True
-popenargs = (['pycodestyle', 'setup.py', 'insta485'],), kwargs = {}
-process = <Popen: returncode: 1 args: ['pycodestyle', 'setup.py', 'insta485']>
-stdout = None, stderr = None, retcode = 1
-
-    def run(*popenargs,
-            input=None, capture_output=False, timeout=None, check=False, **kwargs):
-        """Run command with arguments and return a CompletedProcess instance.
-    
-        The returned instance will have attributes args, returncode, stdout and
-        stderr. By default, stdout and stderr are not captured, and those attributes
-        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them.
-    
-        If check is True and the exit code was non-zero, it raises a
-        CalledProcessError. The CalledProcessError object will have the return code
-        in the returncode attribute, and output & stderr attributes if those streams
-        were captured.
-    
-        If timeout is given, and the process takes too long, a TimeoutExpired
-        exception will be raised.
-    
-        There is an optional argument "input", allowing you to
-        pass bytes or a string to the subprocess's stdin.  If you use this argument
-        you may not also use the Popen constructor's "stdin" argument, as
-        it will be used internally.
-    
-        By default, all communication is in bytes, and therefore any "input" should
-        be bytes, and the stdout and stderr will be bytes. If in text mode, any
-        "input" should be a string, and stdout and stderr will be strings decoded
-        according to locale encoding, or by "encoding" if set. Text mode is
-        triggered by setting any of text, encoding, errors or universal_newlines.
-    
-        The other arguments are the same as for the Popen constructor.
-        """
-        if input is not None:
-            if kwargs.get('stdin') is not None:
-                raise ValueError('stdin and input arguments may not both be used.')
-            kwargs['stdin'] = PIPE
-    
-        if capture_output:
-            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
-                raise ValueError('stdout and stderr arguments may not be used '
-                                 'with capture_output.')
-            kwargs['stdout'] = PIPE
-            kwargs['stderr'] = PIPE
-    
-        with Popen(*popenargs, **kwargs) as process:
-            try:
-                stdout, stderr = process.communicate(input, timeout=timeout)
-            except TimeoutExpired as exc:
-                process.kill()
-                if _mswindows:
-                    # Windows accumulates the output in a single blocking
-                    # read() call run on child threads, with the timeout
-                    # being done in a join() on those threads.  communicate()
-                    # _after_ kill() is required to collect that and add it
-                    # to the exception.
-                    exc.stdout, exc.stderr = process.communicate()
-                else:
-                    # POSIX _communicate already populated the output so
-                    # far into the TimeoutExpired exception.
-                    process.wait()
-                raise
-            except:  # Including KeyboardInterrupt, communicate handled that.
-                process.kill()
-                # We don't call process.wait() as .__exit__ does that for us.
-                raise
-            retcode = process.poll()
-            if check and retcode:
->               raise CalledProcessError(retcode, process.args,
-                                         output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['pycodestyle', 'setup.py', 'insta485']' returned non-zero exit status 1.
-
-/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/subprocess.py:524: CalledProcessError
------------------------------ Captured stdout call -----------------------------
-insta485/__init__.py:5:80: E501 line too long (88 > 79 characters)
-insta485/model.py:45:26: W292 no newline at end of file
-insta485/views/__init__.py:2:44: W292 no newline at end of file
-insta485/views/index.py:9:10: W291 trailing whitespace
-insta485/views/index.py:17:12: W291 trailing whitespace
-insta485/views/index.py:21:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:28:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:37:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:44:21: E203 whitespace before ':'
-insta485/views/index.py:44:80: E501 line too long (109 > 79 characters)
-insta485/views/index.py:46:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:56:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:78:80: E501 line too long (134 > 79 characters)
-insta485/views/index.py:81:22: E231 missing whitespace after ','
-insta485/views/index.py:84:64: E231 missing whitespace after ','
-insta485/views/index.py:87:29: E203 whitespace before ':'
-insta485/views/index.py:88:28: E203 whitespace before ':'
-insta485/views/index.py:89:36: E203 whitespace before ':'
-insta485/views/index.py:90:30: E203 whitespace before ':'
-insta485/views/index.py:91:32: E203 whitespace before ':'
-insta485/views/index.py:91:80: E501 line too long (89 > 79 characters)
-insta485/views/index.py:92:28: E203 whitespace before ':'
-insta485/views/index.py:93:31: E203 whitespace before ':'
-insta485/views/index.py:96:80: E501 line too long (82 > 79 characters)
-insta485/views/index.py:104:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:112:80: E501 line too long (92 > 79 characters)
-insta485/views/index.py:135:1: W293 blank line contains whitespace
-insta485/views/index.py:138:80: E501 line too long (99 > 79 characters)
-insta485/views/index.py:139:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:159:35: W291 trailing whitespace
-insta485/views/index.py:160:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:161:80: E501 line too long (86 > 79 characters)
-insta485/views/index.py:179:1: W293 blank line contains whitespace
-insta485/views/index.py:181:5: E303 too many blank lines (2)
-insta485/views/index.py:206:1: W293 blank line contains whitespace
-insta485/views/index.py:212:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:214:21: E711 comparison to None should be 'if cond is None:'
-insta485/views/index.py:214:38: E711 comparison to None should be 'if cond is None:'
-insta485/views/index.py:223:20: E711 comparison to None should be 'if cond is not None:'
-insta485/views/index.py:258:80: E501 line too long (109 > 79 characters)
-insta485/views/index.py:281:80: E501 line too long (92 > 79 characters)
-insta485/views/index.py:282:80: E501 line too long (82 > 79 characters)
-insta485/views/index.py:291:1: W293 blank line contains whitespace
-insta485/views/index.py:308:17: E231 missing whitespace after ','
-insta485/views/index.py:333:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:338:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:346:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:354:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:375:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:406:80: E501 line too long (88 > 79 characters)
-insta485/views/index.py:430:80: E501 line too long (88 > 79 characters)
-insta485/views/index.py:469:1: W293 blank line contains whitespace
-insta485/views/index.py:480:50: W291 trailing whitespace
-insta485/views/index.py:481:53: W291 trailing whitespace
-insta485/views/index.py:482:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:491:1: W293 blank line contains whitespace
-insta485/views/index.py:502:5: E303 too many blank lines (2)
-insta485/views/index.py:521:50: W291 trailing whitespace
-insta485/views/index.py:522:53: W291 trailing whitespace
-insta485/views/index.py:523:80: E501 line too long (85 > 79 characters)
-insta485/views/index.py:532:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:541:80: E501 line too long (97 > 79 characters)
-insta485/views/index.py:578:80: E501 line too long (84 > 79 characters)
-insta485/views/index.py:580:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:590:1: W293 blank line contains whitespace
-insta485/views/index.py:600:27: E203 whitespace before ':'
-insta485/views/index.py:606:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:614:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:645:20: E231 missing whitespace after ','
-insta485/views/index.py:646:17: W291 trailing whitespace
-insta485/views/index.py:647:1: W293 blank line contains whitespace
-insta485/views/index.py:681:49: W291 trailing whitespace
-insta485/views/index.py:689:80: E501 line too long (93 > 79 characters)
-insta485/views/index.py:690:80: E501 line too long (89 > 79 characters)
-insta485/views/index.py:737:80: E501 line too long (83 > 79 characters)
-insta485/views/index.py:740:5: E265 block comment should start with '# '
-insta485/views/index.py:744:33: W291 trailing whitespace
-insta485/views/index.py:748:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:749:80: E501 line too long (86 > 79 characters)
-insta485/views/index.py:786:80: E501 line too long (81 > 79 characters)
-insta485/views/index.py:789:1: E302 expected 2 blank lines, found 1
-insta485/views/index.py:794:52: W292 no newline at end of file
-_______________________________ test_pydocstyle ________________________________
-
-    def test_pydocstyle():
-        """Run pydocstyle."""
-        assert_no_prohibited_terms("nopep8", "noqa", "pylint")
->       subprocess.run(["pydocstyle", "setup.py", "insta485"], check=True)
-
-tests/test_style.py:32: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-input = None, capture_output = False, timeout = None, check = True
-popenargs = (['pydocstyle', 'setup.py', 'insta485'],), kwargs = {}
-process = <Popen: returncode: 1 args: ['pydocstyle', 'setup.py', 'insta485']>
-stdout = None, stderr = None, retcode = 1
-
-    def run(*popenargs,
-            input=None, capture_output=False, timeout=None, check=False, **kwargs):
-        """Run command with arguments and return a CompletedProcess instance.
-    
-        The returned instance will have attributes args, returncode, stdout and
-        stderr. By default, stdout and stderr are not captured, and those attributes
-        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them.
-    
-        If check is True and the exit code was non-zero, it raises a
-        CalledProcessError. The CalledProcessError object will have the return code
-        in the returncode attribute, and output & stderr attributes if those streams
-        were captured.
-    
-        If timeout is given, and the process takes too long, a TimeoutExpired
-        exception will be raised.
-    
-        There is an optional argument "input", allowing you to
-        pass bytes or a string to the subprocess's stdin.  If you use this argument
-        you may not also use the Popen constructor's "stdin" argument, as
-        it will be used internally.
-    
-        By default, all communication is in bytes, and therefore any "input" should
-        be bytes, and the stdout and stderr will be bytes. If in text mode, any
-        "input" should be a string, and stdout and stderr will be strings decoded
-        according to locale encoding, or by "encoding" if set. Text mode is
-        triggered by setting any of text, encoding, errors or universal_newlines.
-    
-        The other arguments are the same as for the Popen constructor.
-        """
-        if input is not None:
-            if kwargs.get('stdin') is not None:
-                raise ValueError('stdin and input arguments may not both be used.')
-            kwargs['stdin'] = PIPE
-    
-        if capture_output:
-            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
-                raise ValueError('stdout and stderr arguments may not be used '
-                                 'with capture_output.')
-            kwargs['stdout'] = PIPE
-            kwargs['stderr'] = PIPE
-    
-        with Popen(*popenargs, **kwargs) as process:
-            try:
-                stdout, stderr = process.communicate(input, timeout=timeout)
-            except TimeoutExpired as exc:
-                process.kill()
-                if _mswindows:
-                    # Windows accumulates the output in a single blocking
-                    # read() call run on child threads, with the timeout
-                    # being done in a join() on those threads.  communicate()
-                    # _after_ kill() is required to collect that and add it
-                    # to the exception.
-                    exc.stdout, exc.stderr = process.communicate()
-                else:
-                    # POSIX _communicate already populated the output so
-                    # far into the TimeoutExpired exception.
-                    process.wait()
-                raise
-            except:  # Including KeyboardInterrupt, communicate handled that.
-                process.kill()
-                # We don't call process.wait() as .__exit__ does that for us.
-                raise
-            retcode = process.poll()
-            if check and retcode:
->               raise CalledProcessError(retcode, process.args,
-                                         output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['pydocstyle', 'setup.py', 'insta485']' returned non-zero exit status 1.
-
-/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/subprocess.py:524: CalledProcessError
------------------------------ Captured stdout call -----------------------------
-insta485/views/index.py:21 in public function `get_salt`:
-        D103: Missing docstring in public function
-insta485/views/index.py:28 in public function `hash_password`:
-        D103: Missing docstring in public function
-insta485/views/index.py:37 in public function `get_all_comments`:
-        D103: Missing docstring in public function
-insta485/views/index.py:46 in public function `get_likes`:
-        D103: Missing docstring in public function
-insta485/views/index.py:105 in public function `handle_account`:
-        D103: Missing docstring in public function
-insta485/views/index.py:294 in public function `show_explore`:
-        D103: Missing docstring in public function
-insta485/views/index.py:334 in public function `logout`:
-        D103: Missing docstring in public function
-insta485/views/index.py:339 in public function `login`:
-        D103: Missing docstring in public function
-insta485/views/index.py:347 in public function `show_user`:
-        D103: Missing docstring in public function
-insta485/views/index.py:423 in public function `show_post`:
-        D103: Missing docstring in public function
-insta485/views/index.py:455 in public function `show_followers`:
-        D103: Missing docstring in public function
-insta485/views/index.py:494 in public function `show_following`:
-        D103: Missing docstring in public function
-insta485/views/index.py:575 in public function `send_file`:
-        D103: Missing docstring in public function
-insta485/views/index.py:581 in public function `show_edit`:
-        D103: Missing docstring in public function
-insta485/views/index.py:607 in public function `show_password`:
-        D103: Missing docstring in public function
-insta485/views/index.py:615 in public function `show_delete`:
-        D103: Missing docstring in public function
-insta485/views/index.py:631 in public function `like`:
-        D103: Missing docstring in public function
-insta485/views/index.py:675 in public function `comment`:
-        D103: Missing docstring in public function
-insta485/views/index.py:726 in public function `handle_posts`:
-        D103: Missing docstring in public function
-insta485/views/index.py:790 in public function `show_create`:
-        D103: Missing docstring in public function
-_________________________________ test_pylint __________________________________
-
-    def test_pylint():
-        """Run pylint."""
-        assert_no_prohibited_terms("nopep8", "noqa", "pylint")
->       subprocess.run([
-            "pylint",
-            "--rcfile", utils.TEST_DIR/"testdata/pylintrc",
-            "--disable=cyclic-import",
-            "--disable=assigning-non-slot",
-            "--unsafe-load-any-extension=y",
-            "setup.py",
-            "insta485",
-        ], check=True)
-
-tests/test_style.py:38: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-input = None, capture_output = False, timeout = None, check = True
-popenargs = (['pylint', '--rcfile', PosixPath('/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tests/testdata/pylintrc'), '--disable=cyclic-import', '--disable=assigning-non-slot', '--unsafe-load-any-extension=y', ...],)
-kwargs = {}
-process = <Popen: returncode: 30 args: ['pylint', '--rcfile', PosixPath('/Users/johnky...>
-stdout = None, stderr = None, retcode = 30
-
-    def run(*popenargs,
-            input=None, capture_output=False, timeout=None, check=False, **kwargs):
-        """Run command with arguments and return a CompletedProcess instance.
-    
-        The returned instance will have attributes args, returncode, stdout and
-        stderr. By default, stdout and stderr are not captured, and those attributes
-        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them.
-    
-        If check is True and the exit code was non-zero, it raises a
-        CalledProcessError. The CalledProcessError object will have the return code
-        in the returncode attribute, and output & stderr attributes if those streams
-        were captured.
-    
-        If timeout is given, and the process takes too long, a TimeoutExpired
-        exception will be raised.
-    
-        There is an optional argument "input", allowing you to
-        pass bytes or a string to the subprocess's stdin.  If you use this argument
-        you may not also use the Popen constructor's "stdin" argument, as
-        it will be used internally.
-    
-        By default, all communication is in bytes, and therefore any "input" should
-        be bytes, and the stdout and stderr will be bytes. If in text mode, any
-        "input" should be a string, and stdout and stderr will be strings decoded
-        according to locale encoding, or by "encoding" if set. Text mode is
-        triggered by setting any of text, encoding, errors or universal_newlines.
-    
-        The other arguments are the same as for the Popen constructor.
-        """
-        if input is not None:
-            if kwargs.get('stdin') is not None:
-                raise ValueError('stdin and input arguments may not both be used.')
-            kwargs['stdin'] = PIPE
-    
-        if capture_output:
-            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
-                raise ValueError('stdout and stderr arguments may not be used '
-                                 'with capture_output.')
-            kwargs['stdout'] = PIPE
-            kwargs['stderr'] = PIPE
-    
-        with Popen(*popenargs, **kwargs) as process:
-            try:
-                stdout, stderr = process.communicate(input, timeout=timeout)
-            except TimeoutExpired as exc:
-                process.kill()
-                if _mswindows:
-                    # Windows accumulates the output in a single blocking
-                    # read() call run on child threads, with the timeout
-                    # being done in a join() on those threads.  communicate()
-                    # _after_ kill() is required to collect that and add it
-                    # to the exception.
-                    exc.stdout, exc.stderr = process.communicate()
-                else:
-                    # POSIX _communicate already populated the output so
-                    # far into the TimeoutExpired exception.
-                    process.wait()
-                raise
-            except:  # Including KeyboardInterrupt, communicate handled that.
-                process.kill()
-                # We don't call process.wait() as .__exit__ does that for us.
-                raise
-            retcode = process.poll()
-            if check and retcode:
->               raise CalledProcessError(retcode, process.args,
-                                         output=stdout, stderr=stderr)
-E               subprocess.CalledProcessError: Command '['pylint', '--rcfile', PosixPath('/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tests/testdata/pylintrc'), '--disable=cyclic-import', '--disable=assigning-non-slot', '--unsafe-load-any-extension=y', 'setup.py', 'insta485']' returned non-zero exit status 30.
-
-/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/subprocess.py:524: CalledProcessError
------------------------------ Captured stdout call -----------------------------
-************* Module insta485.model
-insta485/model.py:45:0: C0304: Final newline missing (missing-final-newline)
-************* Module insta485.views.index
-insta485/views/index.py:281:9: W0511: TODO: new hash, don't use old salt won't work, do complete password alg. from spec (fixme)
-insta485/views/index.py:785:9: W0511: TODO: IAN NICOLE FIX THIS IT'S UGLY! but it works (fixme)
-insta485/views/index.py:9:9: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:17:11: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:44:0: C0301: Line too long (109/100) (line-too-long)
-insta485/views/index.py:78:0: C0301: Line too long (134/100) (line-too-long)
-insta485/views/index.py:135:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:159:34: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:179:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:206:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:258:0: C0301: Line too long (109/100) (line-too-long)
-insta485/views/index.py:291:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:469:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:480:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:481:52: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:491:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:521:49: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:522:52: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:590:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:646:16: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:647:0: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:681:48: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:744:32: C0303: Trailing whitespace (trailing-whitespace)
-insta485/views/index.py:794:0: C0304: Final newline missing (missing-final-newline)
-insta485/views/index.py:21:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:28:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:37:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:46:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:62:4: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:105:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:105:0: R0914: Too many local variables (23/15) (too-many-locals)
-insta485/views/index.py:130:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:214:11: C0121: Comparison 'fullname == None' should be 'fullname is None' (singleton-comparison)
-insta485/views/index.py:214:31: C0121: Comparison 'email == None' should be 'email is None' (singleton-comparison)
-insta485/views/index.py:223:11: C0121: Comparison 'fileobj != None' should be 'fileobj is not None' (singleton-comparison)
-insta485/views/index.py:105:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:219:8: W0612: Unused variable 'cursor' (unused-variable)
-insta485/views/index.py:105:0: R0911: Too many return statements (18/6) (too-many-return-statements)
-insta485/views/index.py:105:0: R0912: Too many branches (21/12) (too-many-branches)
-insta485/views/index.py:105:0: R0915: Too many statements (83/50) (too-many-statements)
-insta485/views/index.py:294:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:334:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:339:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:341:4: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:347:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:423:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:455:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:494:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:551:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:562:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:575:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:581:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:607:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:615:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:631:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:650:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:662:8: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:631:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:675:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:726:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:741:4: R1705: Unnecessary "elif" after "return" (no-else-return)
-insta485/views/index.py:775:35: E1101: Module 'flask' has no 'sesion' member; maybe 'session'? (no-member)
-insta485/views/index.py:726:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-insta485/views/index.py:790:0: C0116: Missing function or method docstring (missing-function-docstring)
-insta485/views/index.py:791:4: R1705: Unnecessary "else" after "return" (no-else-return)
-insta485/views/index.py:7:0: W0611: Unused import profile (unused-import)
-insta485/views/index.py:8:0: W0611: Unused import re (unused-import)
-insta485/views/index.py:10:0: W0611: Unused L imported from re (unused-import)
-insta485/views/index.py:13:0: W0611: Unused empty imported from pyparsing (unused-import)
-insta485/views/index.py:16:0: W0611: Unused import pdb (unused-import)
-insta485/views/index.py:15:0: C0411: standard import "import sqlite3" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:16:0: C0411: standard import "import pdb" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:17:0: C0411: standard import "import uuid" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:18:0: C0411: standard import "import hashlib" should be placed before "import arrow" (wrong-import-order)
-insta485/views/index.py:19:0: C0411: standard import "import pathlib" should be placed before "import arrow" (wrong-import-order)
-************* Module insta485.views.__init__
-insta485/views/__init__.py:2:0: C0304: Final newline missing (missing-final-newline)
-
-------------------------------------------------------------------
-Your code has been rated at 8.01/10 (previous run: 8.01/10, +0.00)
-
 __________________________________ test_html ___________________________________
 
 client = <FlaskClient <Flask 'insta485'>>
@@ -660,108 +77,99 @@ client = <FlaskClient <Flask 'insta485'>>
             shutil.rmtree("tmp/localhost")
     
         # Render all pages and download HTML to ./tmp/localhost/
->       crawl(
+        crawl(
             client=client,
             outputdir="tmp/localhost",
             todo=collections.deque([CrawlURL(url='/', source='/')]),
             done=set(),
         )
+    
+        # Verify downloaded pages HTML5 compliances using html5validator
+        print("html5validator --root tmp/localhost")
+>       subprocess.run([
+            "html5validator",
+            "--root", "tmp/localhost",
+            "--ignore", "JAVA_TOOL_OPTIONS",
+        ], check=True)
 
-tests/test_style.py:67: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:132: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
-tests/test_style.py:174: in crawl
-    crawl(client, outputdir, todo, done)
+tests/test_style.py:76: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-client = <FlaskClient <Flask 'insta485'>>
-outputdir = PosixPath('tmp/localhost')
-todo = deque([CrawlURL(url='/posts/1/', source='/users/awdeorio/'), CrawlURL(url='/posts/3/', source='/users/awdeorio/'), Cra...flinn/'), CrawlURL(url='/posts/2/', source='/users/jflinn/'), CrawlURL(url='/users/michjc/', source='/posts/3/'), ...])
-done = {'/', '/explore/', '/posts/1/', '/posts/2/', '/posts/3/', '/users/awdeorio/', ...}
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['html5validator', '--root', 'tmp/localhost', '--ignore', 'JAVA_TOOL_OPTIONS'],)
+kwargs = {}
+process = <Popen: returncode: 80 args: ['html5validator', '--root', 'tmp/localhost', '...>
+stdout = None, stderr = None, retcode = 80
 
-    def crawl(client, outputdir, todo, done):
-        """Recursively render every page provided by 'client', saving to file."""
-        if not todo:
-            return
-        # Pop a URL off the head of the queue and parse it
-        url_pair = todo.popleft()
-        hostname = urlparse(url_pair.url).hostname
-        path = urlparse(url_pair.url).path
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
     
-        # Ignore links outside localhost
-        if hostname and hostname not in ["localhost", "127.0.01"]:
-            done.add(path)
-            crawl(client, outputdir, todo, done)
-            return
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them.
     
-        # Ignore links already visited
-        if path in done:
-            done.add(path)
-            crawl(client, outputdir, todo, done)
-            return
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
     
-        # Ignore logout route
-        if "logout" in path:
-            done.add(path)
-            crawl(client, outputdir, todo, done)
-            return
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
     
-        # Download
-        print("GET", path, "FROM", url_pair.source)
-        response = client.get(path)
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
     
-        # redirect routes should return 302 status
-        redirect_routes = ["/accounts/create/"]
-        if path in redirect_routes:
-            assert response.status_code == 302
-        else:
->           assert response.status_code == 200
-E           assert 404 == 200
-E             +404
-E             -200
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['html5validator', '--root', 'tmp/localhost', '--ignore', 'JAVA_TOOL_OPTIONS']' returned non-zero exit status 80.
 
-tests/test_style.py:150: AssertionError
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/subprocess.py:524: CalledProcessError
 ----------------------------- Captured stdout call -----------------------------
 GET / FROM /
 GET /explore/ FROM /
@@ -774,12 +182,97 @@ GET /users/michjc/ FROM /
 GET /users/jag/ FROM /explore/
 GET /users/awdeorio/followers/ FROM /users/awdeorio/
 GET /users/awdeorio/following/ FROM /users/awdeorio/
-GET  /accounts/edit/ FROM /users/awdeorio/
+GET /accounts/edit/ FROM /users/awdeorio/
+GET /users/jflinn/followers/ FROM /users/jflinn/
+GET /users/jflinn/following/ FROM /users/jflinn/
+GET /users/michjc/followers/ FROM /users/michjc/
+GET /users/michjc/following/ FROM /users/michjc/
+GET /users/jag/followers/ FROM /users/jag/
+GET /users/jag/following/ FROM /users/jag/
+GET /posts/4/ FROM /users/jag/
+GET /accounts/password/ FROM /accounts/edit/
+GET /accounts/delete/ FROM /accounts/edit/
+html5validator --root tmp/localhost
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/index.html":238.5-238.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":148.13-148.39: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":151.13-151.56: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":152.13-152.45: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":154.13-155.60: error: Element "form" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":202.1-202.7: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":146.5-146.23: error: Unclosed element "div".
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":204.5-204.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/1/index.html":204.5-204.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":148.13-148.34: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":151.13-151.51: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":152.13-152.45: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":181.1-181.7: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":146.5-146.23: error: Unclosed element "div".
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":183.5-183.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/4/index.html":183.5-183.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":148.13-148.39: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":151.13-151.56: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":152.13-152.45: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":154.13-155.60: error: Element "form" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":208.1-208.7: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":146.5-146.23: error: Unclosed element "div".
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":210.5-210.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/3/index.html":210.5-210.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":148.13-148.37: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":151.13-151.54: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":152.13-152.45: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":188.1-188.7: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":146.5-146.23: error: Unclosed element "div".
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":190.5-190.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/posts/2/index.html":190.5-190.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/explore/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/explore/index.html":158.5-158.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/password/index.html":155.13-155.38: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/delete/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/delete/index.html":155.5-155.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":147.21-147.85: error: An "img" element must have an "alt" attribute, except under certain conditions. For details, consult guidance on providing text alternatives for images.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":148.34-148.37: error: Element "br" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":162.17-162.46: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":163.17-163.44: error: Element "a" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":164.13-164.17: error: End tag "ul" seen, but there were open elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":163.17-163.44: error: Unclosed element "a".
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":165.9-165.14: error: End tag "div" seen, but there were open elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":166.5-166.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":168.5-168.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/accounts/edit/index.html":168.5-168.11: error: End tag for  "body" seen, but there were unclosed elements.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/index.html":149.13-149.16: error: Element "br" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/index.html":186.5-186.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/followers/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/followers/index.html":157.5-157.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/following/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jflinn/following/index.html":172.5-172.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/index.html":149.13-149.16: error: Element "br" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/index.html":186.5-186.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/followers/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/followers/index.html":164.5-164.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/following/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/jag/following/index.html":164.5-164.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/index.html":149.13-149.16: error: Element "br" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/index.html":188.5-188.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/followers/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/followers/index.html":179.5-179.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/following/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/awdeorio/following/index.html":179.5-179.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/index.html":145.1-145.6: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/index.html":149.13-149.16: error: Element "br" not allowed as child of element "ul" in this context. (Suppressing further errors from this subtree.)
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/index.html":182.5-182.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/followers/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/followers/index.html":187.5-187.11: error: Saw an end tag after "body" had been closed.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/following/index.html":144.5-144.10: error: Start tag "body" seen but an element of the same type was already open.
+"file:/Users/johnkyle/Desktop/Michigan/EECS/485/p2-insta485-serverside/tmp/localhost/localhost/users/michjc/following/index.html":172.5-172.11: error: Saw an end tag after "body" had been closed.
 =========================== short test summary info ============================
-FAILED tests/test_accounts_public.py::test_accounts_delete - assert 200 == 404
-FAILED tests/test_post_public.py::test_delete_post - assert 404 == 302
-FAILED tests/test_style.py::test_pycodestyle - subprocess.CalledProcessError:...
-FAILED tests/test_style.py::test_pydocstyle - subprocess.CalledProcessError: ...
-FAILED tests/test_style.py::test_pylint - subprocess.CalledProcessError: Comm...
-FAILED tests/test_style.py::test_html - assert 404 == 200
-======================== 6 failed, 42 passed in 13.84s =========================
+FAILED tests/test_style.py::test_html - subprocess.CalledProcessError: Comman...
+======================== 1 failed, 47 passed in 13.83s =========================

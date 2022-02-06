@@ -4,9 +4,9 @@
         {% for post in posts %}
             <div class="posts">
                 <ul>
-                    <a href="{{ url_for('show_user', user_url_slug=post.owner) }}"><img src="{{ url_for('send_file', filename=post.owner_img_url) }}" alt="Profile picture" class="profilepicture"></a>
-                    <a href="{{ url_for('show_user', user_url_slug=post.owner) }}" class="username"><b>{{post.owner}}</b></a>
-                    <a href="{{ url_for('show_post', post_url_slug=post.postid) }}" class="time">{{post.timestamp}}</a>
+                    <li><a href="{{ url_for('show_user', user_url_slug=post.owner) }}"><img src="{{ url_for('send_file', filename=post.owner_img_url) }}" alt="Profile picture" class="profilepicture"></a></li>
+                    <li><a href="{{ url_for('show_user', user_url_slug=post.owner) }}" class="username"><b>{{post.owner}}</b></a></li>
+                    <li><a href="{{ url_for('show_post', post_url_slug=post.postid) }}" class="time">{{post.timestamp}}</a></li>
                 </ul>
                 <img src="{{ url_for('send_file', filename=post.img_url) }}" alt="Post" style="width:400px; height:400px; position: relative; margin-right: auto; margin-left: auto;">
                 {% if post.likes == 1%}

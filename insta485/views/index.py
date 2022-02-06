@@ -108,11 +108,17 @@ def show_index():
     # get all following posts
     for user in l_following:
         user_posts = connection.execute(
-            "SELECT P.postid, P.filename AS pf, P.owner, P.created, U.filename AS uf "
-            "FROM posts P, users U "
-            "WHERE P.owner = ? AND ? = U.username ",
-            (user, user, )
+            "SELECT P.postid, P.filename AS pf, P.owner, P.created "
+            "FROM posts P "
+            "WHERE P.owner = ? ",
+            (user, )
         ).fetchall()
+        user_filename = connection.execute(
+            "SELECT U.filename "
+            "FROM users U "
+            "WHERE U.username = ? ",
+            (user, )
+        ).fetchall()[0]['filename']
         for post in user_posts:
             likes, logname_liked = get_likes(post['postid'], connection)
             comments = get_all_comments(post['postid'], connection)
@@ -120,7 +126,7 @@ def show_index():
             posts.append({
                 "postid": post['postid'],
                 "owner": post['owner'],
-                "owner_img_url": post['uf'],
+                "owner_img_url": user_filename,
                 "img_url": post['pf'],
                 "timestamp": timestamp,
                 "likes": len(likes),
@@ -430,7 +436,10 @@ def show_password():
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
     # serve password.html
-    return flask.render_template("password.html")
+    context = {
+        "logname": flask.session['logname']
+    }
+    return flask.render_template("password.html", **context)
 
 
 @insta485.app.route('/uploads/<filename>', methods=['GET'])
@@ -453,7 +462,11 @@ def logout():
     flask.session.clear()
     return flask.redirect(flask.url_for('login'))
 
-def handle_account_login():
+
+def handle_account_login(target):
+    """Handle logging into an account."""
+    if target is None:
+        target = flask.url_for('show_index')
     # check if any empty information
     if not flask.request.form.get('username'):
         return flask.abort(400)
@@ -483,8 +496,14 @@ def handle_account_login():
         return flask.abort(403)
     # otherwise, set session cookie and redirect to target
     flask.session['logname'] = logname
+    return flask.redirect(target)
 
-def handle_account_create():
+
+def handle_account_create(target):
+    """Handle creating an account."""
+    # if target is not specified, default to index
+    if target is None:
+        target = flask.url_for('show_index')
     # get form data
     username = flask.request.form.get('username')
     fullname = flask.request.form.get('fullname')
@@ -525,8 +544,13 @@ def handle_account_create():
     connection.commit()
     # set session cookie to login
     flask.session['logname'] = username
+    return flask.redirect(target)
 
-def handle_account_delete():        
+
+def handle_account_delete(target):
+    """Handle deleting account."""
+    if target is None:
+        target = flask.url_for('show_index')
     # if not logged in, abort(403)
     if 'logname' not in flask.session:
         return flask.abort(403)
@@ -567,8 +591,13 @@ def handle_account_delete():
     connection.commit()
     # clear session and redirect to target
     flask.session.clear()
+    return flask.redirect(target)
 
-def handle_account_edit():
+
+def handle_account_edit(target):
+    """Handle account edits for account endpoint."""
+    if target is None:
+        target = flask.url_for('show_index')
     # see if logged in
     if 'logname' not in flask.session:
         return flask.abort(403)
@@ -627,9 +656,11 @@ def handle_account_edit():
     )
     # commit changes and redirect to the target
     connection.commit()
+    return flask.redirect(target)
 
 
-def handle_account_password():
+def handle_account_password(target):
+    """Handle password changes for account endpoint."""
     # check if logged in
     if 'logname' not in flask.session:
         return flask.abort(403)
@@ -671,6 +702,8 @@ def handle_account_password():
     )
     # commit changes and redirect to the target
     connection.commit()
+    return flask.redirect(target)
+
 
 @insta485.app.route('/accounts/', methods=['POST'])
 def handle_account():
@@ -678,24 +711,23 @@ def handle_account():
     # get the operation and the target
     operation = flask.request.form.get('operation')
     target = flask.request.args.get('target')
-    # if target is not specified, default to index
     if target is None:
         target = flask.url_for('show_index')
     # LOGIN:
     if operation == 'login':
-        handle_account_login()
+        handle_account_login(target)
     # CREATE
     elif operation == 'create':
-        handle_account_create()
+        handle_account_create(target)
     # DELETE
     elif operation == 'delete':
-        handle_account_delete()
+        handle_account_delete(target)
     # EDIT_ACCOUNT
     elif operation == 'edit_account':
-        handle_account_edit()
+        handle_account_edit(target)
     # UPDATE_PASSWORD
     elif operation == 'update_password':
-        handle_account_password()
+        handle_account_password(target)
     return flask.redirect(target)
 
 
@@ -761,6 +793,7 @@ def like():
     connection = insta485.model.get_db()
     if 'logname' not in flask.session:
         return flask.redirect(flask.url_for('login'))
+
     logname = flask.session['logname']
     operation = flask.request.form.get('operation')
     postid = flask.request.form.get('postid')
@@ -770,6 +803,7 @@ def like():
             "WHERE L.postid = ? AND L.owner = ?",
             (postid, logname, )
     ).fetchall()
+
     if operation == 'like':
         # put the like in the database if it is not there
         if len(check) == 0:
@@ -781,7 +815,7 @@ def like():
             return flask.redirect(target)
         return flask.abort(409)
 
-    elif operation == 'unlike':
+    if operation == 'unlike':
         # take the like out if it's there
         if len(check) == 1:
             connection.execute(
