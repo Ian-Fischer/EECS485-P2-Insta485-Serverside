@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-    <!--FIX ME FIX ME WHAT DOES THE NAVBAR LOOK LIKE???-->
     <head>
         <title>insta485</title>
         <style>
@@ -47,12 +46,12 @@
         </ul>
         <div class="box">
             <form action="{{ url_for('handle_account') }}?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
-                <label>Profile Piccy: </label><input type="file" name="file" required/>
-                <label>fullname</label><input type="text" name="fullname" required/>
-                <label>username</label><input type="text" name="username" required/>
-                <label>gimme dat email</label><input type="text" name="email" required/>
-                <label>password: shhh -- secret!</label><input type="password" name="password" required/>
-                <label>full send shotty for the boys?</label><input type="submit" name="signup" value="sign up"/>
+                <label>File: </label><input type="file" name="file" required/>
+                <label>Fullname:</label><input type="text" name="fullname" required/>
+                <label>Username:</label><input type="text" name="username" required/>
+                <label>Email:</label><input type="text" name="email" required/>
+                <label>Password:</label><input type="password" name="password" required/>
+                <label>Submit:</label><input type="submit" name="signup" value="sign up"/>
                 <input type="hidden" name="operation" value="create"/>
             </form>
         </div>

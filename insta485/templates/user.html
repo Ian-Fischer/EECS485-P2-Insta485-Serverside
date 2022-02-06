@@ -7,19 +7,19 @@
             <li>{{username}}</li>
             <br>
             {% if total_posts == 1%}
-            <li>{{total_posts}} post</li>
+            <li>1 post</li>
             {% else %}
             <li> {{total_posts}} posts</li>
             {% endif %}
             <li>
                 {% if followers == 1 %}
-                <a href="{{ url_for('show_followers', user_url_slug=username) }}">{{followers}} follower</a>
+                <a href="{{ url_for('followers', user_url_slug=username) }}">1 follower</a>
                 {% else %}
-                <a href="{{ url_for('show_followers', user_url_slug=username) }}">{{followers}} followers</a>
+                <a href="{{ url_for('followers', user_url_slug=username) }}">{{followers}} followers</a>
                 {% endif %}
             </li>
             <li>
-                <a href="{{ url_for('show_following', user_url_slug=username) }}">{{following}} following</a>
+                <a href="{{ url_for('following', user_url_slug=username) }}">{{following}} following</a>
             </li>
         </ul>
         {% if username == logname %}
@@ -34,7 +34,7 @@
             <input type="hidden" name="operation" value="create" />
         </form>
         {% endif %}
-        {% if logname_follows_username == true and logname != username %}
+        {% if logname_follows_username and logname != username %}
         <ul>
             <li>following</li>
             <li>

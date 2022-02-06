@@ -8,16 +8,16 @@
                 <a href="{{ url_for('show_user', user_url_slug=follow.username)}}">
                     <p>{{follow.username}}</p>
                 </a>
-                {% if follow.logname_follows_username == true and logname != follow.username %}
+                {% if follow.logname_follows_username and logname != follow.username %}
                     <p>following</p>
-                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('show_following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
+                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
                         <input type="submit" name="unfollow" value="unfollow"/>
                         <input type="hidden" name="username" value="{{follow.username}}"/>
                         <input type="hidden" name="operation" value="unfollow"/>
                     </form>
-                {% elif follow.logname_follows_username == false and logname != follow.username %}
+                {% elif not follow.logname_follows_username and logname != follow.username %}
                     <p>not following</p>
-                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('show_following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
+                    <form action="{{ url_for('follow_unfollow') }}?target={{ url_for('following', user_url_slug=username)}}" method="post" enctype="multipart/form-data">
                         <input type="submit" name="follow" value="follow"/>
                         <input type="hidden" name="username" value="{{follow.username}}"/>
                         <input type="hidden" name="operation" value="follow"/>

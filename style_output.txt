@@ -1,0 +1,9 @@
+insta485/__init__.py:5:80: E501 line too long (88 > 79 characters)
+insta485/views/__init__.py:9:45: W292 no newline at end of file
+insta485/views/index.py:119:80: E501 line too long (86 > 79 characters)
+insta485/views/index.py:122:18: E231 missing whitespace after ','
+insta485/views/index.py:125:60: E231 missing whitespace after ','
+insta485/views/index.py:201:39: W291 trailing whitespace
+insta485/views/index.py:347:17: E231 missing whitespace after ','
+insta485/views/index.py:470:80: E501 line too long (93 > 79 characters)
+insta485/views/index.py:767:20: E231 missing whitespace after ','

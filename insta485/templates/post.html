@@ -25,7 +25,7 @@
         {% else %}
         <p> {{likes}} likes </p>
         {% endif %}
-        {% if logname_liked == false %}
+        {% if not logname_liked %}
         <form action="{{ url_for('like') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post"
             enctype="multipart/form-data">
             <input type="hidden" name="operation" value="like" />
@@ -54,7 +54,6 @@
             {% endif %}
         </div>
         {% endfor %}
-        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
         <form action="{{ url_for('comment') }}?target={{ url_for('show_post', post_url_slug=postid) }}" method="post"
             enctype="multipart/form-data">
             <input type="hidden" name="operation" value="create" />

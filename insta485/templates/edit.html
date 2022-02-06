@@ -8,7 +8,6 @@
             </ul>
         </div>
         <div class="box">
-            <!--    WHERE DO WE REDIRECT TO???  --->
             <form action="{{ url_for('handle_account') }}?target={{ url_for('show_edit') }}" method="post" enctype="multipart/form-data">
                 <label>Photo  </label><input type="file" name="file" accept="image/*" /><br>
                 <label>Name  </label><input type="text" name="fullname" value="{{logname_fullname}}" required /><br>
