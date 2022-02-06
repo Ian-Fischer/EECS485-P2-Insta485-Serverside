@@ -3,6 +3,7 @@ from insta485.views.index import show_index
 from insta485.views.index import show_user
 from insta485.views.index import followers
 from insta485.views.index import following
+from insta485.views.index import show_post
 from insta485.views.index import show_explore
 from insta485.views.index import login
 from insta485.views.index import logout
@@ -12,3 +13,7 @@ from insta485.views.index import show_edit
 from insta485.views.index import show_password
 from insta485.views.index import like
 from insta485.views.index import send_file
+from insta485.views.index import comment
+from insta485.views.index import handle_account
+from insta485.views.index import follow_unfollow
+from insta485.views.index import handle_posts

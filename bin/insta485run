@@ -3,9 +3,16 @@
 
 # stop on errors
 set -Eeuo pipefail
+set -x
 
-# call insta485db create
-./bin/insta485db create
+# call insta485db create if db does not exist
+if [ ! -f "var/insta485.sqlite3" ]
+then
+    ./bin/insta485db create
+else 
+    echo "Error: database already exists"
+    exit
+fi
 
 # set her up
 export FLASK_ENV=development
