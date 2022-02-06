@@ -354,10 +354,12 @@ def show_explore():
         "EXCEPT "
         "SELECT F.username2 "
         "FROM following F "
-        "WHERE F.username1 = ? OR F.username2 = ?",
+        "WHERE F.username1 = ? OR F.username2 = ? ",
         (logname, logname, )
     ).fetchall()
     users = [elt['username'] for elt in users]
+    if logname in users:
+        users.remove(logname)
     # get not following
     not_following = []
     for user in users:

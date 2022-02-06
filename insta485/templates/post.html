@@ -19,7 +19,7 @@
                 </li>
             {% endif %}
         </ul>
-        <img src="{{ url_for('send_file', filename=img_url) }}" alt="Post" class="posts">
+        <img src="{{ url_for('send_file', filename=img_url) }}" alt="Post" class="posts" style="height: 500px; width: 500px">
         {% if likes == 1%}
             <p> 1 like </p>
         {% else %}
