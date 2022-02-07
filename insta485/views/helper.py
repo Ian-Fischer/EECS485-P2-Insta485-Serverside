@@ -3,6 +3,7 @@ import hashlib
 import pathlib
 import uuid
 import sqlite3
+from xxlimited import new
 import flask
 import insta485
 
@@ -131,6 +132,7 @@ def handle_account_create(target):
     # check for empty fields
     if None in [username, fullname, email, password, filename, fileobj]:
         return flask.abort(400)
+    password = new_password_hash(password)
     # check to see if the user already exists
     user = connection.execute(
         "SELECT U.username "
